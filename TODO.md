@@ -2,11 +2,8 @@
 
 - tauri , react, TS
 - octokit
-- tailwind
 - shadcn
-- lucide icons
 - tauri-store
-- react router
 
 2. setup dev env and repo
 3. build out sample UI and enough logic for demo-ing to sir
