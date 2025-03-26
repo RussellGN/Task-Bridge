@@ -1,0 +1,4 @@
+src-tauri/src/
+src-tauri/target/
+src-tauri/**.rs
+src-tauri/**.toml
