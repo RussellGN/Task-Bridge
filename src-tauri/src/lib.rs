@@ -1,9 +1,12 @@
 use tauri::{AppHandle, Manager};
 use utils::log;
 
+mod auth;
 mod commands;
 mod setup;
 mod utils;
+
+pub const STORE_PATH: &str = "store.json";
 
 fn initialize_single_instance(app: &AppHandle, _args: Vec<String>, _cwd: String) {
    if let Some(window) = app.get_webview_window("main") {

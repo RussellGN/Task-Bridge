@@ -3,7 +3,7 @@ use std::error::Error;
 use tauri::{App, Runtime};
 use tauri_plugin_deep_link::DeepLinkExt;
 
-use crate::utils::log;
+use crate::{auth::handle_auth_setup, utils::log};
 
 pub fn setup(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
    setup_deep_linking(app)
@@ -38,12 +38,27 @@ fn setup_deep_linking(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>>
       }
    }
 
-   deep_link.on_open_url(|e| {
-      log(format!("deep link hit [on_open_url]. Urls: {:#?}", e.urls()));
+   let app_handle = app.handle().clone();
+
+   deep_link.on_open_url(move |e| {
+      let urls = e.urls();
+      log(format!("deep link hit [on_open_url]. Urls: {urls:#?}",));
+
+      if !urls.is_empty() {
+         let url = urls.first().unwrap();
+         if let Err(e) = handle_auth_setup(url, &app_handle) {
+            log(format!("error handling deep link hit: {e}"));
+         }
+      };
    });
 
-   if let Ok(Some(urls)) = deep_link.get_current() {
-      log(format!("app loaded by deep link, urls: {urls:#?}"));
+   // this should not be possible, due to single instance plugin]
+   {
+      if let Ok(Some(urls)) = deep_link.get_current() {
+         log(format!(
+            "[this should not be possible, due to single instance plugin] app loaded by deep link, urls: {urls:#?}"
+         ));
+      }
    }
 
    Ok(())
