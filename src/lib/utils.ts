@@ -8,3 +8,11 @@ export function cn(...inputs: ClassValue[]) {
 export function random_global_auth_keyword() {
    return "key_t_b_auth";
 }
+
+export function logError(e: Error) {
+   console.error(e);
+}
+
+export function wait(seconds: number) {
+   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
