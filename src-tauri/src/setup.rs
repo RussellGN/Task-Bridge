@@ -6,6 +6,10 @@ use tauri_plugin_deep_link::DeepLinkExt;
 use crate::utils::log;
 
 pub fn setup(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
+   setup_deep_linking(app)
+}
+
+fn setup_deep_linking(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
    let deep_link = app.deep_link();
 
    match deep_link.is_registered("task-bridge") {
