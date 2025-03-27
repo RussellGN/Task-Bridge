@@ -1,11 +1,24 @@
+use tauri::{AppHandle, Manager};
+use utils::log;
+
 mod commands;
 mod setup;
 mod utils;
 
+fn initialize_single_instance(app: &AppHandle, _args: Vec<String>, _cwd: String) {
+   if let Some(window) = app.get_webview_window("main") {
+      if let Err(e) = window.set_focus() {
+         log(format!(
+            "could not focus main window after cancelling launch of additional window instance: {e}"
+         ));
+      };
+   }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
    tauri::Builder::default()
-      .plugin(tauri_plugin_single_instance::init(|_, _, _| {}))
+      .plugin(tauri_plugin_single_instance::init(initialize_single_instance))
       .plugin(tauri_plugin_deep_link::init())
       .plugin(tauri_plugin_store::Builder::new().build())
       .plugin(tauri_plugin_opener::init())
