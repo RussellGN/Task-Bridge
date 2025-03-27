@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    task_bridge_lib::run()
+   task_bridge_lib::run()
 }
