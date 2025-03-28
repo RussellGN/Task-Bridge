@@ -61,7 +61,7 @@ fn validate_auth_keyword(_auth_keyword: &str) -> Result<(), String> {
 
 #[derive(Debug, Deserialize, Serialize, Default)]
 // #[serde(rename_all = "camelCase")]
-struct AccessToken {
+pub struct AccessToken {
    access_token: String,
    scope: String,
    token_type: String,
@@ -74,6 +74,10 @@ impl AccessToken {
          scope,
          token_type,
       }
+   }
+
+   pub fn get_token(&self) -> String {
+      self.access_token.clone()
    }
 
    fn exchange_code_for_access_token(code: &str) -> Result<Self, String> {
