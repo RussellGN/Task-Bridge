@@ -13,7 +13,9 @@ export default function useHome() {
       load(STORE_PATH)
          .then((store) => {
             store.get<AccessToken>("token").then((token) => {
-               setToken(token);
+               // token is somehow a string, so we need to convert it to an AccessToken object
+               const tokenObj = JSON.parse(String(token)) as AccessToken;
+               setToken(tokenObj);
             });
          })
          .catch((e) => {
@@ -24,6 +26,8 @@ export default function useHome() {
             setLoading(false);
          });
    }, []);
+
+   console.log(token);
 
    return { loading, token, error };
 }
