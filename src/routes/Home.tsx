@@ -3,7 +3,7 @@ import useHome from "@/hooks/route-hooks/useHome";
 import { TriangleAlert } from "lucide-react";
 
 export default function Home() {
-   const { token, loading, error } = useHome();
+   const { user, loading, error } = useHome();
 
    return (
       <div className="p-5">
@@ -17,22 +17,13 @@ export default function Home() {
          ) : error ? (
             <div className="flex flex-col items-center gap-3">
                <TriangleAlert className="text-red-400" />
-               <p className="font-semibold max-w-prose text-center text-red-400">{error.message}</p>
+               <p className="font-semibold max-w-prose text-center text-red-400 break-words">{error.toString()}</p>
             </div>
-         ) : token ? (
-            <div className="flex flex-col items-center gap-3">
-               <p className="font-semibold">Token:</p>
-               <ul className="list-disc">
-                  <li>
-                     <strong>Access Token:</strong> {token.access_token}
-                  </li>
-                  <li>
-                     <strong>Token Type:</strong> {token.token_type}
-                  </li>
-                  <li>
-                     <strong>Scope:</strong> {token.scope}
-                  </li>
-               </ul>
+         ) : user ? (
+            <div className="w-full max-w-md p-5 bg-white shadow-md rounded-md flex flex-col items-center">
+               <img src={user.avatar_url} alt={`${user.login}'s profile`} className="w-20 h-20 rounded-full mb-3" />
+               <h2 className="text-lg font-bold mb-3">Welcome, {user.login}!</h2>
+               <p className="text-sm text-gray-600">Email: {user.email}</p>
             </div>
          ) : (
             ""
