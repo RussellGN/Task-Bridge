@@ -4,6 +4,7 @@ use utils::log;
 mod auth;
 mod commands;
 mod setup;
+mod structs;
 mod utils;
 
 pub const STORE_PATH: &str = "store.json";
@@ -27,6 +28,7 @@ pub fn run() {
       .plugin(tauri_plugin_store::Builder::new().build())
       .plugin(tauri_plugin_opener::init())
       .setup(setup::setup)
+      .invoke_handler(tauri::generate_handler![commands::fetch_save_and_return_user])
       .run(tauri::generate_context!())
       .expect("error while running tauri application");
 }
