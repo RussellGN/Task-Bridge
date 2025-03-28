@@ -14,7 +14,7 @@ export function logError(e: Error) {
 }
 
 export function logInfo<T>(info: T) {
-   logInfo(info);
+   console.log(info);
 }
 
 export function wait(seconds: number) {
