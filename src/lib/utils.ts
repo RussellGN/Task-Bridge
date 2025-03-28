@@ -13,7 +13,7 @@ export function logError(e: Error) {
    console.error(e);
 }
 
-export function logInfo(info: any) {
+export function logInfo<T>(info: T) {
    logInfo(info);
 }
 
