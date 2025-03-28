@@ -1,8 +1,5 @@
 export type AccessToken = {
-   accessToken: string;
-   expiresIn?: number;
-   refreshToken?: string;
-   refreshTokenExpiresIn?: number;
+   access_token: string;
    scope: string;
-   tokenType: string;
+   token_type: string;
 };

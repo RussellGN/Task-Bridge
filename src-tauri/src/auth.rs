@@ -1,7 +1,8 @@
 use std::{collections::HashMap, error::Error};
 
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Emitter, Runtime, Url};
+use tauri::{http::Method, AppHandle, Emitter, Runtime, Url};
+use tauri_plugin_http::reqwest;
 use tauri_plugin_store::StoreExt;
 
 use crate::{
@@ -9,7 +10,7 @@ use crate::{
    STORE_PATH,
 };
 
-pub fn handle_auth_setup(url: &Url, app: &AppHandle<impl Runtime>) -> Result<(), Box<dyn Error>> {
+pub fn proceed_to_auth(url: &Url, app: &AppHandle<impl Runtime>) -> Result<(), Box<dyn Error>> {
    let path = url.path();
    let query_params = url.query_pairs().collect::<HashMap<_, _>>();
    let code = query_params.get("code");
@@ -59,20 +60,76 @@ fn validate_auth_keyword(_auth_keyword: &str) -> Result<(), String> {
 }
 
 #[derive(Debug, Deserialize, Serialize, Default)]
-#[serde(rename_all = "camelCase")]
+// #[serde(rename_all = "camelCase")]
 struct AccessToken {
    access_token: String,
-   expires_in: Option<usize>,
-   refresh_token: Option<String>,
-   refresh_token_expires_in: Option<usize>,
    scope: String,
    token_type: String,
 }
 
 impl AccessToken {
-   fn exchange_code_for_access_token(_code: &str) -> Result<Self, String> {
-      let fake_token = AccessToken::default();
-      // TODO: get actual access token
-      Ok(fake_token)
+   fn new(access_token: String, scope: String, token_type: String) -> Self {
+      Self {
+         access_token,
+         scope,
+         token_type,
+      }
+   }
+
+   fn exchange_code_for_access_token(code: &str) -> Result<Self, String> {
+      let env_vars = dotenv::vars().collect::<HashMap<_, _>>();
+      let client_id = env_vars
+         .get("VITE_CLIENT_ID")
+         .ok_or(String::from("failed to load CLIENT_ID var"))?;
+      let client_secret = env_vars
+         .get("VITE_CLIENT_SECRET")
+         .ok_or(String::from("failed to load CLIENT_SECRET var"))?;
+
+      let mut code_exchange_url =
+         Url::parse("https://github.com/login/oauth/access_token").map_err(|e| e.to_string())?;
+
+      code_exchange_url
+         .query_pairs_mut()
+         .append_pair("client_id", client_id)
+         .append_pair("client_secret", client_secret)
+         .append_pair("code", code);
+
+      log(code_exchange_url.as_str());
+      let req = reqwest::blocking::Request::new(Method::POST, code_exchange_url);
+      let res = reqwest::blocking::Client::new()
+         .execute(req)
+         .map_err(|e| e.to_string())?;
+
+      let bytes = res.bytes().map_err(|e| e.to_string())?.to_vec();
+      let params = String::from_utf8(bytes).map_err(|e| e.to_string())?;
+      let param_pairs_list = params
+         .split("&")
+         .map(|query_pair| query_pair.split("=").map(|item| item.to_string()).collect::<Vec<_>>())
+         .collect::<Vec<Vec<_>>>();
+
+      let mut params: HashMap<String, String> = HashMap::new();
+
+      for k_v_pair in param_pairs_list.clone() {
+         if let [k, v] = k_v_pair.as_slice() {
+            params.insert(k.to_string(), v.to_string());
+         } else {
+            return  Err(format!("[AccessToken::exchange_code_for_token] param_pairs_list does not contain key-value pairs: {param_pairs_list:#?}"));
+         }
+      }
+
+      let access_token = params
+         .get("access_token")
+         .ok_or("access_token was nott ofund in params")?
+         .to_string();
+      let scope = params.get("scope").ok_or("scope was nott ofund in params")?.to_string();
+      let token_type = params
+         .get("token_type")
+         .ok_or("token_type was nott ofund in params")?
+         .to_string();
+      let token = Self::new(access_token, scope, token_type);
+
+      log(format!("token: {token:?}"));
+
+      Ok(token)
    }
 }

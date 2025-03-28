@@ -3,7 +3,7 @@ use std::error::Error;
 use tauri::{App, Runtime};
 use tauri_plugin_deep_link::DeepLinkExt;
 
-use crate::{auth::handle_auth_setup, utils::log};
+use crate::{auth::proceed_to_auth, utils::log};
 
 pub fn setup(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
    setup_deep_linking(app)
@@ -46,8 +46,15 @@ fn setup_deep_linking(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>>
 
       if !urls.is_empty() {
          let url = urls.first().unwrap();
-         if let Err(e) = handle_auth_setup(url, &app_handle) {
-            log(format!("error handling deep link hit: {e}"));
+         match url.path() {
+            "/proceed-to-auth" => {
+               if let Err(e) = proceed_to_auth(url, &app_handle) {
+                  log(format!("error handling deep link hit: {e}"));
+               }
+            }
+            path => log(format!(
+               "no handler set for deep link path = {path} with url = {url:#?}"
+            )),
          }
       };
    });

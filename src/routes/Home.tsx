@@ -24,22 +24,13 @@ export default function Home() {
                <p className="font-semibold">Token:</p>
                <ul className="list-disc">
                   <li>
-                     <strong>Access Token:</strong> {token.accessToken}
+                     <strong>Access Token:</strong> {token.access_token}
                   </li>
                   <li>
-                     <strong>Refresh Token:</strong> {token.refreshToken}
-                  </li>
-                  <li>
-                     <strong>Expires In:</strong> {token.expiresIn}
-                  </li>
-                  <li>
-                     <strong>Token Type:</strong> {token.tokenType}
+                     <strong>Token Type:</strong> {token.token_type}
                   </li>
                   <li>
                      <strong>Scope:</strong> {token.scope}
-                  </li>
-                  <li>
-                     <strong>Refresh Token Expires In :</strong> {token.refreshTokenExpiresIn}
                   </li>
                </ul>
             </div>
