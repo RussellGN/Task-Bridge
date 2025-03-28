@@ -13,6 +13,10 @@ export function logError(e: Error) {
    console.error(e);
 }
 
+export function logInfo(info: any) {
+   logInfo(info);
+}
+
 export function wait(seconds: number) {
    return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }

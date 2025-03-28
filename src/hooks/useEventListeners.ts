@@ -1,28 +1,28 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { logError } from "@/lib/utils";
+import { logError, logInfo } from "@/lib/utils";
 import { once } from "@tauri-apps/api/event";
 
 export default function useEventListeners() {
    const navigate = useNavigate();
-   console.log("in useEventListeners");
+   logInfo("in useEventListeners");
 
    useEffect(() => {
-      console.log("[useEventListeners] useEffect run, id: ", Date.now());
+      logInfo("[useEventListeners] useEffect run, id: " + Date.now());
 
       let unlisten: (() => void) | undefined;
 
       (async () => {
          try {
             unlisten = await once("auth-setup-complete", (e) => {
-               console.log("auth-setup-complete", e);
+               logInfo("auth-setup-complete " + e);
                navigate("/home");
 
                if (unlisten) {
-                  console.log("[useEventListeners] inside auth event cb! unlisten was set, calling it!");
+                  logInfo("[useEventListeners] inside auth event cb! unlisten was set, calling it!");
                   unlisten();
                   unlisten = undefined;
-               } else console.log("[useEventListeners]  inside auth event cb! unlisten was not set!");
+               } else logInfo("[useEventListeners]  inside auth event cb! unlisten was not set!");
             });
          } catch (error) {
             if (error instanceof Error) {
@@ -33,13 +33,13 @@ export default function useEventListeners() {
          }
       })();
 
-      console.log("[useEventListeners] unlisten: ", unlisten);
+      logInfo("[useEventListeners] unlisten: " + unlisten);
 
       return () => {
          if (unlisten) {
-            console.log("[useEventListeners] unlisten was set, calling it!");
+            logInfo("[useEventListeners] unlisten was set, calling it!");
             unlisten();
-         } else console.log("[useEventListeners] unlisten was not set!");
+         } else logInfo("[useEventListeners] unlisten was not set!");
       };
    }, []);
 }

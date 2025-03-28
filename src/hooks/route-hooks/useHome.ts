@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { load } from "@tauri-apps/plugin-store";
 import { STORE_PATH } from "@/lib/constants";
-import { logError } from "@/lib/utils";
+import { logError, logInfo } from "@/lib/utils";
 import { AccessToken } from "@/lib/types";
 
 export default function useHome() {
@@ -27,7 +27,7 @@ export default function useHome() {
          });
    }, []);
 
-   console.log(token);
+   logInfo(token);
 
    return { loading, token, error };
 }

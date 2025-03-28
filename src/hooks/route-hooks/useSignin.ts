@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { load } from "@tauri-apps/plugin-store";
 import { STORE_PATH } from "@/lib/constants";
-import { logError, wait } from "@/lib/utils";
+import { logError, logInfo, wait } from "@/lib/utils";
 import { useNavigate } from "react-router";
 import { AccessToken } from "@/lib/types";
 
@@ -14,10 +14,10 @@ export default function useSignin() {
          .then((store) => {
             store.get<AccessToken>("token").then((token) => {
                if (token) {
-                  console.log("[sign in page] found token, no need to sign-in", token);
+                  logInfo("[sign in page] found token, no need to sign-in " + token);
                   wait(2).then(() => navigate("/home"));
                } else {
-                  console.log("[sign in page] no token found, awaiting signin");
+                  logInfo("[sign in page] no token found, awaiting signin");
                   setLoading(false);
                }
             });
