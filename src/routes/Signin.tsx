@@ -2,18 +2,22 @@ import Spinner from "@/components/general/Spinner";
 import { Button } from "@/components/ui/button";
 import useSignin from "@/hooks/route-hooks/useSignin";
 import { GITHUB_AUTH_URL } from "@/lib/constants";
-import { LogIn, UserCircle } from "lucide-react";
+import { AlertTriangle, LogIn, UserCircle } from "lucide-react";
 import { Link } from "react-router";
 
 export default function Signin() {
    const { loading } = useSignin();
 
    return (
-      <div className="pt-30 flex justify-center items-center flex-col gap-4 text-center">
+      <div className="pt-30 flex justify-center items-center flex-col gap-3 text-center">
          <UserCircle size={100} />
 
-         <p>
-            You need to sign into your GitHub account <br /> in order to proceed
+         <p>You need to sign into your GitHub account in order to proceed</p>
+         <p className="text-sm font-thin max-w-prose bg-foreground/5 p-2 rounded-sm mb-3">
+            <AlertTriangle size={13} className="inline-block mr-1 -mt-0.5" />
+            This is the account that will be
+            <br />
+            used on your behalf to interact with GitHub and <br /> cannot be changed.
          </p>
 
          <span className={loading ? "cursor-not-allowed" : ""}>
