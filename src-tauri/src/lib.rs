@@ -21,6 +21,7 @@ fn initialize_single_instance(app: &AppHandle, _args: Vec<String>, _cwd: String)
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
    tauri::Builder::default()
+      .plugin(tauri_plugin_http::init())
       .plugin(tauri_plugin_single_instance::init(initialize_single_instance))
       .plugin(tauri_plugin_deep_link::init())
       .plugin(tauri_plugin_store::Builder::new().build())
