@@ -4,5 +4,4 @@ use serde::{Deserialize, Serialize};
 pub struct User {
    login: String,
    avatar_url: String,
-   email: Option<String>,
 }

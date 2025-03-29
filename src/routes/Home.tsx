@@ -7,8 +7,6 @@ export default function Home() {
 
    return (
       <div className="p-5">
-         <h1 className="mb-5">Home</h1>
-
          {loading ? (
             <div className="flex flex-col items-center justify-center gap-3">
                <Spinner />
@@ -20,10 +18,11 @@ export default function Home() {
                <p className="font-semibold max-w-prose text-center text-red-400 break-words">{error.toString()}</p>
             </div>
          ) : user ? (
-            <div className="w-full max-w-md p-5 bg-white shadow-md rounded-md flex flex-col items-center">
-               <img src={user.avatar_url} alt={`${user.login}'s profile`} className="w-20 h-20 rounded-full mb-3" />
-               <h2 className="text-lg font-bold mb-3">Welcome, {user.login}!</h2>
-               <p className="text-sm text-gray-600">Email: {user.email}</p>
+            <div className="w-fit  flex items-center gap-3">
+               <img src={user.avatar_url} alt={`${user.login}'s profile`} className="size-9 rounded-full" />
+               <h2 className="text-lg font-bold">
+                  Welcome <span className="text-yellow-300"> {user.login}</span>!
+               </h2>
             </div>
          ) : (
             ""
