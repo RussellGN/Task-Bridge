@@ -42,6 +42,9 @@ where
    req.headers_mut()
       .append(header::ACCEPT, HeaderValue::from_static("application/json"));
 
+   req.headers_mut()
+      .append(header::USER_AGENT, HeaderValue::from_static("reqwest"));
+
    let auth_header = format!("Bearer {}", user_access_token.get_token());
    req.headers_mut().append(
       header::AUTHORIZATION,
@@ -50,6 +53,7 @@ where
    req.headers_mut()
       .append("X-GitHub-Api-Version", HeaderValue::from_static("2022-11-28"));
 
+   log(format!("req = {req:#?}"));
    let res = reqwest::Client::new().execute(req).await.map_err(|e| e.to_string())?;
 
    log(format!("status: {}", res.status().as_str()));
@@ -66,7 +70,7 @@ where
    }
 }
 
-pub fn user_github_request_sync<'a, T>(
+pub fn _user_github_request_sync<'a, T>(
    user_access_token: &AccessToken,
    mut url: Url,
    method: Method,
