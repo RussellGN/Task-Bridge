@@ -20,7 +20,7 @@ export default function useHome() {
             let userObj = await store.get<UserInterface>("user");
 
             if (!userObj) {
-               logInfo("User not found, fetching from backend");
+               logInfo("[useHome] User not found, fetching from backend");
                userObj = await invoke<UserInterface>("fetch_save_and_return_user");
             } else if (typeof userObj === "string") userObj = JSON.parse(userObj) as UserInterface;
 
@@ -32,8 +32,6 @@ export default function useHome() {
          }
       })();
    }, []);
-
-   logInfo(user);
 
    return { loading, user, error };
 }
