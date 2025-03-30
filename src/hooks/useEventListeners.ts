@@ -5,31 +5,26 @@ import { once } from "@tauri-apps/api/event";
 
 export default function useEventListeners() {
    const navigate = useNavigate();
-   logInfo("in useEventListeners");
 
    useEffect(() => {
-      logInfo("[useEventListeners] useEffect run, id: " + Date.now());
-
+      logInfo("[useEventListeners] effect run at: " + new Date().toISOString());
       let unlisten: (() => void) | undefined;
 
       (async () => {
          try {
             unlisten = await once("auth-setup-complete", (e) => {
-               logInfo("auth-setup-complete " + e);
-               navigate("/home");
+               logInfo("[useEventListeners] auth-setup-complete, event: " + e);
 
                if (unlisten) {
                   logInfo("[useEventListeners] inside auth event cb! unlisten was set, calling it!");
                   unlisten();
                   unlisten = undefined;
-               } else logInfo("[useEventListeners]  inside auth event cb! unlisten was not set!");
+               } else logInfo("[useEventListeners] inside auth event cb! unlisten was not set!");
+
+               navigate("/home");
             });
-         } catch (error) {
-            if (error instanceof Error) {
-               logError(error);
-            } else {
-               logError(new Error("Error is not an instance of Error. Error: " + error));
-            }
+         } catch (e) {
+            logError(e);
          }
       })();
 
