@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { load } from "@tauri-apps/plugin-store";
 import { STORE_PATH } from "@/lib/constants";
-import { logError, logInfo } from "@/lib/utils";
+import { logInfo } from "@/lib/utils";
 import { UserInterface } from "@/lib/interfaces";
 import { invoke } from "@tauri-apps/api/core";
 
@@ -11,36 +11,26 @@ export default function useHome() {
    const [user, setUser] = useState<UserInterface | undefined>(undefined);
 
    useEffect(() => {
-      load(STORE_PATH)
-         .then((store) => {
-            store.get<UserInterface>("user").then((user) => {
-               if (!user) {
-                  logInfo("User not found, fetching from backend");
-                  invoke<UserInterface>("fetch_save_and_return_user")
-                     .then((user) => {
-                        logInfo(user);
-                        setUser(user);
-                     })
-                     .catch((e) => {
-                        logError(e);
-                        setError(e);
-                     });
-               } else {
-                  if (typeof user === "string") {
-                     // user is somehow a string, so we need to convert it to UserInterface object
-                     const userObj = JSON.parse(String(user)) as UserInterface;
-                     setUser(userObj);
-                  } else setUser(user);
-               }
-            });
-         })
-         .catch((e) => {
-            logError(e);
-            setError(e);
-         })
-         .finally(() => {
+      setLoading(true);
+      setError(undefined);
+
+      void (async () => {
+         try {
+            const store = await load(STORE_PATH);
+            let userObj = await store.get<UserInterface>("user");
+
+            if (!userObj) {
+               logInfo("User not found, fetching from backend");
+               userObj = await invoke<UserInterface>("fetch_save_and_return_user");
+            } else if (typeof userObj === "string") userObj = JSON.parse(userObj) as UserInterface;
+
+            setUser(userObj);
+         } catch (e) {
+            setError(e as typeof error);
+         } finally {
             setLoading(false);
-         });
+         }
+      })();
    }, []);
 
    logInfo(user);

@@ -1,29 +1,30 @@
 import Spinner from "@/components/general/Spinner";
 import useHome from "@/hooks/route-hooks/useHome";
 import { TriangleAlert } from "lucide-react";
+import { UserAvatar } from "../components/general/UserAvatar";
 
 export default function Home() {
    const { user, loading, error } = useHome();
 
    return (
-      <div className="p-5">
+      <div className="pt-30 font-semibold flex flex-col items-center justify-center gap-3 text-center">
          {loading ? (
-            <div className="flex flex-col items-center justify-center gap-3">
+            <>
                <Spinner />
-               <p className="font-semibold">Loading...</p>
-            </div>
+               <p>Loading...</p>
+            </>
          ) : error ? (
-            <div className="flex flex-col items-center gap-3">
-               <TriangleAlert className="text-red-400" />
-               <p className="font-semibold max-w-prose text-center text-red-400 break-words">{error.toString()}</p>
-            </div>
+            <>
+               <TriangleAlert className="text-DANGER" />
+               <p className="max-w-prose text-DANGER break-words">{error.toString()}</p>
+            </>
          ) : user ? (
-            <div className="w-fit  flex items-center gap-3">
-               <img src={user.avatar_url} alt={`${user.login}'s profile`} className="size-9 rounded-full" />
-               <h2 className="text-lg font-bold">
-                  Welcome <span className="text-yellow-300"> {user.login}</span>!
-               </h2>
-            </div>
+            <>
+               <UserAvatar user={user} />
+               <h1 className="text-lg">
+                  Welcome <span className="text-PRIMARY"> {user.login}</span>!
+               </h1>
+            </>
          ) : (
             ""
          )}
