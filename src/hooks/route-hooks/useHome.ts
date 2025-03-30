@@ -26,9 +26,11 @@ export default function useHome() {
                         setError(e);
                      });
                } else {
-                  // user is somehow a string, so we need to convert it to UserInterface object
-                  const userObj = JSON.parse(String(user)) as UserInterface;
-                  setUser(userObj);
+                  if (typeof user === "string") {
+                     // user is somehow a string, so we need to convert it to UserInterface object
+                     const userObj = JSON.parse(String(user)) as UserInterface;
+                     setUser(userObj);
+                  } else setUser(user);
                }
             });
          })
