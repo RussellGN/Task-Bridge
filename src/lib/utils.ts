@@ -9,7 +9,7 @@ export function random_global_auth_keyword() {
    return "key_t_b_auth";
 }
 
-export function logError(e: Error) {
+export function logError<T>(e: T) {
    console.error(e);
 }
 
