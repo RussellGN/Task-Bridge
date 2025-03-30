@@ -73,6 +73,8 @@
 }
 
 @theme inline {
+   --color-PRIMARY: #32d97a;
+   --color-DANGER: #d9323d;
    --radius-sm: calc(var(--radius) - 4px);
    --radius-md: calc(var(--radius) - 2px);
    --radius-lg: var(--radius);
