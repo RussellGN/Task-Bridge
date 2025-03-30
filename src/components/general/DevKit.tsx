@@ -1,10 +1,10 @@
 import { Button } from "../ui/button";
 import { Link } from "react-router";
-import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import useDevKit from "@/hooks/component-hooks/useDevKit";
 
 export default function DevKit() {
-   const [isExpanded, setIsExpanded] = useState(false);
+   const { isExpanded, setIsExpanded } = useDevKit();
 
    return (
       <div className="fixed bottom-4 left-4">
