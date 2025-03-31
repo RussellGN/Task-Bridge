@@ -4,7 +4,7 @@ mod setup;
 mod structs;
 mod utils;
 
-use setup::initialize_single_instance;
+use setup::init_tauri_plugin_single_instance;
 
 pub const STORE_PATH: &str = "store.json";
 
@@ -12,7 +12,7 @@ pub const STORE_PATH: &str = "store.json";
 pub fn run() {
    tauri::Builder::default()
       .plugin(tauri_plugin_http::init())
-      .plugin(tauri_plugin_single_instance::init(initialize_single_instance))
+      .plugin(tauri_plugin_single_instance::init(init_tauri_plugin_single_instance))
       .plugin(tauri_plugin_deep_link::init())
       .plugin(tauri_plugin_store::Builder::new().build())
       .plugin(tauri_plugin_opener::init())

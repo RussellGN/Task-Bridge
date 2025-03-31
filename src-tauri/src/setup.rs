@@ -71,7 +71,7 @@ fn setup_deep_linking(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>>
    Ok(())
 }
 
-pub fn initialize_single_instance(app: &AppHandle, _args: Vec<String>, _cwd: String) {
+pub fn init_tauri_plugin_single_instance(app: &AppHandle, _args: Vec<String>, _cwd: String) {
    if let Some(window) = app.get_webview_window("main") {
       if let Err(e) = window.set_focus() {
          log(format!(
