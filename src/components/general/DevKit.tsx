@@ -4,10 +4,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import useDevKit from "@/hooks/component-hooks/useDevKit";
 
 export default function DevKit() {
-   const { isExpanded, setIsExpanded } = useDevKit();
+   const { isExpanded, loading, experimental, setIsExpanded } = useDevKit();
 
    return (
-      <div className="fixed bottom-4 left-4">
+      <div className={`fixed bottom-4 left-4 transition-opacity ${loading ? "pointer-events-none opacity-70" : ""}`}>
          <div
             className={`transition-all duration-100 mb-4 ${
                isExpanded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
@@ -16,14 +16,24 @@ export default function DevKit() {
             }`}
          >
             <h3 className="font-bold mb-4">Dev Kit</h3>
-            <p className="underline mb-3"> Navigation</p>
-            <div className="flex gap-2">
-               <Button asChild>
-                  <Link to="/home">Home</Link>
-               </Button>
-               <Button asChild>
-                  <Link to="/">Sign In</Link>
-               </Button>
+
+            <div className="mb-3">
+               <p className="underline mb-3"> Experimental</p>
+               <div className="flex gap-2">
+                  <Button onClick={experimental.getUser}>Get User</Button>
+               </div>
+            </div>
+
+            <div>
+               <p className="underline mb-3"> Navigation</p>
+               <div className="flex gap-2">
+                  <Button asChild>
+                     <Link to="/home">Home</Link>
+                  </Button>
+                  <Button asChild>
+                     <Link to="/">Sign In</Link>
+                  </Button>
+               </div>
             </div>
          </div>
 
