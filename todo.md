@@ -1,6 +1,6 @@
 # v1
 
-1. refactor frontend code
+1. R&D log macro
 2. refactor backend code
 3. use octocrab
 4. home screen with 'create new project' and 'All projects' options
