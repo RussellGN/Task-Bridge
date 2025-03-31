@@ -55,7 +55,7 @@ pub fn proceed_to_auth(url: &Url, app: &AppHandle<impl Runtime>) -> Result<(), B
    Ok(())
 }
 
-fn validate_auth_keyword(_auth_keyword: &str) -> Result<(), String> {
+fn validate_auth_keyword(_auth_keyword: &str) -> crate::Result {
    Ok(())
 }
 
@@ -80,7 +80,7 @@ impl AccessToken {
       self.access_token.clone()
    }
 
-   fn exchange_code_for_access_token(code: &str) -> Result<Self, String> {
+   fn exchange_code_for_access_token(code: &str) -> crate::Result<Self> {
       let env_vars = dotenv::vars().collect::<HashMap<_, _>>();
       let client_id = env_vars
          .get("VITE_CLIENT_ID")

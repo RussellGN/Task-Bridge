@@ -26,7 +26,7 @@ pub async fn user_github_request_async<'a, T>(
    mut url: Url,
    method: Method,
    query_params: Option<HashMap<String, String>>,
-) -> Result<T, String>
+) -> crate::Result<T>
 where
    T: Debug + serde::de::DeserializeOwned,
 {
@@ -75,7 +75,7 @@ pub fn _user_github_request_sync<'a, T>(
    mut url: Url,
    method: Method,
    query_params: Option<HashMap<String, String>>,
-) -> Result<T, String>
+) -> crate::Result<T>
 where
    T: Debug + serde::de::DeserializeOwned,
 {

@@ -9,7 +9,7 @@ use crate::{
 };
 
 #[tauri::command]
-pub async fn fetch_save_and_return_user<R: Runtime>(app: AppHandle<R>) -> Result<User, String> {
+pub async fn fetch_save_and_return_user<R: Runtime>(app: AppHandle<R>) -> crate::Result<User> {
    log("getting store");
    let store = app.store(STORE_PATH).map_err(|e| e.to_string())?;
 
