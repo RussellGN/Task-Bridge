@@ -6,7 +6,9 @@ use tauri_plugin_deep_link::DeepLinkExt;
 use crate::{auth::proceed_to_auth, utils::log};
 
 pub fn setup(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
-   setup_deep_linking(app)
+   setup_deep_linking(app)?;
+
+   Ok(())
 }
 
 fn setup_deep_linking(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
