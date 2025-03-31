@@ -86,7 +86,7 @@ pub fn init_tauri_plugin_single_instance(app: &AppHandle, _args: Vec<String>, _c
    if let Some(window) = app.get_webview_window("main") {
       if let Err(e) = window.set_focus() {
          log(format!(
-            "could not focus main window after cancelling launch of additional window instance: {e}"
+            "[init_tauri_plugin_single_instance] could not focus main window after cancelling launch of additional window instance: {e}"
          ));
       };
    }
