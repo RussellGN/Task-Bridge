@@ -5,6 +5,8 @@ use tauri_plugin_deep_link::DeepLinkExt;
 
 use crate::{auth::proceed_to_auth, utils::log};
 
+const APP_URL_SCHEME: &str = "task-bridge";
+
 pub fn setup(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
    setup_deep_linking(app)?;
 
@@ -14,24 +16,31 @@ pub fn setup(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
 fn setup_deep_linking(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
    let deep_link = app.deep_link();
 
-   match deep_link.is_registered("task-bridge") {
+   match deep_link.is_registered(APP_URL_SCHEME) {
       Err(e) => {
          log(format!(
-            "could not confirm if app is registered to handle 'task-bridge' urls. Error: {e}"
+            "[setup_deep_linking] could not confirm if app is registered to handle '{APP_URL_SCHEME}' urls. Error: {e}"
          ));
-         log("attempting to register");
 
-         match deep_link.register_all() {
+         log(format!(
+            "[setup_deep_linking] attempting to register scheme: {APP_URL_SCHEME}"
+         ));
+         match deep_link.register(APP_URL_SCHEME) {
             Ok(_) => {
-               log("registration as 'task-bridge' handler successfull");
                log(format!(
-                  "[deep_link.is_registered] {:#?}",
-                  deep_link.is_registered("task-bridge")
+                  "[setup_deep_linking] '{APP_URL_SCHEME}' scheme registration was successfull"
+               ));
+               log(format!(
+                  "[setup_deep_linking] {APP_URL_SCHEME} is_registered? {}",
+                  deep_link.is_registered("task-bridge").map_err(|e| e.to_string())?
                ));
             }
-            Err(e) => log(format!(
-               "failed to register app to handle 'task-bridge' urls. Error: {e}"
-            )),
+            Err(e) => {
+               log(format!(
+                  "[setup_deep_linking] '{APP_URL_SCHEME}' scheme registration failed. Error: {e}"
+               ));
+               return Err(Box::new(e));
+            }
          }
       }
 
@@ -44,30 +53,30 @@ fn setup_deep_linking(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>>
 
    deep_link.on_open_url(move |e| {
       let urls = e.urls();
-      log(format!("deep link hit [on_open_url]. Urls: {urls:#?}",));
+      log(format!("[on_open_url] deep link hit. Urls: {urls:#?}",));
 
       if !urls.is_empty() {
-         let url = urls.first().unwrap();
-         match url.path() {
-            "/proceed-to-auth" => {
-               if let Err(e) = proceed_to_auth(url, &app_handle) {
-                  log(format!("error handling deep link hit: {e}"));
+         match urls.first() {
+            Some(url) => match url.path() {
+               "/proceed-to-auth" => {
+                  if let Err(e) = proceed_to_auth(url, &app_handle) {
+                     log(format!("[on_open_url] error handling deep-link-hit: {e}"));
+                  }
                }
-            }
-            path => log(format!(
-               "no handler set for deep link path = {path} with url = {url:#?}"
-            )),
+               path => log(format!(
+                  "[on_open_url] no handler set for deep link path '{path}', url = {url:#?}"
+               )),
+            },
+            None => log("[on_open_url] could not retrieve the first url"),
          }
       };
    });
 
    // this should not be possible, due to single instance plugin]
-   {
-      if let Ok(Some(urls)) = deep_link.get_current() {
-         log(format!(
-            "[this should not be possible, due to single instance plugin] app loaded by deep link, urls: {urls:#?}"
-         ));
-      }
+   if let Ok(Some(urls)) = deep_link.get_current() {
+      log(format!(
+         "[setup_deep_linking] this should not be possible, due to single instance plugin: app loaded by deep link with urls: {urls:#?}"
+      ));
    }
 
    Ok(())
