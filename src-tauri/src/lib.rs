@@ -1,23 +1,12 @@
-use tauri::{AppHandle, Manager};
-use utils::log;
-
 mod auth;
 mod commands;
 mod setup;
 mod structs;
 mod utils;
 
-pub const STORE_PATH: &str = "store.json";
+use setup::initialize_single_instance;
 
-fn initialize_single_instance(app: &AppHandle, _args: Vec<String>, _cwd: String) {
-   if let Some(window) = app.get_webview_window("main") {
-      if let Err(e) = window.set_focus() {
-         log(format!(
-            "could not focus main window after cancelling launch of additional window instance: {e}"
-         ));
-      };
-   }
-}
+pub const STORE_PATH: &str = "store.json";
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
