@@ -11,6 +11,10 @@ use crate::{
 const APP_URL_SCHEME: &str = "task-bridge";
 
 pub fn setup(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
+   // use tauri_plugin_store::StoreExt;
+   // log("clearing store");
+   // app.store("store.json").unwrap().clear();
+
    println!("{:#?}", get_env_vars());
    setup_deep_linking(app)?;
 
