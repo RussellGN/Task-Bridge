@@ -12,12 +12,16 @@ export function random_global_auth_keyword() {
 
 export function logError<T>(e: T) {
    console.error(e);
-   toast(String(e));
+   if (import.meta.env.DEV) {
+      toast(String(e));
+   }
 }
 
 export function logInfo<T>(info: T) {
    console.log(info);
-   toast(String(info));
+   if (import.meta.env.DEV) {
+      toast(String(info));
+   }
 }
 
 export function wait(seconds: number) {
