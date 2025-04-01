@@ -6,6 +6,8 @@ import useDevKit from "@/hooks/component-hooks/useDevKit";
 export default function DevKit() {
    const { isExpanded, loading, experimental, setIsExpanded } = useDevKit();
 
+   if (import.meta.env.PROD) return null; // Hide in production
+
    return (
       <div className={`fixed bottom-4 left-4 transition-opacity ${loading ? "pointer-events-none opacity-70" : ""}`}>
          <div
