@@ -6,7 +6,7 @@ use tauri_plugin_http::reqwest;
 use tauri_plugin_store::StoreExt;
 
 use crate::{
-   utils::{dbg_store, log},
+   utils::{dbg_store, get_env_vars, log},
    STORE_PATH,
 };
 
@@ -81,12 +81,12 @@ impl AccessToken {
    }
 
    fn exchange_code_for_access_token(code: &str) -> crate::Result<Self> {
-      let env_vars = dotenv::vars().collect::<HashMap<_, _>>();
-      let client_id = env_vars
-         .get("VITE_CLIENT_ID")
+      let env_vars_map = get_env_vars()?;
+      let client_id = env_vars_map
+         .get("CLIENT_ID")
          .ok_or(String::from("failed to load CLIENT_ID var"))?;
-      let client_secret = env_vars
-         .get("VITE_CLIENT_SECRET")
+      let client_secret = env_vars_map
+         .get("CLIENT_SECRET")
          .ok_or(String::from("failed to load CLIENT_SECRET var"))?;
 
       let mut code_exchange_url =

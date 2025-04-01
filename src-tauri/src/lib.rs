@@ -8,6 +8,7 @@ mod utils;
 use setup::init_tauri_plugin_single_instance;
 
 pub const STORE_PATH: &str = "store.json";
+pub const ENV_STR: &'static str = include_str!("../.env");
 
 pub type Result<T = ()> = std::result::Result<T, String>;
 

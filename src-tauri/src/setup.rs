@@ -3,11 +3,15 @@ use std::error::Error;
 use tauri::{App, AppHandle, Manager, Runtime};
 use tauri_plugin_deep_link::DeepLinkExt;
 
-use crate::{auth::proceed_to_auth, utils::log};
+use crate::{
+   auth::proceed_to_auth,
+   utils::{get_env_vars, log},
+};
 
 const APP_URL_SCHEME: &str = "task-bridge";
 
 pub fn setup(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
+   println!("{:#?}", get_env_vars());
    setup_deep_linking(app)?;
 
    Ok(())
