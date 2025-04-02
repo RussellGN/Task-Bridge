@@ -8,7 +8,7 @@ export default function useHomeTab() {
    useEffect(() => {
       getVersion()
          .then(setAppVersion)
-         .catch((e) => logError("[useHomeTab] Error fetching app version: " + e));
+         .catch((e) => logError("[useHomeTab] Error fetching app version: " + JSON.stringify(e)));
    }, []);
 
    return { appVersion };

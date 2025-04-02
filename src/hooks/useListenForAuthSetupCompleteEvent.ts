@@ -19,7 +19,7 @@ export default function useListenForAuthSetupCompleteEvent() {
 
             unlisten = await once("auth-setup-complete", (e) => {
                alertSuccess("[useListenForAuthSetupCompleteEvent] Auth setup complete!");
-               logInfo("[useListenForAuthSetupCompleteEvent] auth-setup-complete, event: " + e);
+               logInfo("[useListenForAuthSetupCompleteEvent] auth-setup-complete, event: " + JSON.stringify(e));
 
                if (unlisten) {
                   logInfo("[useListenForAuthSetupCompleteEvent] inside auth event cb! unlisten was set, calling it!");

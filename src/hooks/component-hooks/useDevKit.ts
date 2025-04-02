@@ -10,7 +10,7 @@ export default function useDevKit() {
       setLoading(true);
       invoke("clear_store")
          .then(() => alertInfo("[clearStore] Store cleared successfully"))
-         .catch((e) => alertError("[clearStore] " + e))
+         .catch((e) => alertError("[clearStore] " + JSON.stringify(e)))
          .finally(() => setLoading(false));
    }
 
