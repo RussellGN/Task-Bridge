@@ -1,5 +1,6 @@
 mod auth;
 mod commands;
+mod experimental;
 mod github_api;
 mod setup;
 mod utils;
@@ -20,7 +21,10 @@ pub fn run() {
       .plugin(tauri_plugin_store::Builder::new().build())
       .plugin(tauri_plugin_opener::init())
       .setup(setup::setup)
-      .invoke_handler(tauri::generate_handler![commands::fetch_save_and_return_user])
+      .invoke_handler(tauri::generate_handler![
+         commands::fetch_save_and_return_user,
+         experimental::clear_store
+      ])
       .run(tauri::generate_context!())
       .expect("error while running tauri application");
 }

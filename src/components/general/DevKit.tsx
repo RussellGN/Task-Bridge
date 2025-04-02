@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import useDevKit from "@/hooks/component-hooks/useDevKit";
 
 export default function DevKit() {
-   const { isExpanded, loading, setIsExpanded } = useDevKit();
+   const { isExpanded, loading, experimental, setIsExpanded } = useDevKit();
 
    if (import.meta.env.PROD) return null; // Hide in production
 
@@ -21,16 +21,20 @@ export default function DevKit() {
 
             <div className="mb-3">
                <p className="underline mb-3"> Experimental</p>
-               <div className="flex gap-2"></div>
+               <div className="flex gap-2">
+                  <Button disabled={loading} onClick={experimental.clearStore}>
+                     Clear Store
+                  </Button>
+               </div>
             </div>
 
             <div>
                <p className="underline mb-3"> Navigation</p>
                <div className="flex gap-2">
-                  <Button asChild>
+                  <Button disabled={loading} asChild>
                      <Link to="/home">Home</Link>
                   </Button>
-                  <Button asChild>
+                  <Button disabled={loading} asChild>
                      <Link to="/">Sign In</Link>
                   </Button>
                </div>

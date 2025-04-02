@@ -1,8 +1,17 @@
+import { logError } from "@/lib/utils";
+import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 
 export default function useDevKit() {
    const [isExpanded, setIsExpanded] = useState(false);
    const [loading, setLoading] = useState(false);
 
-   return { isExpanded, loading, experimental: {}, setIsExpanded };
+   function clearStore() {
+      setLoading(true);
+      invoke("clear_store")
+         .catch((e) => logError(e))
+         .finally(() => setLoading(false));
+   }
+
+   return { isExpanded, loading, experimental: { clearStore }, setIsExpanded };
 }
