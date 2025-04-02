@@ -1,3 +1,5 @@
+import { STORE_PATH } from "@/lib/constants";
+import { load } from "@tauri-apps/plugin-store";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { toast } from "sonner";
@@ -26,4 +28,10 @@ export function logInfo<T>(info: T) {
 
 export function wait(seconds: number) {
    return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
+
+export async function checkAuth() {
+   const store = await load(STORE_PATH);
+   const isAuthenticated = await store.has("token");
+   return isAuthenticated;
 }
