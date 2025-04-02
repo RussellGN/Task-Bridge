@@ -1,10 +1,10 @@
 import { Outlet } from "react-router";
-import useEventListeners from "@/hooks/useEventListeners";
+import useListenForAuthSetupCompleteEvent from "@/hooks/useListenForAuthSetupCompleteEvent";
 import DevKit from "./DevKit";
 import { Toaster } from "@/components/ui/sonner";
 
 export default function Layout() {
-   useEventListeners();
+   useListenForAuthSetupCompleteEvent();
 
    return (
       <div>
