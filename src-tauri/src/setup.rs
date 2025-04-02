@@ -8,14 +8,30 @@ use crate::{auth::proceed_to_auth, log, utils::get_env_vars};
 const APP_URL_SCHEME: &str = "task-bridge";
 
 pub fn setup(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
-   const F: &str = "[setup]";
+   if cfg!(debug_assertions) {
+      setup_dev_plumbing(app)?;
+   }
+   setup_deep_linking(app)?;
+   Ok(())
+}
+
+pub fn setup_dev_plumbing(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
+   const F: &str = "[setup_dev_plumbing]";
 
    // use tauri_plugin_store::StoreExt;
    // log!("{F} clearing store");
    // app.store("store.json").unwrap().clear();
 
+   if let Some(main_webview) = app.get_webview_window("main") {
+      let _ = main_webview.set_size(tauri::Size::Logical(tauri::LogicalSize {
+         width: 750.0,
+         height: 550.0,
+      }));
+      main_webview.open_devtools();
+      let _ = main_webview.set_position(tauri::Position::Logical(tauri::LogicalPosition { x: 0.0, y: 0.0 }));
+   }
+
    log!("{F} {:#?}", get_env_vars());
-   setup_deep_linking(app)?;
 
    Ok(())
 }
