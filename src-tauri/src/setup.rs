@@ -12,7 +12,7 @@ pub fn setup(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
    // log!("clearing store");
    // app.store("store.json").unwrap().clear();
 
-   println!("{:#?}", get_env_vars());
+   log!("{:#?}", get_env_vars());
    setup_deep_linking(app)?;
 
    Ok(())
