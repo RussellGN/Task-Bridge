@@ -1,15 +1,15 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import Signin from "./routes/Signin";
 import Layout from "./components/general/Layout";
-import Home from "./routes/Home";
+import { ROUTES } from "./lib/constants";
 
 export default function App() {
    return (
       <BrowserRouter>
          <Routes>
             <Route Component={Layout}>
-               <Route path="/" Component={Signin} />
-               <Route path="/home" Component={Home} />
+               {ROUTES.map((route) => (
+                  <Route key={route.path} path={route.path} Component={route.component} />
+               ))}
             </Route>
          </Routes>
       </BrowserRouter>
