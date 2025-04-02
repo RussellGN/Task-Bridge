@@ -16,8 +16,7 @@
             "width": 800,
             "height": 600,
             "center": true,
-            "maximized": true,
-            "alwaysOnBottom": true
+            "maximized": true
          }
       ],
       "security": {
