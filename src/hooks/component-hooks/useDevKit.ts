@@ -1,4 +1,4 @@
-import { logError } from "@/lib/utils";
+import { alertError, alertInfo } from "@/lib/utils";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 
@@ -9,7 +9,8 @@ export default function useDevKit() {
    function clearStore() {
       setLoading(true);
       invoke("clear_store")
-         .catch((e) => logError(e))
+         .then(() => alertInfo("[clearStore] Store cleared successfully"))
+         .catch((e) => alertError("[clearStore] " + e))
          .finally(() => setLoading(false));
    }
 

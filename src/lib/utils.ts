@@ -12,18 +12,26 @@ export function random_global_auth_keyword() {
    return "key_t_b_auth";
 }
 
+export function alertError<T>(e: T) {
+   logError(e);
+   let errorMsg = e instanceof Error && e.message ? e.message : String(e);
+   errorMsg = errorMsg.replace(/\[.*?\]/g, "").trim(); // remove [<func_name>]
+   toast.error(errorMsg);
+}
+
+export function alertInfo<T>(info: T) {
+   logInfo(info);
+   let infoMsg = String(info);
+   infoMsg = infoMsg.replace(/\[.*?\]/g, "").trim(); // remove [<func_name>]
+   toast(infoMsg);
+}
+
 export function logError<T>(e: T) {
    console.error(e);
-   if (import.meta.env.DEV) {
-      toast(String(e));
-   }
 }
 
 export function logInfo<T>(info: T) {
    console.log(info);
-   if (import.meta.env.DEV) {
-      toast(String(info));
-   }
 }
 
 export function wait(seconds: number) {

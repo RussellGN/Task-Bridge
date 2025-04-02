@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { load } from "@tauri-apps/plugin-store";
 import { STORE_PATH } from "@/lib/constants";
-import { checkAuth, logInfo } from "@/lib/utils";
+import { alertError, checkAuth, logInfo } from "@/lib/utils";
 import { UserInterface } from "@/lib/interfaces";
 import { invoke } from "@tauri-apps/api/core";
-import { toast } from "sonner";
 import { useNavigate } from "react-router";
 
 export default function useHome() {
@@ -20,7 +19,7 @@ export default function useHome() {
          try {
             const isAuthenticated = await checkAuth();
             if (!isAuthenticated) {
-               toast.error("[useHome] You are not authenticated. Please sign in.");
+               alertError("[useHome] You are not authenticated. Please sign in.");
                navigate("/");
             } else {
                logInfo("[useHome] User is authenticated");
