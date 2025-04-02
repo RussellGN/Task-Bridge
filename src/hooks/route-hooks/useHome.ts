@@ -8,13 +8,13 @@ import { useNavigate } from "react-router";
 
 export default function useHome() {
    const [loading, setLoading] = useState(true);
-   const [error, setError] = useState<Error | string | undefined>(undefined);
-   const [user, setUser] = useState<UserInterface | undefined>(undefined);
+   const [error, setError] = useState<Error | string | null>(null);
+   const [user, setUser] = useState<UserInterface | null>(null);
    const navigate = useNavigate();
 
    useEffect(() => {
       setLoading(true);
-      setError(undefined);
+      setError(null);
       void (async () => {
          try {
             const isAuthenticated = await checkAuth();
