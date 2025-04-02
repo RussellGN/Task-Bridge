@@ -4,12 +4,14 @@ import { STORE_PATH } from "@/lib/constants";
 import { alertError, checkAuth, logInfo } from "@/lib/utils";
 import { UserInterface } from "@/lib/interfaces";
 import { invoke } from "@tauri-apps/api/core";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
 export default function useHome() {
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState<Error | string | null>(null);
    const [user, setUser] = useState<UserInterface | null>(null);
+   const [searchParams, setSearchParams] = useSearchParams();
+   const activeTab = searchParams.get("tab") || "home";
    const navigate = useNavigate();
 
    useEffect(() => {
@@ -39,5 +41,13 @@ export default function useHome() {
       })();
    }, []);
 
-   return { loading, user, error };
+   function setActiveTab(tab: string) {
+      setSearchParams((prev) => {
+         const newParams = new URLSearchParams(prev.toString());
+         newParams.set("tab", tab);
+         return newParams;
+      });
+   }
+
+   return { loading, user, error, activeTab, setActiveTab };
 }
