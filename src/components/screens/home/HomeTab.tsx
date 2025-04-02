@@ -9,7 +9,7 @@ type DefaultTabProps = {
    user: UserInterface | null;
 };
 
-export default function DefaultTab({ loading, error, user }: DefaultTabProps) {
+export default function HomeTab({ loading, error, user }: DefaultTabProps) {
    return (
       <div className="pt-30 font-semibold flex flex-col items-center justify-center gap-3 text-center">
          {loading ? (

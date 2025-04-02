@@ -1,5 +1,5 @@
 import useHome from "@/hooks/route-hooks/useHome";
-import DefaultTab from "@/components/screens/home/DefaultTab";
+import HomeTab from "@/components/screens/home/HomeTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FolderPlus, FolderTree, HomeIcon } from "lucide-react";
 import NewProjectTab from "@/components/screens/home/NewProjectTab";
@@ -9,7 +9,7 @@ export default function Home() {
    const { user, loading, error } = useHome();
 
    const TABS = [
-      { name: "Home", Icon: HomeIcon, component: <DefaultTab loading={loading} error={error} user={user} /> },
+      { name: "Home", Icon: HomeIcon, component: <HomeTab loading={loading} error={error} user={user} /> },
       { name: "New Project", Icon: FolderPlus, component: <NewProjectTab /> },
       { name: "All Projects", Icon: FolderTree, component: <AllProjectsTab /> },
    ];
