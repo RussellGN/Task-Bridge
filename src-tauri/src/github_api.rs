@@ -7,20 +7,24 @@ use tauri_plugin_http::reqwest;
 use crate::{auth::AccessToken, log, utils::get_env_vars};
 
 pub async fn get_user(token: &str) -> crate::Result<models::Author> {
-   log!("[get_user] creating octo with authentication");
+   const F: &str = "[get_user]";
+
+   log!("{F} creating octo with authentication");
    let octo = OctocrabBuilder::new()
       .user_access_token(token)
       .build()
       .map_err(|e| e.to_string())?;
 
-   log!("[get_user] fetching user");
+   log!("{F} fetching user");
    let user = octo.current().user().await.map_err(|e| e.to_string())?;
-   log!("[get_user] now returning user response: {user:#?}");
+   log!("{F} now returning user response: {user:#?}");
 
    Ok(user)
 }
 
 pub fn exchange_code_for_access_token(code: &str) -> crate::Result<AccessToken> {
+   const F: &str = "[exchange_code_for_access_token]";
+
    let env_vars_map = get_env_vars()?;
    let client_id = env_vars_map
       .get("CLIENT_ID")
@@ -37,7 +41,7 @@ pub fn exchange_code_for_access_token(code: &str) -> crate::Result<AccessToken> 
       .append_pair("client_secret", client_secret)
       .append_pair("code", code);
 
-   log!("{}", code_exchange_url.as_str());
+   log!("{F} {}", code_exchange_url.as_str());
    let req = reqwest::blocking::Request::new(Method::POST, code_exchange_url);
    let res = reqwest::blocking::Client::new()
       .execute(req)
@@ -68,7 +72,7 @@ pub fn exchange_code_for_access_token(code: &str) -> crate::Result<AccessToken> 
       .to_string();
 
    let token = AccessToken::new(access_token);
-   log!("token: {token:?}");
+   log!("{F} token: {token:?}");
 
    Ok(token)
 }

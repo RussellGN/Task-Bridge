@@ -20,17 +20,19 @@ impl AccessToken {
 }
 
 pub fn proceed_to_auth(url: &Url, app: &AppHandle<impl Runtime>) -> Result<(), Box<dyn Error>> {
+   const F: &str = "[proceed_to_auth]";
+
    let path = url.path();
    let query_params = url.query_pairs().collect::<HashMap<_, _>>();
    let code = query_params.get("code");
    let state = query_params.get("state");
-   log!("[proceed_to_auth] path: {path}\ncode: {code:?}\nstate: {state:?}");
+   log!("{F} path: {path}\ncode: {code:?}\nstate: {state:?}");
 
    if let (Some(auth_keyword), Some(code)) = (state, code) {
-      log!("[proceed_to_auth] about to validate auth keyword");
+      log!("{F} about to validate auth keyword");
       validate_auth_keyword(auth_keyword.as_ref())?;
 
-      log!("[proceed_to_auth] about to exchange code for token");
+      log!("{F} about to exchange code for token");
       let token = github_api::exchange_code_for_access_token(code.as_ref())?;
 
       let store = app.store(STORE_PATH)?;
@@ -38,11 +40,11 @@ pub fn proceed_to_auth(url: &Url, app: &AppHandle<impl Runtime>) -> Result<(), B
       store.set("token", serde_json::to_value(token)?);
       dbg_store(&store);
 
-      log!("about to emit ready event");
+      log!("{F} about to emit ready event");
       app.emit("auth-setup-complete", "auth setup completed")?;
-      log!("ready event emitted!");
+      log!("{F} ready event emitted!");
    } else {
-      log!("error: {:#?}", (state, code));
+      log!("{F} error: {:#?}", (state, code));
    }
 
    Ok(())
