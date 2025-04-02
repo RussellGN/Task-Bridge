@@ -28,10 +28,10 @@ pub fn exchange_code_for_access_token(code: &str) -> crate::Result<AccessToken> 
    let env_vars_map = get_env_vars()?;
    let client_id = env_vars_map
       .get("CLIENT_ID")
-      .ok_or(String::from("failed to load CLIENT_ID var"))?;
+      .ok_or(format!("{F} failed to load CLIENT_ID var"))?;
    let client_secret = env_vars_map
       .get("CLIENT_SECRET")
-      .ok_or(String::from("failed to load CLIENT_SECRET var"))?;
+      .ok_or(format!("{F} failed to load CLIENT_SECRET var"))?;
 
    let mut code_exchange_url = Url::parse("https://github.com/login/oauth/access_token").map_err(|e| e.to_string())?;
 
@@ -61,14 +61,14 @@ pub fn exchange_code_for_access_token(code: &str) -> crate::Result<AccessToken> 
          params.insert(k.to_string(), v.to_string());
       } else {
          return Err(format!(
-            "[exchange_code_for_token] param_pairs_list does not contain key-value pairs: {param_pairs_list:#?}"
+            "{F} param_pairs_list does not contain key-value pairs: {param_pairs_list:#?}"
          ));
       }
    }
 
    let access_token = params
       .get("access_token")
-      .ok_or("access_token was nott ofund in params")?
+      .ok_or(format!("{F} access_token was not found in params"))?
       .to_string();
 
    let token = AccessToken::new(access_token);

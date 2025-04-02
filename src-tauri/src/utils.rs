@@ -23,6 +23,7 @@ pub fn dbg_store(store: &Store<impl Runtime>) {
 }
 
 pub fn get_env_vars() -> crate::Result<HashMap<String, String>> {
+   const F: &str = "[get_env_vars]";
    let env_vars = ENV_STR
       .split("\n")
       .map(|pair| {
@@ -40,8 +41,8 @@ pub fn get_env_vars() -> crate::Result<HashMap<String, String>> {
       if pair.is_empty() {
          continue;
       }
-      let name = pair.get(0).ok_or("could not access env vars")?.to_string();
-      let value = pair.get(1).ok_or("could not access env vars")?.to_string();
+      let name = pair.get(0).ok_or(format!("{F} could not access env vars"))?.to_string();
+      let value = pair.get(1).ok_or(format!("{F} could not access env vars"))?.to_string();
       env_vars_map.insert(name, value);
    }
 
