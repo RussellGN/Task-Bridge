@@ -8,13 +8,7 @@ function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive
 }
 
 function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {
-   return (
-      <TabsPrimitive.List
-         data-slot="tabs-list"
-         className={cn("bg-muted text-muted-foreground", className)}
-         {...props}
-      />
-   );
+   return <TabsPrimitive.List data-slot="tabs-list" className={cn("text-muted-foreground", className)} {...props} />;
 }
 
 function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
