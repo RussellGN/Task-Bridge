@@ -5,8 +5,14 @@ use tauri_plugin_store::Store;
 
 use crate::ENV_STR;
 
-pub fn log(msg: impl Into<String>) {
-   println!("{}", msg.into());
+#[macro_export]
+macro_rules! log {
+   () => {
+      println!();
+   };
+   ($($arg:tt)*) => {{
+      println!($($arg)*);
+   }};
 }
 
 pub fn dbg_store(store: &Store<impl Runtime>) {
