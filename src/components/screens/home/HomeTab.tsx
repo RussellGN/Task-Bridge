@@ -9,7 +9,7 @@ import { Link } from "react-router";
 type DefaultTabProps = {
    loading: boolean;
    error: Error | string | null;
-   user: UserInterface | null;
+   user: UserInterface | undefined | null;
 };
 
 export default function HomeTab({ loading, error, user }: DefaultTabProps) {
