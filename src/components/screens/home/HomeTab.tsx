@@ -16,7 +16,7 @@ export default function HomeTab({ loading, error, user }: DefaultTabProps) {
    const { appVersion } = useHomeTab();
 
    return (
-      <div className="pt-30 font-semibold h-full flex flex-col items-center  gap-3 text-center">
+      <div className="flex h-full flex-col items-center gap-3 pt-30 text-center font-semibold">
          {loading ? (
             <>
                <Spinner />
@@ -25,7 +25,7 @@ export default function HomeTab({ loading, error, user }: DefaultTabProps) {
          ) : error ? (
             <>
                <TriangleAlert className="text-DANGER" />
-               <p className="max-w-prose text-DANGER break-words">{error.toString()}</p>
+               <p className="text-DANGER max-w-prose break-words">{error.toString()}</p>
             </>
          ) : user ? (
             <>
@@ -36,24 +36,24 @@ export default function HomeTab({ loading, error, user }: DefaultTabProps) {
 
                <p>Get started by</p>
 
-               <div className="bg-foreground/5 w-fit rounded-lg p-4 mt-4 flex text-center justify-center items-center gap-3 ">
-                  <Button size="sm" asChild variant="link" className="text-foreground/70 dark:text-foreground/50 ">
+               <div className="bg-foreground/5 mt-4 flex w-fit items-center justify-center gap-3 rounded-lg p-4 text-center">
+                  <Button size="sm" asChild variant="link" className="text-foreground/70 dark:text-foreground/50">
                      <Link to={{ search: "?tab=new" }}>
                         Creating a new project
                         <ArrowUpRight />
                      </Link>
                   </Button>
-                  <div className="w-0.5  h-6 bg-foreground/20"></div>
+                  <div className="bg-foreground/20 h-6 w-0.5"></div>
 
-                  <Button size="sm" asChild variant="link" className="text-foreground/70 dark:text-foreground/50 ">
+                  <Button size="sm" asChild variant="link" className="text-foreground/70 dark:text-foreground/50">
                      <Link to={{ search: "?tab=all" }}>
                         Managing existing projects
                         <ArrowUpRight />
                      </Link>
                   </Button>
-                  <div className="w-0.5  h-6 bg-foreground/20"></div>
+                  <div className="bg-foreground/20 h-6 w-0.5"></div>
 
-                  <Button size="sm" asChild variant="link" className="text-foreground/70 dark:text-foreground/50 ">
+                  <Button size="sm" asChild variant="link" className="text-foreground/70 dark:text-foreground/50">
                      <Link to="/settings">
                         Configuring preferences
                         <ArrowUpRight />

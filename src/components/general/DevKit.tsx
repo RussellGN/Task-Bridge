@@ -11,16 +11,16 @@ export default function DevKit() {
    return (
       <div className={`fixed bottom-4 left-4 transition-opacity ${loading ? "pointer-events-none opacity-70" : ""}`}>
          <div
-            className={`transition-all duration-100 mb-4 ${
-               isExpanded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
-            } bg-foreground/10 shadow-lg rounded-lg p-4 border-2 border-gray-200 ${
+            className={`mb-4 transition-all duration-100 ${
+               isExpanded ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"
+            } bg-foreground/10 rounded-lg border-2 border-gray-200 p-4 shadow-lg ${
                isExpanded ? "pointer-events-auto" : "pointer-events-none"
             }`}
          >
-            <h3 className="font-bold mb-4">Dev Kit</h3>
+            <h3 className="mb-4 font-bold">Dev Kit</h3>
 
             <div className="mb-3">
-               <p className="underline mb-3"> Experimental</p>
+               <p className="mb-3 underline"> Experimental</p>
                <div className="flex gap-2">
                   <Button disabled={loading} onClick={experimental.clearStore}>
                      Clear Store
@@ -29,7 +29,7 @@ export default function DevKit() {
             </div>
 
             <div>
-               <p className="underline mb-3"> Navigation</p>
+               <p className="mb-3 underline"> Navigation</p>
                <div className="flex gap-2">
                   <Button disabled={loading} asChild>
                      <Link to="/home">Home</Link>
@@ -43,9 +43,9 @@ export default function DevKit() {
 
          <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center justify-center w-9 h-9 bg-transparent text-white rounded-full shadow-lg hover:bg-gray-700 outline-none ring-1 ring-offset-2 ring-foreground/10"
+            className="ring-foreground/10 flex h-9 w-9 items-center justify-center rounded-full bg-transparent text-white shadow-lg ring-1 ring-offset-2 outline-none hover:bg-gray-700"
          >
-            {isExpanded ? <ChevronLeft className="w-6 h-6" /> : <ChevronRight className="w-6 h-6" />}
+            {isExpanded ? <ChevronLeft className="h-6 w-6" /> : <ChevronRight className="h-6 w-6" />}
          </button>
       </div>
    );

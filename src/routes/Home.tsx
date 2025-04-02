@@ -20,8 +20,8 @@ export default function Home() {
    ];
 
    return (
-      <div className="p-10 h-screen">
-         <Tabs value={activeTab} className="grid grid-cols-12 gap-4 items-start h-full">
+      <div className="h-screen p-10">
+         <Tabs value={activeTab} className="grid h-full grid-cols-12 items-start gap-4">
             <TabsList className="col-span-2 flex flex-col gap-4">
                {TABS.map((tab) => (
                   <TabsTrigger
@@ -40,7 +40,7 @@ export default function Home() {
                <TabsContent
                   key={tab.value}
                   value={tab.value}
-                  className="col-span-10 bg-foreground/5 rounded-md p-4 h-full"
+                  className="bg-foreground/5 col-span-10 h-full rounded-md p-4"
                >
                   {tab.component}
                </TabsContent>

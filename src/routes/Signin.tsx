@@ -9,11 +9,11 @@ export default function Signin() {
    const { loading } = useSignin();
 
    return (
-      <div className="pt-30 flex justify-center items-center flex-col gap-3 text-center">
+      <div className="flex flex-col items-center justify-center gap-3 pt-30 text-center">
          <UserCircle size={100} />
          <p>You need to sign into your GitHub account in order to proceed</p>
-         <p className="text-xs text-foreground/70 max-w-prose mb-3">
-            <AlertTriangle size={13} className="inline-block mr-1 -mt-0.5" />
+         <p className="text-foreground/70 mb-3 max-w-prose text-xs">
+            <AlertTriangle size={13} className="-mt-0.5 mr-1 inline-block" />
             This is the account that will be
             <br />
             used on your behalf to interact with GitHub and <br /> cannot be changed.
@@ -23,7 +23,7 @@ export default function Signin() {
             <Button
                disabled={loading}
                asChild
-               className={`btn btn-primary ${loading ? "pointer-events-none opacity-50 " : ""}`}
+               className={`btn btn-primary ${loading ? "pointer-events-none opacity-50" : ""}`}
             >
                <Link to={loading ? "" : GITHUB_AUTH_URL} target={loading ? "" : "_blank"}>
                   {loading && <Spinner size="sm" />}

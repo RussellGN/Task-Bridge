@@ -6,7 +6,7 @@ export function UserAvatar({ user, className }: { user: UserInterface; className
       <img
          src={user.avatar_url}
          alt={`${user.login}'s profile`}
-         className={cn("size-10 shadow-md rounded-full bg-black", className)}
+         className={cn("size-10 rounded-full bg-black shadow-md", className)}
       />
    );
 }
