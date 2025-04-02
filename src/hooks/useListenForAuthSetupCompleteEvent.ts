@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { checkAuth, logError, logInfo } from "@/lib/utils";
+import { alertSuccess, checkAuth, logError, logInfo } from "@/lib/utils";
 import { once } from "@tauri-apps/api/event";
 
 export default function useListenForAuthSetupCompleteEvent() {
    const navigate = useNavigate();
 
    useEffect(() => {
-      logInfo("[useListenForAuthSetupCompleteEvent] effect run at: " + new Date().toISOString());
       let unlisten: (() => void) | undefined;
 
       (async () => {
@@ -19,6 +18,7 @@ export default function useListenForAuthSetupCompleteEvent() {
             }
 
             unlisten = await once("auth-setup-complete", (e) => {
+               alertSuccess("[useListenForAuthSetupCompleteEvent] Auth setup complete!");
                logInfo("[useListenForAuthSetupCompleteEvent] auth-setup-complete, event: " + e);
 
                if (unlisten) {
@@ -33,8 +33,6 @@ export default function useListenForAuthSetupCompleteEvent() {
             logError(e);
          }
       })();
-
-      logInfo("[useListenForAuthSetupCompleteEvent] unlisten: " + unlisten);
 
       return () => {
          if (unlisten) {

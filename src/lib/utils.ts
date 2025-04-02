@@ -26,6 +26,13 @@ export function alertInfo<T>(info: T) {
    toast(infoMsg);
 }
 
+export function alertSuccess<T>(info: T) {
+   logInfo(info);
+   let infoMsg = String(info);
+   infoMsg = infoMsg.replace(/\[.*?\]/g, "").trim(); // remove [<func_name>]
+   toast.success(infoMsg);
+}
+
 export function logError<T>(e: T) {
    console.error(e);
 }
