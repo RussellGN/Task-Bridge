@@ -33,12 +33,12 @@ export function alertSuccess<T>(info: T) {
    toast.success(infoMsg);
 }
 
-export function logError<T>(e: T) {
-   console.error(e);
+export function logError(...args: unknown[]) {
+   console.error(...args);
 }
 
-export function logInfo<T>(info: T) {
-   console.log(info);
+export function logInfo(...args: unknown[]) {
+   console.log(...args);
 }
 
 export function wait(seconds: number) {
