@@ -23,3 +23,20 @@ pub async fn fetch_save_and_return_user<R: Runtime>(app: AppHandle<R>) -> crate:
    log!("{F} returning user");
    Ok(user)
 }
+
+#[tauri::command]
+pub async fn find_users_matching_query<R: Runtime>(
+   app: AppHandle<R>,
+   query: String,
+) -> crate::Result<Vec<models::Author>> {
+   const F: &str = "[find_users_matching_query]";
+
+   log!("{F} getting store");
+   let store = app.store(STORE_PATH).map_err(|e| e.to_string())?;
+   log!("{F} getting token");
+   let token = store.get("token").ok_or(format!("{F} token not found"))?;
+   log!("{F} token value: {token:#?}");
+   let token = serde_json::from_value::<AccessToken>(token).map_err(|e| e.to_string())?;
+   let users_found = github_api::search_users(&query, &token.get_token()).await?;
+   Ok(users_found)
+}

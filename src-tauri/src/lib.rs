@@ -23,6 +23,7 @@ pub fn run() {
       .setup(setup::setup)
       .invoke_handler(tauri::generate_handler![
          commands::fetch_save_and_return_user,
+         commands::find_users_matching_query,
          experimental::clear_store
       ])
       .run(tauri::generate_context!())
