@@ -11,7 +11,7 @@ export default function NewProjectTab() {
       <form onSubmit={handleSubmit} className="flex h-full flex-1 flex-col gap-4 p-5">
          <h1 className="mb-3 text-lg font-bold">Start New Project</h1>
 
-         <div className="mb-4 flex items-center gap-10">
+         <div className="mb-5 flex items-center gap-10">
             <label htmlFor="name" className="mb-2 block min-w-1/5 text-nowrap">
                Project name:
             </label>
@@ -28,7 +28,7 @@ export default function NewProjectTab() {
             />
          </div>
 
-         <div className="mb-4 flex items-center gap-10">
+         <div className="mb-5 flex items-center gap-10">
             <label htmlFor="should_create_repo" className="mb-2 flex min-w-1/5 items-center gap-4 text-nowrap">
                Create GitHub Repository:
                <InfoTooltip
@@ -49,7 +49,7 @@ export default function NewProjectTab() {
             />
          </div>
 
-         <div className="mb-4 flex items-center gap-10">
+         <div className="mb-5 flex items-center gap-10">
             <label htmlFor="repo_name" className="mb-2 flex min-w-1/5 items-center gap-4 text-nowrap">
                GitHub Repo name:
                <InfoTooltip
@@ -71,7 +71,7 @@ export default function NewProjectTab() {
             />
          </div>
 
-         <div className="mb-4 flex items-center gap-10">
+         <div className="mb-5 flex items-start gap-10">
             <label htmlFor="team" className="mb-2 flex min-w-1/5 items-center gap-4 text-nowrap">
                Team - Access Invitations:
                <InfoTooltip
