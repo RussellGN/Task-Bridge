@@ -1,6 +1,7 @@
 export interface UserInterface {
    login: string;
    avatar_url: string;
+   email: string | undefined;
 }
 
 export interface AuthorInterface {
