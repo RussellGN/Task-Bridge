@@ -7,7 +7,6 @@ import pluginQuery from "@tanstack/eslint-plugin-query";
 
 export default defineConfig([
    ...pluginQuery.configs["flat/recommended"],
-   { ignores: ["src-tauri/"] },
    { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
    { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"], languageOptions: { globals: globals.browser } },
    { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"], plugins: { js }, extends: ["js/recommended"] },

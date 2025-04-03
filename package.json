@@ -8,7 +8,7 @@
       "build": "tsc && vite build",
       "preview": "vite preview",
       "tauri": "tauri",
-      "lint": "eslint .",
+      "lint": "eslint src",
       "fmt": "prettier . --write",
       "check-fmt": "prettier . --check"
    },
