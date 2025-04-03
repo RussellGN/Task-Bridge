@@ -120,3 +120,14 @@
       @apply bg-background text-foreground;
    }
 }
+
+::-webkit-scrollbar {
+   width: 8px;
+   height: 8px;
+}
+::-webkit-scrollbar-thumb {
+   @apply border-foreground/20 bg-background hover:bg-foreground/20 rounded-lg border-2;
+}
+::-webkit-scrollbar-track {
+   @apply bg-foreground/20;
+}
