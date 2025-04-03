@@ -36,7 +36,7 @@ export default function HomeTab({ loading, error, user }: DefaultTabProps) {
 
                <p>Get started by</p>
 
-               <div className="bg-foreground/5 mt-4 flex w-fit items-center justify-center gap-3 rounded-lg p-4 text-center">
+               <div className="mt-2 flex flex-wrap items-center justify-center gap-2 text-center">
                   <Button size="sm" asChild variant="link" className="text-foreground/70 dark:text-foreground/50">
                      <Link to={{ search: "?tab=new" }}>
                         Creating a new project

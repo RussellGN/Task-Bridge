@@ -20,15 +20,15 @@ export default function Home() {
    ];
 
    return (
-      <div className="h-screen p-10">
-         <Tabs value={activeTab} className="grid h-full grid-cols-12 items-start gap-4">
-            <TabsList className="col-span-2 flex flex-col gap-4">
+      <div className="h-screen p-3 md:p-5 lg:p-8">
+         <Tabs value={activeTab} className="flex h-full grid-cols-12 flex-col gap-4 md:grid md:items-start">
+            <TabsList className="col-span-2 flex gap-4 md:flex-col">
                {TABS.map((tab) => (
                   <TabsTrigger
                      onClick={() => setActiveTab(tab.value)}
                      key={tab.value}
                      value={tab.value}
-                     className="border-foreground/20 gap-3 py-2"
+                     className="border-foreground/20 gap-2 lg:gap-3 lg:py-2"
                   >
                      {tab.label}
                      <tab.Icon />
@@ -40,7 +40,7 @@ export default function Home() {
                <TabsContent
                   key={tab.value}
                   value={tab.value}
-                  className="bg-foreground/5 col-span-10 h-full rounded-md p-4"
+                  className="bg-foreground/5 col-span-10 grow rounded-md p-4 md:h-full"
                >
                   {tab.component}
                </TabsContent>
