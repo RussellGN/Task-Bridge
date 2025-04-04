@@ -4,6 +4,10 @@ A software-project management solution with deep GitHub integration
 
 ## download
 
+> **Tip:** You can run each new installer without manually deleting the app first. It will automatically replace the older version for you.
+
+> **Notice:** Installers for other versions and operating systems will be available in due time.
+
 - version 0.0.4
    - [exe - win x64](https://drive.google.com/file/d/1kW6miYVPxriU9l4--WAD199lWM_5q5ct/view?usp=sharing)
 - version 0.0.3
