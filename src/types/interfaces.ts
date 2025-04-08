@@ -31,7 +31,6 @@ export interface Author {
 
 export interface NewProjectPayload {
    name: string;
-   shouldCreateRepo: boolean;
    repoName: string;
    team: string;
 }

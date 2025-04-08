@@ -16,7 +16,6 @@ use crate::{
 #[serde(rename_all = "camelCase")]
 pub struct ProjectPayload {
    name: String,
-   should_create_repo: bool,
    repo_name: String,
    team: String,
 }

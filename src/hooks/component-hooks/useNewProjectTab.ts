@@ -13,7 +13,6 @@ export default function useNewProjectTab() {
       const projectPayload: NewProjectPayload = {
          name: data["name"] as string,
          repoName: data["repoName"] as string,
-         shouldCreateRepo: data["shouldCreateRepo"] === "true",
          team: data["team"] as string,
       };
       dbg("[handleSubmit]", projectPayload);

@@ -34,28 +34,6 @@ export default function NewProjectTab() {
          </div>
 
          <div className="mb-5 items-center gap-10 lg:flex">
-            <label htmlFor="shouldCreateRepo" className="mb-2 flex min-w-1/5 items-center gap-3 text-nowrap">
-               Create GitHub Repository:
-               <InfoTooltip
-                  align="start"
-                  className="-mb-1"
-                  content="Create a new GitHub repository for this project?"
-               />
-            </label>
-            <Input
-               type="checkbox"
-               name="shouldCreateRepo"
-               id="shouldCreateRepo"
-               value="true"
-               className="size-5"
-               checked
-               required
-               readOnly
-               disabled={isPending}
-            />
-         </div>
-
-         <div className="mb-5 items-center gap-10 lg:flex">
             <label htmlFor="repoName" className="mb-2 flex min-w-1/5 items-center gap-3 text-nowrap">
                GitHub Repo name:
                <InfoTooltip
