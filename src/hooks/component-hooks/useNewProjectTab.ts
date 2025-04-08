@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import useCreateProject from "../backend-api-hooks/useCreateProject";
 import { NewProjectInterface } from "@/lib/interfaces";
+import { dbg } from "@/lib/utils";
 
 export default function useNewProjectTab() {
    const [projectName, setProjectName] = useState<string>("");
@@ -15,7 +16,7 @@ export default function useNewProjectTab() {
          shouldCreateRepo: data["shouldCreateRepo"] === "true",
          team: data["repoName"] as string,
       };
-      console.log(projectData);
+      dbg("[handleSubmit]", projectData);
 
       createProject(projectData);
    };
