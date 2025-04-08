@@ -26,3 +26,14 @@ export interface AuthorInterface {
    patch_url: string | undefined;
    email?: string | undefined;
 }
+
+export interface NewProjectInterface {
+   name: string;
+   shouldCreateRepo: boolean;
+   repoName: string;
+   team: string;
+}
+
+export interface Project {
+   name: string;
+}

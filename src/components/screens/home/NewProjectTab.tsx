@@ -1,15 +1,26 @@
 import InfoTooltip from "@/components/general/InfoTooltip";
+import Spinner from "@/components/general/Spinner";
 import TeamSelector from "@/components/general/TeamSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import useNewProjectTab from "@/hooks/component-hooks/useNewProjectTab";
+import { AlertTriangle } from "lucide-react";
 
 export default function NewProjectTab() {
-   const { handleSubmit, projectName, setProjectName } = useNewProjectTab();
+   const { isPending, projectName, projectCreationErr, handleSubmit, setProjectName } = useNewProjectTab();
 
    return (
       <form onSubmit={handleSubmit} className="flex h-full flex-1 flex-col gap-4 p-5">
          <h1 className="mb-3 text-lg font-bold">Start New Project</h1>
+
+         {projectCreationErr && (
+            <div className="mb-3">
+               <p className="text-DANGER flex items-center gap-2">
+                  <AlertTriangle className="-mb-0.5" />
+                  {projectCreationErr.message || JSON.stringify(projectCreationErr)}
+               </p>
+            </div>
+         )}
 
          <div className="mb-5 items-center gap-10 lg:flex">
             <label htmlFor="name" className="mb-2 block min-w-1/5 text-nowrap">
@@ -25,6 +36,7 @@ export default function NewProjectTab() {
                required
                value={projectName}
                onChange={(e) => setProjectName(e.target.value)}
+               disabled={isPending}
             />
          </div>
 
@@ -41,11 +53,12 @@ export default function NewProjectTab() {
                type="checkbox"
                name="shouldCreateRepo"
                id="shouldCreateRepo"
-               value="yes"
+               value="true"
                className="size-5"
                checked
                required
                readOnly
+               disabled={isPending}
             />
          </div>
 
@@ -68,6 +81,7 @@ export default function NewProjectTab() {
                placeholder="Derived from project name..."
                value={projectName}
                readOnly
+               disabled={isPending}
             />
          </div>
 
@@ -81,14 +95,21 @@ export default function NewProjectTab() {
                />
             </label>
             <div className="grow">
-               <TeamSelector />
+               <TeamSelector disabled={isPending} />
             </div>
          </div>
 
          <div className="mt-10 text-end">
-            <Button variant="PRIMARY" type="submit">
-               Create
-            </Button>
+            {isPending ? (
+               <div>
+                  <Spinner />
+                  <p className="text-muted-foreground text-sm">Creating project...</p>
+               </div>
+            ) : (
+               <Button disabled={isPending} variant="PRIMARY" type="submit">
+                  Create
+               </Button>
+            )}
          </div>
       </form>
    );

@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 import { Search } from "lucide-react";
 import Spinner from "./Spinner";
 
-export default function TeamSelector() {
+export default function TeamSelector({ disabled }: { disabled?: boolean }) {
    const { team, query, loading, queriedUsers, teamInputValue, setQuery, selectUser, removeUser, handleSearch } =
       useTeamSelector();
 
@@ -16,7 +16,7 @@ export default function TeamSelector() {
          <div className="flex flex-wrap gap-2">
             {team.length === 0 && <p className="text-muted-foreground text-sm">0 team members added.</p>}
             {team.map((user) => (
-               <TeamUserCard key={user.login} user={user} onRemove={() => removeUser(user)} />
+               <TeamUserCard key={user.login} user={user} onRemove={disabled ? undefined : () => removeUser(user)} />
             ))}
          </div>
 
@@ -29,7 +29,7 @@ export default function TeamSelector() {
                   className={"w-[40ch] " + (loading ? "opacity-30" : "")}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  disabled={loading}
+                  disabled={loading || disabled}
                />
                {queriedUsers !== undefined && (
                   <div className="bg-background/50 border-foreground/20 absolute top-full left-0 mt-2 max-h-[25ch] w-full overflow-y-auto rounded-md border shadow-lg">
@@ -52,7 +52,13 @@ export default function TeamSelector() {
             {loading ? (
                <Spinner />
             ) : (
-               <Button disabled={loading} onClick={handleSearch} type="button" variant="outline" size="icon">
+               <Button
+                  disabled={loading || disabled}
+                  onClick={handleSearch}
+                  type="button"
+                  variant="outline"
+                  size="icon"
+               >
                   <Search />
                </Button>
             )}
