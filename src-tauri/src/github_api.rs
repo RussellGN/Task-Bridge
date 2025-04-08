@@ -1,8 +1,13 @@
 use std::collections::HashMap;
 
+use http_body_util::BodyExt;
 use octocrab::models;
 use serde::Serialize;
-use tauri::{http::Method, Url};
+use serde_json::{json, Value};
+use tauri::{
+   http::{Method, StatusCode},
+   Url,
+};
 use tauri_plugin_http::reqwest;
 
 use crate::{
@@ -109,6 +114,43 @@ pub async fn create_repo(payload: RepoPayload, token: &str) -> crate::Result<mod
    log!("{F} got response, returning repo");
 
    Ok(repo)
+}
+
+pub async fn invite_collaborator(login: &str, token: &str, owner: &str, repo: &str) -> crate::Result {
+   const F: &str = "[invite_collaborators]";
+
+   let octo = create_authenticated_octo(token)?;
+   log!("{F} about to invite collaborator with login: {login:#?}");
+   let url = format!("https://api.github.com/repos/{owner}/{repo}/collaborators/{login}");
+   log!("{F} url = {url}");
+
+   let res = octo
+      ._put(url, Some(&json!({})))
+      .await
+      .map_err(|e| format!("{F} failed to send request: {}", e.to_string()))?;
+
+   let (parts, body) = res.into_parts();
+   log!("{F} got response parts: {parts:#?}");
+   let was_successfull = parts.status == StatusCode::CREATED || parts.status == StatusCode::NO_CONTENT;
+
+   let data = body
+      .collect()
+      .await
+      .map_err(|e| format!("{F} {e}"))?
+      .to_bytes()
+      .to_vec();
+   let json_data: Value = serde_json::from_slice(&data).map_err(|e| format!("{F} {e}"))?;
+
+   if was_successfull {
+      log!("{F} returned json: {json_data:#?}");
+      Ok(())
+   } else {
+      Err(format!(
+         "{F} could not invite {login} to collaborate on {owner}/{repo}. status = {}, reponse-json = {}",
+         parts.status,
+         json_data.as_str().unwrap_or("")
+      ))
+   }
 }
 
 #[derive(Serialize, Debug)]

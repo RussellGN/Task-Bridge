@@ -30,17 +30,23 @@ pub struct Project {
 impl Project {
    pub async fn create_and_save(payload: ProjectPayload, store: Arc<Store<impl Runtime>>) -> crate::Result<Self> {
       const F: &str = "[create_and_save]";
-      let token = get_token(&store)?;
+      let token = get_token(&store)?.get_token();
 
       // step 1: Create the Repository
       let repo_payload = RepoPayload::new(payload.repo_name.clone());
-      let repo = github_api::create_repo(repo_payload, &token.get_token()).await?;
+      let repo = github_api::create_repo(repo_payload, &token).await?;
       log!("{F} step 1 complete! repo created: {repo:#?}");
 
       // step 2: Add Collaborators
-      {
-         let team = payload.team.split(TEAM_LOGINS_SEPERATOR).collect::<Vec<_>>();
-         log!("{F} team = {team:#?}");
+      let team_logins = payload.team.split(TEAM_LOGINS_SEPERATOR).collect::<Vec<_>>();
+      log!("{F} team-logins = {team_logins:#?}");
+      for login in team_logins {
+         let owner = repo.owner.clone().ok_or(format!(
+            "{F} repo '{}' somehow does not have an owner set up",
+            repo.name
+         ))?;
+         github_api::invite_collaborator(login, &token, &owner.login, &repo.name).await?;
+         log!("{F} successfully invited {login}!");
       }
 
       // step 3: Create GitHub Project
