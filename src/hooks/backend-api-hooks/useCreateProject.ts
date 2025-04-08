@@ -11,9 +11,10 @@ export default function useCreateProject() {
 
    const { mutate, isPending, error } = useMutation({
       mutationFn: (projectData: NewProjectInterface) => invoke<Project>("create_project", { projectData }),
-      onError(err) {
+      onError(err: Error | string) {
          dbg("[useNewProjectTab]", err);
-         alertError("[useNewProjectTab] Error creating project: " + err.message || JSON.stringify(err));
+         const errorMessage = err instanceof Error ? err.message : err;
+         alertError("[useNewProjectTab] Error creating project: " + errorMessage);
       },
       onSuccess(project) {
          dbg("[useNewProjectTab]", project);
@@ -24,5 +25,6 @@ export default function useCreateProject() {
       },
    });
 
-   return { createProject: mutate, isPending, error };
+   const errorMessage = error instanceof Error ? error.message : error;
+   return { createProject: mutate, isPending, errorMessage };
 }

@@ -17,7 +17,7 @@ export default function NewProjectTab() {
             <div className="mb-3">
                <p className="text-DANGER flex items-center gap-1">
                   <AlertTriangle className="-mb-0.5" size={17} />
-                  {projectCreationErr.message || JSON.stringify(projectCreationErr)}
+                  {projectCreationErr}
                </p>
             </div>
          )}

@@ -5,7 +5,7 @@ import { dbg } from "@/lib/utils";
 
 export default function useNewProjectTab() {
    const [projectName, setProjectName] = useState<string>("");
-   const { error: projectCreationErr, isPending, createProject } = useCreateProject();
+   const { errorMessage: projectCreationErr, isPending, createProject } = useCreateProject();
 
    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -14,7 +14,7 @@ export default function useNewProjectTab() {
          name: data["name"] as string,
          repoName: data["repoName"] as string,
          shouldCreateRepo: data["shouldCreateRepo"] === "true",
-         team: data["repoName"] as string,
+         team: data["team"] as string,
       };
       dbg("[handleSubmit]", projectData);
 
