@@ -2,6 +2,7 @@ mod auth;
 mod commands;
 mod experimental;
 mod github_api;
+mod project;
 mod setup;
 mod utils;
 
@@ -9,6 +10,7 @@ use setup::init_tauri_plugin_single_instance;
 
 pub const STORE_PATH: &str = "store.json";
 pub const ENV_STR: &'static str = include_str!("../.env");
+pub const TEAM_LOGINS_SEPERATOR: &str = "-;;-";
 
 pub type Result<T = ()> = std::result::Result<T, String>;
 
@@ -24,6 +26,7 @@ pub fn run() {
       .invoke_handler(tauri::generate_handler![
          commands::fetch_save_and_return_user,
          commands::find_users_matching_query,
+         commands::create_project,
          experimental::clear_store
       ])
       .run(tauri::generate_context!())

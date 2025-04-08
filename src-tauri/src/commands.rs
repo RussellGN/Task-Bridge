@@ -3,6 +3,7 @@ use tauri::{AppHandle, Runtime};
 
 use crate::{
    github_api, log,
+   project::{Project, ProjectPayload},
    utils::{dbg_store, get_store, get_token},
 };
 
@@ -31,4 +32,15 @@ pub async fn find_users_matching_query<R: Runtime>(
    let token = get_token(&store)?;
    let users_found = github_api::search_users(&query, &token.get_token()).await?;
    Ok(users_found)
+}
+
+#[tauri::command]
+pub async fn create_project<R: Runtime>(app: tauri::AppHandle<R>, payload: ProjectPayload) -> crate::Result<Project> {
+   const F: &str = "[create_project]";
+
+   log!("{F} {payload:#?}");
+   let store = get_store(app)?;
+   let project = Project::create_and_save(payload, store).await?;
+
+   Ok(project)
 }
