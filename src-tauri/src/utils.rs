@@ -1,9 +1,9 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
-use tauri::Runtime;
-use tauri_plugin_store::Store;
+use tauri::{AppHandle, Runtime};
+use tauri_plugin_store::{Store, StoreExt};
 
-use crate::ENV_STR;
+use crate::{auth::AccessToken, ENV_STR, STORE_PATH};
 
 #[macro_export]
 macro_rules! log {
@@ -47,4 +47,24 @@ pub fn get_env_vars() -> crate::Result<HashMap<String, String>> {
    }
 
    Ok(env_vars_map)
+}
+
+pub fn get_store<R: Runtime>(app: AppHandle<R>) -> crate::Result<Arc<Store<R>>> {
+   const F: &str = "[get_store]";
+
+   log!("{F} getting store");
+   let store = app.store(STORE_PATH).map_err(|e| format!("{F} {}", e.to_string()))?;
+
+   Ok(store)
+}
+
+pub fn get_token<R: Runtime>(store: &Arc<Store<R>>) -> crate::Result<AccessToken> {
+   const F: &str = "[get_token]";
+
+   log!("{F} getting token");
+   let token = store.get("token").ok_or(format!("{F} token not found"))?;
+   log!("{F} token value: {token:#?}");
+   let token = serde_json::from_value::<AccessToken>(token).map_err(|e| e.to_string())?;
+
+   Ok(token)
 }

@@ -1,30 +1,10 @@
-use std::sync::Arc;
-
 use octocrab::models;
 use tauri::{AppHandle, Runtime};
-use tauri_plugin_store::{Store, StoreExt};
 
-use crate::{auth::AccessToken, github_api, log, utils::dbg_store, STORE_PATH};
-
-fn get_store<R: Runtime>(app: AppHandle<R>) -> crate::Result<Arc<Store<R>>> {
-   const F: &str = "[get_store]";
-
-   log!("{F} getting store");
-   let store = app.store(STORE_PATH).map_err(|e| format!("{F} {}", e.to_string()))?;
-
-   Ok(store)
-}
-
-fn get_token<R: Runtime>(store: &Arc<Store<R>>) -> crate::Result<AccessToken> {
-   const F: &str = "[get_token]";
-
-   log!("{F} getting token");
-   let token = store.get("token").ok_or(format!("{F} token not found"))?;
-   log!("{F} token value: {token:#?}");
-   let token = serde_json::from_value::<AccessToken>(token).map_err(|e| e.to_string())?;
-
-   Ok(token)
-}
+use crate::{
+   github_api, log,
+   utils::{dbg_store, get_store, get_token},
+};
 
 #[tauri::command]
 pub async fn fetch_save_and_return_user<R: Runtime>(app: AppHandle<R>) -> crate::Result<models::Author> {
