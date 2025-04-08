@@ -2,6 +2,7 @@ import { Button } from "../ui/button";
 import { Link } from "react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import useDevKit from "@/hooks/component-hooks/useDevKit";
+import { Input } from "../ui/input";
 
 export default function DevKit() {
    const { isExpanded, loading, experimental, setIsExpanded } = useDevKit();
@@ -30,6 +31,9 @@ export default function DevKit() {
 
             <div>
                <p className="mb-3 underline"> Navigation</p>
+               <form onSubmit={experimental.handleInputNavigation} className="mb-3">
+                  <Input type="text" placeholder="route..." name="route" />
+               </form>
                <div className="flex gap-2">
                   <Button disabled={loading} asChild>
                      <Link to="/home">Home</Link>

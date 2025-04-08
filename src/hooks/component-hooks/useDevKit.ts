@@ -1,10 +1,12 @@
-import { alertError, alertInfo } from "@/lib/utils";
+import { alertError, alertInfo, logInfo } from "@/lib/utils";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 export default function useDevKit() {
    const [isExpanded, setIsExpanded] = useState(false);
    const [loading, setLoading] = useState(false);
+   const navigate = useNavigate();
 
    function clearStore() {
       setLoading(true);
@@ -14,5 +16,21 @@ export default function useDevKit() {
          .finally(() => setLoading(false));
    }
 
-   return { isExpanded, loading, experimental: { clearStore }, setIsExpanded };
+   function handleInputNavigation(e: React.FormEvent<HTMLFormElement>) {
+      e.preventDefault();
+      setLoading(true);
+      const formData = new FormData(e.currentTarget);
+      const route = formData.get("route") as string;
+      logInfo("[handleInputNavigation] route: " + route);
+
+      if (!route) {
+         setLoading(false);
+         return;
+      }
+
+      navigate(route);
+      setLoading(false);
+   }
+
+   return { isExpanded, loading, experimental: { clearStore, handleInputNavigation }, setIsExpanded };
 }
