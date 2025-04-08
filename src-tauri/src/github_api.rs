@@ -1,19 +1,27 @@
 use std::collections::HashMap;
 
-use octocrab::{models, OctocrabBuilder};
+use octocrab::{models, Octocrab, OctocrabBuilder};
 use tauri::{http::Method, Url};
 use tauri_plugin_http::reqwest;
 
 use crate::{auth::AccessToken, log, utils::get_env_vars};
 
-pub async fn get_user(token: &str) -> crate::Result<models::Author> {
-   const F: &str = "[get_user]";
+fn create_authenticated_octo(token: &str) -> crate::Result<Octocrab> {
+   const F: &str = "[create_authenticated_octo]";
 
    log!("{F} creating octo with authentication");
    let octo = OctocrabBuilder::new()
       .user_access_token(token)
       .build()
-      .map_err(|e| e.to_string())?;
+      .map_err(|e| format!("{F} {}", e.to_string()))?;
+
+   Ok(octo)
+}
+
+pub async fn get_user(token: &str) -> crate::Result<models::Author> {
+   const F: &str = "[get_user]";
+
+   let octo = create_authenticated_octo(token)?;
 
    log!("{F} fetching user");
    let user = octo.current().user().await.map_err(|e| e.to_string())?;
@@ -25,11 +33,7 @@ pub async fn get_user(token: &str) -> crate::Result<models::Author> {
 pub async fn search_users(search: &str, token: &str) -> crate::Result<Vec<models::Author>> {
    const F: &str = "[search_users]";
 
-   log!("{F} creating octo with authentication");
-   let octo = OctocrabBuilder::new()
-      .user_access_token(token)
-      .build()
-      .map_err(|e| format!("{F} {}", e.to_string()))?;
+   let octo = create_authenticated_octo(token)?;
 
    log!("{F} searching users that match '{search}'");
    let page = octo
