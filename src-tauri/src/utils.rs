@@ -1,5 +1,6 @@
 use std::{collections::HashMap, sync::Arc};
 
+use octocrab::{Octocrab, OctocrabBuilder};
 use tauri::{AppHandle, Runtime};
 use tauri_plugin_store::{Store, StoreExt};
 
@@ -67,4 +68,16 @@ pub fn get_token<R: Runtime>(store: &Arc<Store<R>>) -> crate::Result<AccessToken
    let token = serde_json::from_value::<AccessToken>(token).map_err(|e| e.to_string())?;
 
    Ok(token)
+}
+
+pub fn create_authenticated_octo(token: &str) -> crate::Result<Octocrab> {
+   const F: &str = "[create_authenticated_octo]";
+
+   log!("{F} creating octo with authentication");
+   let octo = OctocrabBuilder::new()
+      .user_access_token(token)
+      .build()
+      .map_err(|e| format!("{F} {}", e.to_string()))?;
+
+   Ok(octo)
 }

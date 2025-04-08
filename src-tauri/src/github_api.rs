@@ -1,23 +1,15 @@
 use std::collections::HashMap;
 
-use octocrab::{models, Octocrab, OctocrabBuilder};
+use octocrab::models;
 use serde::Serialize;
 use tauri::{http::Method, Url};
 use tauri_plugin_http::reqwest;
 
-use crate::{auth::AccessToken, log, utils::get_env_vars};
-
-fn create_authenticated_octo(token: &str) -> crate::Result<Octocrab> {
-   const F: &str = "[create_authenticated_octo]";
-
-   log!("{F} creating octo with authentication");
-   let octo = OctocrabBuilder::new()
-      .user_access_token(token)
-      .build()
-      .map_err(|e| format!("{F} {}", e.to_string()))?;
-
-   Ok(octo)
-}
+use crate::{
+   auth::AccessToken,
+   log,
+   utils::{create_authenticated_octo, get_env_vars},
+};
 
 pub async fn get_user(token: &str) -> crate::Result<models::Author> {
    const F: &str = "[get_user]";
