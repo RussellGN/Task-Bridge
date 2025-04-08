@@ -33,6 +33,10 @@ export function alertSuccess<T>(info: T) {
    toast.success(infoMsg);
 }
 
+export function dbg(...args: unknown[]) {
+   console.log(...args);
+}
+
 export function logError(...args: unknown[]) {
    console.error(...args);
 }
