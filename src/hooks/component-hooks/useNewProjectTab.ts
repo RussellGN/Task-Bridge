@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import useCreateProject from "../backend-api-hooks/useCreateProject";
-import { NewProjectInterface } from "@/types/interfaces";
+import { NewProjectPayload } from "@/types/interfaces";
 import { dbg } from "@/lib/utils";
 
 export default function useNewProjectTab() {
@@ -10,15 +10,15 @@ export default function useNewProjectTab() {
    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-      const projectData: NewProjectInterface = {
+      const projectPayload: NewProjectPayload = {
          name: data["name"] as string,
          repoName: data["repoName"] as string,
          shouldCreateRepo: data["shouldCreateRepo"] === "true",
          team: data["team"] as string,
       };
-      dbg("[handleSubmit]", projectData);
+      dbg("[handleSubmit]", projectPayload);
 
-      createProject(projectData);
+      createProject(projectPayload);
    };
 
    return {

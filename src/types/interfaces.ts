@@ -27,7 +27,7 @@ export interface AuthorInterface {
    email?: string | undefined;
 }
 
-export interface NewProjectInterface {
+export interface NewProjectPayload {
    name: string;
    shouldCreateRepo: boolean;
    repoName: string;

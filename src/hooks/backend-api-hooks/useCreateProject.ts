@@ -1,4 +1,4 @@
-import { NewProjectInterface, Project } from "@/types/interfaces";
+import { NewProjectPayload, Project } from "@/types/interfaces";
 import { alertError, alertInfo, dbg } from "@/lib/utils";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
@@ -10,7 +10,7 @@ export default function useCreateProject() {
    const navigate = useNavigate();
 
    const { mutate, isPending, error } = useMutation({
-      mutationFn: (projectData: NewProjectInterface) => invoke<Project>("create_project", { projectData }),
+      mutationFn: (payload: NewProjectPayload) => invoke<Project>("create_project", { payload }),
       onError(err: Error | string) {
          dbg("[useNewProjectTab]", err);
          const errorMessage = err instanceof Error ? err.message : err;
