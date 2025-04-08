@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use octocrab::{models, Octocrab, OctocrabBuilder};
+use serde::Serialize;
 use tauri::{http::Method, Url};
 use tauri_plugin_http::reqwest;
 
@@ -102,4 +103,29 @@ pub fn exchange_code_for_access_token(code: &str) -> crate::Result<AccessToken> 
    log!("{F} token: {token:?}");
 
    Ok(token)
+}
+
+pub async fn create_repo(payload: NewRepoPayload, token: &str) -> crate::Result<models::Repository> {
+   const F: &str = "[create_repo]";
+
+   let octo = create_authenticated_octo(token)?;
+   log!("{F} about to create repo from payload: {payload:#?}");
+   let repo: models::Repository = octo
+      .post("/user/repos", Some(&payload))
+      .await
+      .map_err(|e| format!("{F} {}", e.to_string()))?;
+   log!("{F} got response, returning repo: {repo:#?}");
+
+   Ok(repo)
+}
+
+#[derive(Serialize, Debug)]
+pub struct NewRepoPayload {
+   name: String,
+}
+
+impl NewRepoPayload {
+   pub fn new(name: String) -> Self {
+      Self { name }
+   }
 }
