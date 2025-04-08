@@ -1,10 +1,10 @@
+import ErrorDisplay from "@/components/general/ErrorDisplay";
 import InfoTooltip from "@/components/general/InfoTooltip";
 import Spinner from "@/components/general/Spinner";
 import TeamSelector from "@/components/general/TeamSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import useNewProjectTab from "@/hooks/component-hooks/useNewProjectTab";
-import { AlertTriangle } from "lucide-react";
 
 export default function NewProjectTab() {
    const { isPending, projectName, projectCreationErr, handleSubmit, setProjectName } = useNewProjectTab();
@@ -13,14 +13,7 @@ export default function NewProjectTab() {
       <form onSubmit={handleSubmit} className="flex h-full flex-1 flex-col gap-4 p-5">
          <h1 className="mb-3 text-lg font-bold">Start New Project</h1>
 
-         {projectCreationErr && (
-            <div className="mb-3">
-               <p className="text-DANGER flex items-center gap-1">
-                  <AlertTriangle className="-mb-0.5" size={17} />
-                  {projectCreationErr}
-               </p>
-            </div>
-         )}
+         <ErrorDisplay containerClassName="mb-3" error={projectCreationErr} />
 
          <div className="mb-5 items-center gap-10 lg:flex">
             <label htmlFor="name" className="mb-2 block min-w-1/5 text-nowrap">
