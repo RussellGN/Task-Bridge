@@ -15,8 +15,8 @@ export default function NewProjectTab() {
 
          {projectCreationErr && (
             <div className="mb-3">
-               <p className="text-DANGER flex items-center gap-2">
-                  <AlertTriangle className="-mb-0.5" />
+               <p className="text-DANGER flex items-center gap-1">
+                  <AlertTriangle className="-mb-0.5" size={17} />
                   {projectCreationErr.message || JSON.stringify(projectCreationErr)}
                </p>
             </div>
@@ -101,7 +101,7 @@ export default function NewProjectTab() {
 
          <div className="mt-10 text-end">
             {isPending ? (
-               <div>
+               <div className="flex items-center justify-end gap-2">
                   <Spinner />
                   <p className="text-muted-foreground text-sm">Creating project...</p>
                </div>
