@@ -1,10 +1,10 @@
-export interface UserInterface {
+export interface User {
    login: string;
    avatar_url: string;
    email: string | undefined;
 }
 
-export interface AuthorInterface {
+export interface Author {
    login: string;
    id: string;
    node_id: string;

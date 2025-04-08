@@ -1,5 +1,5 @@
 import { STORE_PATH } from "@/lib/constants";
-import { UserInterface } from "@/types/interfaces";
+import { User } from "@/types/interfaces";
 import { logInfo } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
@@ -7,14 +7,14 @@ import { load } from "@tauri-apps/plugin-store";
 
 /** authenticated-user data from cache, store, or github if not found. */
 export default function useGetUser() {
-   const { data, error, isLoading, refetch } = useQuery<UserInterface, string>({
+   const { data, error, isLoading, refetch } = useQuery<User, string>({
       queryKey: ["user"],
       queryFn: async () => {
          const store = await load(STORE_PATH);
-         const user = await store.get<UserInterface>("user");
+         const user = await store.get<User>("user");
          if (user) return user;
          logInfo("[useGetUser] User not found, fetching from backend");
-         return await invoke<UserInterface>("fetch_save_and_return_user");
+         return await invoke<User>("fetch_save_and_return_user");
       },
    });
 

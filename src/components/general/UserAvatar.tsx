@@ -1,7 +1,7 @@
-import { UserInterface } from "@/types/interfaces";
+import { User } from "@/types/interfaces";
 import { cn } from "@/lib/utils";
 
-export function UserAvatar({ user, className }: { user: UserInterface; className?: string }) {
+export function UserAvatar({ user, className }: { user: User; className?: string }) {
    return (
       <img
          src={user.avatar_url}

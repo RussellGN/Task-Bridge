@@ -2,14 +2,14 @@ import Spinner from "@/components/general/Spinner";
 import { UserAvatar } from "@/components/general/UserAvatar";
 import { Button } from "@/components/ui/button";
 import useHomeTab from "@/hooks/component-hooks/useHomeTab";
-import { UserInterface } from "@/types/interfaces";
+import { User } from "@/types/interfaces";
 import { ArrowUpRight, TriangleAlert } from "lucide-react";
 import { Link } from "react-router";
 
 type DefaultTabProps = {
    loading: boolean;
    error: Error | string | null;
-   user: UserInterface | undefined | null;
+   user: User | undefined | null;
 };
 
 export default function HomeTab({ loading, error, user }: DefaultTabProps) {

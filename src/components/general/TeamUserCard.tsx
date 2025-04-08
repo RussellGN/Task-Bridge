@@ -1,10 +1,10 @@
-import { AuthorInterface } from "@/types/interfaces";
+import { Author } from "@/types/interfaces";
 import { Button } from "../ui/button";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type TeamUserCardProps = {
-   user: AuthorInterface;
+   user: Author;
    onRemove?: () => void;
    className?: string;
 };
