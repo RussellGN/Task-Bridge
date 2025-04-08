@@ -105,7 +105,7 @@ pub fn exchange_code_for_access_token(code: &str) -> crate::Result<AccessToken> 
    Ok(token)
 }
 
-pub async fn create_repo(payload: NewRepoPayload, token: &str) -> crate::Result<models::Repository> {
+pub async fn create_repo(payload: RepoPayload, token: &str) -> crate::Result<models::Repository> {
    const F: &str = "[create_repo]";
 
    let octo = create_authenticated_octo(token)?;
@@ -120,11 +120,11 @@ pub async fn create_repo(payload: NewRepoPayload, token: &str) -> crate::Result<
 }
 
 #[derive(Serialize, Debug)]
-pub struct NewRepoPayload {
+pub struct RepoPayload {
    name: String,
 }
 
-impl NewRepoPayload {
+impl RepoPayload {
    pub fn new(name: String) -> Self {
       Self { name }
    }
