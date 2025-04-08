@@ -1,3 +1,5 @@
+import Repository from "./Repository";
+
 export interface User {
    login: string;
    avatar_url: string;
@@ -36,4 +38,5 @@ export interface NewProjectPayload {
 
 export interface Project {
    name: string;
+   repo: Repository;
 }
