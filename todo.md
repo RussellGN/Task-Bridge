@@ -1,8 +1,6 @@
 # v1
 
 1. auto-creation of repo on github, with access invites sent to developers on team sheet
-   Authenticate with GitHub
-   Use OAuth/PAT for access.
 
 - Create the Repository
 - Add Collaborators
