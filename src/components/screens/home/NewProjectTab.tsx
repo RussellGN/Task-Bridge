@@ -29,7 +29,7 @@ export default function NewProjectTab() {
          </div>
 
          <div className="mb-5 items-center gap-10 lg:flex">
-            <label htmlFor="should_create_repo" className="mb-2 flex min-w-1/5 items-center gap-3 text-nowrap">
+            <label htmlFor="shouldCreateRepo" className="mb-2 flex min-w-1/5 items-center gap-3 text-nowrap">
                Create GitHub Repository:
                <InfoTooltip
                   align="start"
@@ -39,8 +39,8 @@ export default function NewProjectTab() {
             </label>
             <Input
                type="checkbox"
-               name="should_create_repo"
-               id="should_create_repo"
+               name="shouldCreateRepo"
+               id="shouldCreateRepo"
                value="yes"
                className="size-5"
                checked
@@ -50,7 +50,7 @@ export default function NewProjectTab() {
          </div>
 
          <div className="mb-5 items-center gap-10 lg:flex">
-            <label htmlFor="repo_name" className="mb-2 flex min-w-1/5 items-center gap-3 text-nowrap">
+            <label htmlFor="repoName" className="mb-2 flex min-w-1/5 items-center gap-3 text-nowrap">
                GitHub Repo name:
                <InfoTooltip
                   align="start"
@@ -60,8 +60,8 @@ export default function NewProjectTab() {
             </label>
             <Input
                type="text"
-               name="repo_name"
-               id="repo_name"
+               name="repoName"
+               id="repoName"
                maxLength={40}
                minLength={2}
                required
