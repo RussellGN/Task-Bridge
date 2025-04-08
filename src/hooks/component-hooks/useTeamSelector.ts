@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { alertError, logInfo } from "@/lib/utils";
 import { AuthorInterface } from "@/lib/interfaces";
 import useSearchUsers from "../backend-api-hooks/useSearchUsers";
+import { TEAM_LOGINS_SEPERATOR } from "@/lib/constants";
 
 export default function useTeamSelector() {
    const [team, setTeam] = useState<AuthorInterface[]>([]);
    const [query, setQuery] = useState("");
    const { error, loading, queriedUsers, startSearch } = useSearchUsers(query);
-   const teamInputValue = team.map((user) => `${user.login}-${user.id}`).join(", ");
+   const teamInputValue = team.map((user) => `${user.login}`).join(TEAM_LOGINS_SEPERATOR);
 
    useEffect(() => {
       if (error) alertError("[useTeamSelector] " + error);

@@ -12,3 +12,5 @@ export const ROUTES = [
    { path: "/home", component: Home },
    { path: "*", component: NotFound },
 ];
+
+export const TEAM_LOGINS_SEPERATOR = "-;;-";
