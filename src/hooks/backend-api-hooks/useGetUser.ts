@@ -1,5 +1,5 @@
 import { STORE_PATH } from "@/lib/constants";
-import { UserInterface } from "@/lib/interfaces";
+import { UserInterface } from "@/types/interfaces";
 import { logInfo } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";

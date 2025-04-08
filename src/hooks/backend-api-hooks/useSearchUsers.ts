@@ -1,4 +1,4 @@
-import { AuthorInterface } from "@/lib/interfaces";
+import { AuthorInterface } from "@/types/interfaces";
 import { alertError, logInfo } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";

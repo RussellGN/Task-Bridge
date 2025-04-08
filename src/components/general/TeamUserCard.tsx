@@ -1,4 +1,4 @@
-import { AuthorInterface } from "@/lib/interfaces";
+import { AuthorInterface } from "@/types/interfaces";
 import { Button } from "../ui/button";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";

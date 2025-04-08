@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import useCreateProject from "../backend-api-hooks/useCreateProject";
-import { NewProjectInterface } from "@/lib/interfaces";
+import { NewProjectInterface } from "@/types/interfaces";
 import { dbg } from "@/lib/utils";
 
 export default function useNewProjectTab() {

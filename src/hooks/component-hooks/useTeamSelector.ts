@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { alertError, logInfo } from "@/lib/utils";
-import { AuthorInterface } from "@/lib/interfaces";
+import { AuthorInterface } from "@/types/interfaces";
 import useSearchUsers from "../backend-api-hooks/useSearchUsers";
 import { TEAM_LOGINS_SEPERATOR } from "@/lib/constants";
 

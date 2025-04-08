@@ -2,7 +2,7 @@ import Spinner from "@/components/general/Spinner";
 import { UserAvatar } from "@/components/general/UserAvatar";
 import { Button } from "@/components/ui/button";
 import useHomeTab from "@/hooks/component-hooks/useHomeTab";
-import { UserInterface } from "@/lib/interfaces";
+import { UserInterface } from "@/types/interfaces";
 import { ArrowUpRight, TriangleAlert } from "lucide-react";
 import { Link } from "react-router";
 

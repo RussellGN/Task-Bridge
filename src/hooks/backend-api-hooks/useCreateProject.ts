@@ -1,4 +1,4 @@
-import { NewProjectInterface, Project } from "@/lib/interfaces";
+import { NewProjectInterface, Project } from "@/types/interfaces";
 import { alertError, alertInfo, dbg } from "@/lib/utils";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
