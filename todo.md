@@ -16,4 +16,5 @@
 - Prompt branch conventions (to link with task tracking)
 - open dashboard
 
-2. project dashboard : back button, team list, project name;
+2. get user to install app on account
+3. project dashboard : back button, team list, project name;
