@@ -16,5 +16,5 @@
 - Prompt branch conventions (to link with task tracking)
 - open dashboard
 
-2. get user to install app on account
+2. get user to install app on account (code exchange func seems to have wrong url)
 3. project dashboard : back button, team list, project name;
