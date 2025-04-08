@@ -114,7 +114,7 @@ pub async fn create_repo(payload: RepoPayload, token: &str) -> crate::Result<mod
       .post("/user/repos", Some(&payload))
       .await
       .map_err(|e| format!("{F} {}", e.to_string()))?;
-   log!("{F} got response, returning repo: {repo:#?}");
+   log!("{F} got response, returning repo");
 
    Ok(repo)
 }
