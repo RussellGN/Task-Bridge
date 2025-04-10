@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use octocrab::models;
 use tauri::{AppHandle, Runtime};
 
@@ -44,4 +46,24 @@ pub async fn create_project<R: Runtime>(app: tauri::AppHandle<R>, payload: Proje
    let project = Project::create_and_save(payload, store).await?;
 
    Ok(project)
+}
+
+#[tauri::command]
+pub async fn sync_projects_with_github<R: Runtime>(app: tauri::AppHandle<R>) -> crate::Result {
+   const F: &str = "[sync_projects_with_github]";
+
+   let store = get_store(app)?;
+   let token = get_token(&store)?;
+
+   // get repos from github
+   let repos = GithubAPI::get_repos(&token, None).await?;
+
+   // save them to store with project-name = repo-name
+   log!("{F} converting repos to projects and saving to store");
+   for repo in repos {
+      let project = Project::new(repo.name.clone(), repo);
+      project.save_to_store(Arc::clone(&store))?;
+   }
+
+   Ok(())
 }

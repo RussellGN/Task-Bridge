@@ -28,6 +28,7 @@ pub fn run() {
          commands::fetch_save_and_return_user,
          commands::find_users_matching_query,
          commands::create_project,
+         commands::sync_projects_with_github,
          experimental::clear_store
       ])
       .run(tauri::generate_context!())
