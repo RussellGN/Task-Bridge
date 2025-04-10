@@ -1,6 +1,7 @@
 use std::fmt::Debug;
 
 use serde::{de::DeserializeOwned, Serialize};
+use serde_json::Value;
 use tauri::http::{header, Method};
 use tauri_plugin_http::reqwest;
 
@@ -93,5 +94,25 @@ impl GithubAPI {
       log!("{F} response json: {json_data:#?}");
 
       Ok((json_data, parts))
+   }
+
+   pub async fn invite_collaborator(login: &str, token: &AccessToken, owner: &str, repo: &str) -> crate::Result {
+      const F: &str = "[GithubAPI::invite_collaborators]";
+
+      log!("{F} about to invite collaborator with login: {login:#?}");
+      let path_n_query = format!("/repos/{owner}/{repo}/collaborators/{login}");
+
+      let (res_data, parts) = Self::request::<Value, Value>(Method::PUT, path_n_query, token, None).await?;
+
+      let status = *parts.status();
+      let was_successfull = status == reqwest::StatusCode::CREATED || status == reqwest::StatusCode::NO_CONTENT;
+
+      if was_successfull {
+         log!("{F} successfully invited {login}, status: {status} response: {res_data:#?}");
+         Ok(())
+      } else {
+         let msg = format!("{F} failed to invite {login} to {owner}/{repo}, status: {status}, response: {res_data:#?}");
+         Err(msg)
+      }
    }
 }

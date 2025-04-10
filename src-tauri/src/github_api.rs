@@ -2,17 +2,12 @@ use std::collections::HashMap;
 
 use octocrab::models;
 use serde::Serialize;
-use serde_json::Value;
-use tauri::{
-   http::{Method, StatusCode},
-   Url,
-};
+use tauri::{http::Method, Url};
 use tauri_plugin_http::reqwest;
 
 use crate::{
    auth::AccessToken,
    log,
-   new_github_api::GithubAPI,
    utils::{create_authenticated_octo, get_env_vars},
 };
 
@@ -114,26 +109,6 @@ pub async fn create_repo(payload: RepoPayload, token: &str) -> crate::Result<mod
    log!("{F} got response, returning repo");
 
    Ok(repo)
-}
-
-pub async fn invite_collaborator(login: &str, token: &AccessToken, owner: &str, repo: &str) -> crate::Result {
-   const F: &str = "[invite_collaborators]";
-
-   log!("{F} about to invite collaborator with login: {login:#?}");
-   let path_n_query = format!("/repos/{owner}/{repo}/collaborators/{login}");
-
-   let (res_data, parts) = GithubAPI::request::<Value, Value>(Method::PUT, path_n_query, token, None).await?;
-
-   let status = *parts.status();
-   let was_successfull = status == StatusCode::CREATED || status == StatusCode::NO_CONTENT;
-
-   if was_successfull {
-      log!("{F} successfully invited {login}, status: {status} response: {res_data:#?}");
-      Ok(())
-   } else {
-      let msg = format!("{F} failed to invite {login} to {owner}/{repo}, status: {status}, response: {res_data:#?}");
-      Err(msg)
-   }
 }
 
 #[derive(Serialize, Debug)]

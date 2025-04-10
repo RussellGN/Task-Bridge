@@ -8,6 +8,7 @@ use tauri_plugin_store::Store;
 use crate::{
    github_api::{self, RepoPayload},
    log,
+   new_github_api::GithubAPI,
    utils::get_token,
    TEAM_LOGINS_SEPERATOR,
 };
@@ -45,7 +46,7 @@ impl Project {
             "{F} repo '{}' somehow does not have an owner set up",
             repo.name
          ))?;
-         github_api::invite_collaborator(login, &token, &owner.login, &repo.name).await?;
+         GithubAPI::invite_collaborator(login, &token, &owner.login, &repo.name).await?;
          log!("{F} successfully invited {login}!");
       }
 
