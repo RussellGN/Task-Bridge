@@ -30,11 +30,11 @@ pub struct Project {
 impl Project {
    pub async fn create_and_save(payload: ProjectPayload, store: Arc<Store<impl Runtime>>) -> crate::Result<Self> {
       const F: &str = "[create_and_save]";
-      let token = get_token(&store)?.get_token();
+      let token = get_token(&store)?;
 
       // step 1: Create the Repository
       let repo_payload = RepoPayload::new(payload.repo_name.clone());
-      let repo = github_api::create_repo(repo_payload, &token).await?;
+      let repo = github_api::create_repo(repo_payload, &token.get_token()).await?;
       log!("{F} step 1 complete! repo created: {repo:#?}");
 
       // step 2: Add Collaborators

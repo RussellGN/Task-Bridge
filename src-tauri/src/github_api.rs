@@ -1,9 +1,8 @@
 use std::collections::HashMap;
 
-use http_body_util::BodyExt;
 use octocrab::models;
 use serde::Serialize;
-use serde_json::{json, Value};
+use serde_json::Value;
 use tauri::{
    http::{Method, StatusCode},
    Url,
@@ -13,6 +12,7 @@ use tauri_plugin_http::reqwest;
 use crate::{
    auth::AccessToken,
    log,
+   new_github_api::GithubAPI,
    utils::{create_authenticated_octo, get_env_vars},
 };
 
@@ -116,40 +116,23 @@ pub async fn create_repo(payload: RepoPayload, token: &str) -> crate::Result<mod
    Ok(repo)
 }
 
-pub async fn invite_collaborator(login: &str, token: &str, owner: &str, repo: &str) -> crate::Result {
+pub async fn invite_collaborator(login: &str, token: &AccessToken, owner: &str, repo: &str) -> crate::Result {
    const F: &str = "[invite_collaborators]";
 
-   let octo = create_authenticated_octo(token)?;
    log!("{F} about to invite collaborator with login: {login:#?}");
-   let url = format!("https://api.github.com/repos/{owner}/{repo}/collaborators/{login}");
-   log!("{F} url = {url}");
+   let path_n_query = format!("/repos/{owner}/{repo}/collaborators/{login}");
 
-   let res = octo
-      ._put(url, Some(&json!({})))
-      .await
-      .map_err(|e| format!("{F} failed to send request: {}", e.to_string()))?;
+   let (res_data, parts) = GithubAPI::request::<Value, Value>(Method::PUT, path_n_query, token, None).await?;
 
-   let (parts, body) = res.into_parts();
-   log!("{F} got response parts: {parts:#?}");
-   let was_successfull = parts.status == StatusCode::CREATED || parts.status == StatusCode::NO_CONTENT;
-
-   let data = body
-      .collect()
-      .await
-      .map_err(|e| format!("{F} {e}"))?
-      .to_bytes()
-      .to_vec();
-   let json_data: Value = serde_json::from_slice(&data).map_err(|e| format!("{F} {e}"))?;
+   let status = *parts.status();
+   let was_successfull = status == StatusCode::CREATED || status == StatusCode::NO_CONTENT;
 
    if was_successfull {
-      log!("{F} returned json: {json_data:#?}");
+      log!("{F} successfully invited {login}, status: {status} response: {res_data:#?}");
       Ok(())
    } else {
-      Err(format!(
-         "{F} could not invite {login} to collaborate on {owner}/{repo}. status = {}, reponse-json = {}",
-         parts.status,
-         json_data.as_str().unwrap_or("")
-      ))
+      let msg = format!("{F} failed to invite {login} to {owner}/{repo}, status: {status}, response: {res_data:#?}");
+      Err(msg)
    }
 }
 
