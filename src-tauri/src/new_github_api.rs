@@ -1,12 +1,29 @@
-use std::fmt::Debug;
+use std::fmt::{Debug, Display};
 
 use octocrab::models;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::Value;
 use tauri::http::{header, Method};
 use tauri_plugin_http::reqwest;
 
 use crate::{auth::AccessToken, log, utils::create_authenticated_octo};
+
+#[derive(Deserialize)]
+struct GithubAPIError {
+   documentation_url: String,
+   message: String,
+   status: String,
+}
+
+impl Display for GithubAPIError {
+   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+      write!(
+         f,
+         "Error from github: {}. Status = {}, documentation_url = {}",
+         self.message, self.status, self.documentation_url
+      )
+   }
+}
 
 const GITHUB_API_BASENAME: &str = "https://api.github.com";
 
@@ -88,7 +105,7 @@ impl GithubAPI {
          .map_err(|e| format!("{F} error sending request, error: {}", e.to_string()))?;
 
       // log response
-      log!("{F} request sent successfully, got response: {res:#?}");
+      log!("{F} request sent, got response: {res:#?}");
 
       // create response parts
       let parts = GithubResponseParts {
@@ -98,11 +115,30 @@ impl GithubAPI {
       };
       log!("{F} response parts: {parts:#?}");
 
+      // handle error status codes
+      let status_code = parts.status.as_u16();
+      if status_code > 399 {
+         let err_msg_value = res
+            .json::<Value>()
+            .await
+            .map_err(|e| format!("{F} Could not decode error-response body: {e}",))?;
+
+         if let Ok(err_msg) = serde_json::from_value::<GithubAPIError>(err_msg_value.clone()) {
+            log!("{F} received error response: {err_msg}");
+            return Err(err_msg.to_string());
+         } else {
+            log!("{F} received error response: {err_msg_value:#?}");
+            return Err(format!(
+               "{F} received error response, with status '{status_code}', and data: {err_msg_value:#?}",
+            ));
+         }
+      }
+
       // log and return reponse data
       let json_data = res
          .json::<R>()
          .await
-         .map_err(|e| format!("{F} error sending request, error: {}", e.to_string()))?;
+         .map_err(|e| format!("{F} error reading response body: {e}",))?;
       log!("{F} response json: {json_data:#?}");
 
       Ok((json_data, parts))
@@ -145,7 +181,7 @@ impl GithubAPI {
       const F: &str = "[GithubAPI::create_repo]";
 
       log!("{F} creating new repo, payload: {payload:#?}");
-      let repo: models::Repository = Self::request(Method::PUT, "/user/repos/", &token, Some(payload))
+      let repo: models::Repository = Self::request(Method::POST, "/user/repos", &token, Some(payload))
          .await?
          .0;
       log!("{F} new repo created: {}", repo.name);
@@ -171,5 +207,50 @@ impl GithubAPI {
          let msg = format!("{F} failed to invite {login} to {owner}/{repo}, status: {status}, response: {res_data:#?}");
          Err(msg)
       }
+   }
+
+   pub async fn get_repos(token: &AccessToken, page: Option<u32>) -> crate::Result<Vec<models::Repository>> {
+      const F: &str = "[GithubAPI::get_repos]";
+
+      log!("{F} fetching authenticated user's repos");
+      let (repos, parts) = Self::request::<Vec<models::Repository>, Value>(
+         Method::GET,
+         format!("/user/repos?affiliation=owner&per_page=100&page={}", page.unwrap_or(1)),
+         &token,
+         None,
+      )
+      .await?;
+
+      log!("{F} reading link header, if any");
+      if let Some(link_header) = parts.headers.get("link") {
+         let links = link_header
+            .to_str()
+            .map_err(|e| format!("{F} could not read link headers: {e}"))?
+            .split("\",")
+            .filter(|link| !link.contains("rel=\"next"))
+            .map(|link| link.trim().replace("<", "").replace(">; rel=\"next", ""))
+            .collect::<Vec<_>>();
+
+         // links should only contain one rel=next link
+         if links.len() == 1 {
+            log!("{F} TODO! links vec contains a 'rel=next' link, dont forget to handle!. Links = {links:#?}");
+            // let next_page = links
+            //    .first()
+            //    .expect("links should only contain one rel=next link")
+            //    .split("page=")
+            //    .last()
+            //    .expect("should have page number at the last item in link string after str 'page='")
+            //    .parse()
+            //    .expect("should be able to covert page str into u32 number");
+            // let mut next_page_repos = Self::get_repos(token, Some(next_page)).await?;
+            // repos.append(&mut next_page_repos);
+         } else {
+            log!("{F} links vec did not contain a 'rel=next' link, skipping next page fetches. Links = {links:#?}");
+         }
+      }
+
+      log!("{F} got {} repos, now returning", repos.len());
+
+      Ok(repos)
    }
 }
