@@ -2,6 +2,7 @@ mod auth;
 mod commands;
 mod experimental;
 mod github_api;
+mod new_github_api;
 mod project;
 mod setup;
 mod utils;
