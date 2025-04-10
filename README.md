@@ -8,6 +8,8 @@ A software-project management solution with deep GitHub integration
 
 > **Notice:** Other installers and operating system versions will be available in due time.
 
+- version 0.0.5
+   - [exe - win x64](https://drive.google.com/file/d/1tLKWTlLjOZbV7KQpmly7489m24exTlrQ/view?usp=sharing)
 - version 0.0.4
    - [exe - win x64](https://drive.google.com/file/d/1kW6miYVPxriU9l4--WAD199lWM_5q5ct/view?usp=sharing)
 - version 0.0.3
