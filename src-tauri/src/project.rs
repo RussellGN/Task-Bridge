@@ -6,9 +6,8 @@ use tauri::Runtime;
 use tauri_plugin_store::Store;
 
 use crate::{
-   github_api::{self, RepoPayload},
    log,
-   new_github_api::GithubAPI,
+   new_github_api::{GithubAPI, RepoPayload},
    utils::get_token,
    TEAM_LOGINS_SEPERATOR,
 };
@@ -35,7 +34,7 @@ impl Project {
 
       // step 1: Create the Repository
       let repo_payload = RepoPayload::new(payload.repo_name.clone());
-      let repo = github_api::create_repo(repo_payload, &token.get_token()).await?;
+      let repo = GithubAPI::create_repo(repo_payload, &token).await?;
       log!("{F} step 1 complete! repo created: {repo:#?}");
 
       // step 2: Add Collaborators

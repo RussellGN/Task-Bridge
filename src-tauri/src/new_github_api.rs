@@ -1,5 +1,6 @@
 use std::fmt::Debug;
 
+use octocrab::models;
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::Value;
 use tauri::http::{header, Method};
@@ -8,6 +9,17 @@ use tauri_plugin_http::reqwest;
 use crate::{auth::AccessToken, log};
 
 const GITHUB_API_BASENAME: &str = "https://api.github.com";
+
+#[derive(Serialize, Debug)]
+pub struct RepoPayload {
+   name: String,
+}
+
+impl RepoPayload {
+   pub fn new(name: String) -> Self {
+      Self { name }
+   }
+}
 
 #[derive(Debug)]
 #[allow(unused)]
@@ -37,7 +49,7 @@ pub struct GithubAPI;
 impl GithubAPI {
    pub async fn request<R, P>(
       method: Method,
-      path_with_query_str: impl Into<String>,
+      path_query: impl Into<String>,
       token: &AccessToken,
       payload: Option<P>,
    ) -> crate::Result<(R, GithubResponseParts)>
@@ -48,7 +60,7 @@ impl GithubAPI {
       const F: &str = "[GithubAPI::request]";
 
       // formulate url
-      let path = path_with_query_str.into();
+      let path = path_query.into();
       let path = if path.starts_with("/") {
          path
       } else {
@@ -94,6 +106,18 @@ impl GithubAPI {
       log!("{F} response json: {json_data:#?}");
 
       Ok((json_data, parts))
+   }
+
+   pub async fn create_repo(payload: RepoPayload, token: &AccessToken) -> crate::Result<models::Repository> {
+      const F: &str = "[GithubAPI::create_repo]";
+
+      log!("{F} creating new repo, payload: {payload:#?}");
+      let repo: models::Repository = Self::request(Method::PUT, "/user/repos/", &token, Some(payload))
+         .await?
+         .0;
+      log!("{F} new repo created: {}", repo.name);
+
+      Ok(repo)
    }
 
    pub async fn invite_collaborator(login: &str, token: &AccessToken, owner: &str, repo: &str) -> crate::Result {
