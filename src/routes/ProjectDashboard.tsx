@@ -1,3 +1,4 @@
+import BackBtn from "@/components/general/BackBtn";
 import ErrorDisplay from "@/components/general/ErrorDisplay";
 import Spinner from "@/components/general/Spinner";
 import useGetProject from "@/hooks/backend-api-hooks/useGetProject";
@@ -9,7 +10,10 @@ export default function ProjectDashboard() {
 
    return (
       <div>
-         <h1 className="mb-5 text-lg font-semibold italic">Project Dashboard/{projectName}</h1>
+         <div className="mb-5 flex items-center gap-2">
+            <BackBtn path="/home?tab=all" />
+            <h1 className="text-lg font-semibold italic">Project Dashboard/{projectName}</h1>
+         </div>
 
          <ErrorDisplay containerClassName="mb-3" error={errorMessage} />
 
