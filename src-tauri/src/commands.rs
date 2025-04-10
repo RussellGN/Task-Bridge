@@ -17,8 +17,8 @@ pub async fn fetch_save_and_return_user<R: Runtime>(app: AppHandle<R>) -> crate:
    let store = get_store(app)?;
    let token = get_token(&store)?;
    let user = GithubAPI::get_user(&token).await?;
+   log!("{F} setting user: {}", user.login);
    let user_val = serde_json::to_value(&user).map_err(|e| e.to_string())?;
-   log!("{F} setting user: {user_val:#?}");
    dbg_store(&store);
    store.set("user", user_val);
    dbg_store(&store);

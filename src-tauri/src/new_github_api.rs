@@ -192,7 +192,7 @@ impl GithubAPI {
    pub async fn invite_collaborator(login: &str, token: &AccessToken, owner: &str, repo: &str) -> crate::Result {
       const F: &str = "[GithubAPI::invite_collaborators]";
 
-      log!("{F} about to invite collaborator with login: {login:#?}");
+      log!("{F} about to invite collaborator with login: {login}");
       let path_n_query = format!("/repos/{owner}/{repo}/collaborators/{login}");
 
       let (res_data, parts) = Self::request::<Value, Value>(Method::PUT, path_n_query, token, None).await?;

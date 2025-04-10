@@ -72,7 +72,10 @@ fn setup_deep_linking(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>>
       const F: &str = "[on_open_url]";
 
       let urls = e.urls();
-      log!("{F} deep link hit. Urls: {urls:#?}");
+      log!(
+         "{F} deep link hit. Urls: {}",
+         urls.iter().map(|u| u.to_string()).collect::<Vec<_>>().join(",\n ")
+      );
 
       if !urls.is_empty() {
          match urls.first() {
@@ -82,7 +85,7 @@ fn setup_deep_linking(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>>
                      log!("{F} error handling deep-link-hit: {e}");
                   }
                }
-               path => log!("{F} no handler set for deep link path '{path}', url = {url:#?}"),
+               path => log!("{F} no handler set for deep link path '{path}', url = {url}"),
             },
             None => log!("{F} could not retrieve the first url"),
          }
@@ -92,7 +95,8 @@ fn setup_deep_linking(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>>
    // this should not be possible, due to single instance plugin]
    if let Ok(Some(urls)) = deep_link.get_current() {
       log!(
-         "{F} this should not be possible, due to single instance plugin: app loaded by deep link with urls: {urls:#?}"
+         "{F} this should not be possible, due to single instance plugin: app loaded by deep link with urls: {}",
+         urls.iter().map(|u| u.to_string()).collect::<Vec<_>>().join(",\n ")
       );
    }
 

@@ -42,7 +42,7 @@ impl Project {
       // step 1: Create the Repository
       let repo_payload = RepoPayload::new(payload.repo_name.clone());
       let repo = GithubAPI::create_repo(repo_payload, &token).await?;
-      log!("{F} step 1 complete! repo created: {repo:#?}");
+      log!("{F} step 1 complete! repo created: {}", repo.name);
 
       // step 2: Add Collaborators
       let team_logins = payload.team.split(TEAM_LOGINS_SEPERATOR).collect::<Vec<_>>();
