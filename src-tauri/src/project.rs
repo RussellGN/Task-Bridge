@@ -28,6 +28,13 @@ pub struct Project {
 }
 
 impl Project {
+   pub fn new(name: impl Into<String>, repo: models::Repository) -> Self {
+      Self {
+         name: name.into(),
+         repo,
+      }
+   }
+
    pub async fn create_and_save(payload: ProjectPayload, store: Arc<Store<impl Runtime>>) -> crate::Result<Self> {
       const F: &str = "[create_and_save]";
       let token = get_token(&store)?;
@@ -74,7 +81,23 @@ impl Project {
    pub fn save_to_store(&self, store: Arc<Store<impl Runtime>>) -> crate::Result {
       const F: &str = "[save]";
       let value = serde_json::to_value(self).map_err(|e| format!("{F} {}", e.to_string()))?;
-      store.set(self.name.clone(), value);
+      let name = self.name.clone();
+      store.set(&name, value);
+
+      if let Some(project_names) = store.get("project-names") {
+         let mut project_names = serde_json::from_value::<Vec<String>>(project_names)
+            .map_err(|e| format!("{F} could not deserialize project-names: {e}"))?;
+
+         if project_names.contains(&name) {
+            return Err(format!("{F} project with name '{name}' already exists in local store"));
+         } else {
+            project_names.push(name);
+            store.set("project-names", project_names);
+         }
+      } else {
+         store.set("project-names", vec![name]);
+      }
+
       Ok(())
    }
 }
