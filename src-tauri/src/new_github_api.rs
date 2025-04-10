@@ -108,6 +108,28 @@ impl GithubAPI {
       Ok((json_data, parts))
    }
 
+   pub async fn search_users(search: &str, token: &AccessToken) -> crate::Result<Vec<models::Author>> {
+      const F: &str = "[GithubAPI::search_users]";
+
+      let octo = create_authenticated_octo(&token.get_token())?;
+      log!("{F} searching users that match '{search}'");
+      let page = octo
+         .search()
+         .users(search)
+         .per_page(50)
+         .send()
+         .await
+         .map_err(|e| format!("{F} {}", e.to_string()))?;
+      let users = page.items;
+      log!(
+         "{F} returning users found, count: {}. User logins: {}",
+         users.len(),
+         users.iter().map(|u| u.login.clone()).collect::<Vec<_>>().join(", ")
+      );
+
+      Ok(users)
+   }
+
    pub async fn get_user(token: &AccessToken) -> crate::Result<models::Author> {
       const F: &str = "[GithubAPI::get_user]";
 

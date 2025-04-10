@@ -2,7 +2,7 @@ use octocrab::models;
 use tauri::{AppHandle, Runtime};
 
 use crate::{
-   github_api, log,
+   log,
    new_github_api::GithubAPI,
    project::{Project, ProjectPayload},
    utils::{dbg_store, get_store, get_token},
@@ -31,7 +31,7 @@ pub async fn find_users_matching_query<R: Runtime>(
 ) -> crate::Result<Vec<models::Author>> {
    let store = get_store(app)?;
    let token = get_token(&store)?;
-   let users_found = github_api::search_users(&query, &token.get_token()).await?;
+   let users_found = GithubAPI::search_users(&query, &token).await?;
    Ok(users_found)
 }
 

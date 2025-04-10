@@ -1,33 +1,9 @@
 use std::collections::HashMap;
 
-use octocrab::models;
 use tauri::{http::Method, Url};
 use tauri_plugin_http::reqwest;
 
-use crate::{
-   auth::AccessToken,
-   log,
-   utils::{create_authenticated_octo, get_env_vars},
-};
-
-pub async fn search_users(search: &str, token: &str) -> crate::Result<Vec<models::Author>> {
-   const F: &str = "[search_users]";
-
-   let octo = create_authenticated_octo(token)?;
-
-   log!("{F} searching users that match '{search}'");
-   let page = octo
-      .search()
-      .users(search)
-      .per_page(50)
-      .send()
-      .await
-      .map_err(|e| format!("{F} {}", e.to_string()))?;
-   let users = page.items;
-   log!("{F} now returning users, count = {}, users = {users:#?}", users.len());
-
-   Ok(users)
-}
+use crate::{auth::AccessToken, log, utils::get_env_vars};
 
 pub fn exchange_code_for_access_token(code: &str) -> crate::Result<AccessToken> {
    const F: &str = "[exchange_code_for_access_token]";
