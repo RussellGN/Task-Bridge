@@ -10,18 +10,6 @@ use crate::{
    utils::{create_authenticated_octo, get_env_vars},
 };
 
-pub async fn get_user(token: &str) -> crate::Result<models::Author> {
-   const F: &str = "[get_user]";
-
-   let octo = create_authenticated_octo(token)?;
-
-   log!("{F} fetching user");
-   let user = octo.current().user().await.map_err(|e| e.to_string())?;
-   log!("{F} now returning user response: {user:#?}");
-
-   Ok(user)
-}
-
 pub async fn search_users(search: &str, token: &str) -> crate::Result<Vec<models::Author>> {
    const F: &str = "[search_users]";
 

@@ -6,7 +6,7 @@ use serde_json::Value;
 use tauri::http::{header, Method};
 use tauri_plugin_http::reqwest;
 
-use crate::{auth::AccessToken, log};
+use crate::{auth::AccessToken, log, utils::create_authenticated_octo};
 
 const GITHUB_API_BASENAME: &str = "https://api.github.com";
 
@@ -106,6 +106,17 @@ impl GithubAPI {
       log!("{F} response json: {json_data:#?}");
 
       Ok((json_data, parts))
+   }
+
+   pub async fn get_user(token: &AccessToken) -> crate::Result<models::Author> {
+      const F: &str = "[GithubAPI::get_user]";
+
+      let octo = create_authenticated_octo(&token.get_token())?;
+      log!("{F} fetching authenticated user");
+      let user = octo.current().user().await.map_err(|e| e.to_string())?;
+      log!("{F} got user, now returning: {}", user.login);
+
+      Ok(user)
    }
 
    pub async fn create_repo(payload: RepoPayload, token: &AccessToken) -> crate::Result<models::Repository> {

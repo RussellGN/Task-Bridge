@@ -3,6 +3,7 @@ use tauri::{AppHandle, Runtime};
 
 use crate::{
    github_api, log,
+   new_github_api::GithubAPI,
    project::{Project, ProjectPayload},
    utils::{dbg_store, get_store, get_token},
 };
@@ -13,7 +14,7 @@ pub async fn fetch_save_and_return_user<R: Runtime>(app: AppHandle<R>) -> crate:
 
    let store = get_store(app)?;
    let token = get_token(&store)?;
-   let user = github_api::get_user(&token.get_token()).await?;
+   let user = GithubAPI::get_user(&token).await?;
    let user_val = serde_json::to_value(&user).map_err(|e| e.to_string())?;
    log!("{F} setting user: {user_val:#?}");
    dbg_store(&store);
