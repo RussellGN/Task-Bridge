@@ -49,13 +49,16 @@ impl Project {
          log!("{F} successfully invited {login}!");
       }
 
-      // step 3: Create GitHub Project
+      // skip for now, use alternate non-project oriented architecture
+      {
+         // step 3: Create GitHub Project Skip
 
-      // step 4: Add Project Columns
+         // step 4: Add Project Columns
 
-      // step 5: Set Up Automation
+         // step 5: Set Up Automation
 
-      // step 6: create branch conventions (to link with task tracking)
+         // step 6: create branch conventions (to link with task tracking)
+      }
 
       // final step : save project to store and return
       let project = Self {
