@@ -29,12 +29,17 @@ export default function AllProjectsTab() {
             <p className="text-foreground/50 text-center">No projects found</p>
          ) : (
             <div className="flex max-h-[80vh] flex-wrap overflow-y-auto">
-               {projects?.map((project, index) => <ProjectCard key={index} project={project} />)}
+               {projects
+                  ?.filter((p) => p.locallyCreated)
+                  .map((project, index) => <ProjectCard key={index} project={project} />)}
 
                <div className="text-foreground/50 my-10 flex w-full items-center gap-2">
                   Synced from GitHub
                   <DownloadCloud />
                </div>
+               {projects
+                  ?.filter((p) => !p.locallyCreated)
+                  .map((project, index) => <ProjectCard key={index} project={project} />)}
             </div>
          )}
       </div>
