@@ -12,7 +12,7 @@ export default function ProjectDashboard() {
    return (
       <div>
          <div className="mb-5 flex items-center gap-2">
-            <BackBtn path="/home?tab=all" />
+            <BackBtn />
             <h1 className="text-lg font-semibold italic">Project Dashboard/{project?.name || projectId}</h1>
 
             <div className="ml-auto">

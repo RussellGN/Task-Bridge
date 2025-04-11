@@ -1,5 +1,6 @@
+import BackBtn from "@/components/general/BackBtn";
 import { Button } from "@/components/ui/button";
-import { CircleArrowLeft, Home } from "lucide-react";
+import { Home } from "lucide-react";
 import { Link, useLocation } from "react-router";
 
 export default function NotFound() {
@@ -17,9 +18,7 @@ export default function NotFound() {
 
          <div className="flex items-center justify-center gap-3">
             <Button title="go back" asChild size="icon" variant="outline">
-               <Link to="..">
-                  <CircleArrowLeft />
-               </Link>
+               <BackBtn />
             </Button>
             <Button title="home-screen" asChild variant="outline">
                <Link to="/home">
