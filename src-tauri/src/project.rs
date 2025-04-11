@@ -72,6 +72,9 @@ impl Project {
       log!("{F} team-logins = {team_logins:#?}");
       let mut pending_invites: Vec<models::Author> = vec![];
       for login in team_logins {
+         if login.trim().is_empty() {
+            continue;
+         }
          let owner = repo.owner.clone().ok_or(format!(
             "{F} repo '{}' somehow does not have an owner set up",
             repo.name
