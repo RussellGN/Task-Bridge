@@ -11,7 +11,10 @@ export default function useDevKit() {
    function clearStore() {
       setLoading(true);
       invoke("clear_store")
-         .then(() => alertInfo("[clearStore] Store cleared successfully"))
+         .then(() => {
+            alertInfo("[clearStore] Store cleared successfully");
+            navigate("/");
+         })
          .catch((e) => alertError("[clearStore] " + JSON.stringify(e)))
          .finally(() => setLoading(false));
    }
