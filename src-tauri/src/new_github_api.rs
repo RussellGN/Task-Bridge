@@ -311,5 +311,46 @@ impl GithubAPI {
       Ok(collaborators)
    }
 
-   pub async fn get_repo_collab_invitees(repo: &models::Repository) -> crate::Result<Vec<models::Author>> {}
+   pub async fn get_repo_collab_invitees(
+      repo: &models::Repository,
+      token: &AccessToken,
+   ) -> crate::Result<Vec<models::Author>> {
+      const F: &str = "[GithubAPI::get_repo_collab_invitees]";
+
+      log!("{F} fetching collab invites for repo '{}'", repo.name);
+
+      #[derive(Deserialize, Debug)]
+      struct PendingInviteResponse {
+         id: usize,
+         node_id: String,
+         repository: models::Repository,
+         invitee: models::Author,
+         inviter: models::Author,
+         permissions: String,
+         created_at: String,
+         url: String,
+         html_url: String,
+         expired: bool,
+      }
+
+      let url = format!(
+         "/repos/{}/{}/invitations",
+         repo
+            .owner
+            .clone()
+            .expect(&format!("{F} '{}' repo somehow doesnt have owner", repo.name))
+            .login,
+         repo.name
+      );
+      let invites = Self::request::<Vec<PendingInviteResponse>, Value>(Method::GET, url, &token, None)
+         .await?
+         .0
+         .into_iter()
+         .map(|i| i.invitee)
+         .collect::<Vec<_>>();
+
+      log!("{F} got {} collab invites for repo '{}'", invites.len(), repo.name);
+
+      Ok(invites)
+   }
 }
