@@ -198,6 +198,7 @@ impl GithubAPI {
       const F: &str = "[GithubAPI::invite_collaborators]";
 
       #[derive(Deserialize, Debug)]
+      #[allow(unused)]
       struct InviteResponse {
          id: usize,
          node_id: String,
@@ -320,6 +321,7 @@ impl GithubAPI {
       log!("{F} fetching collab invites for repo '{}'", repo.name);
 
       #[derive(Deserialize, Debug)]
+      #[allow(unused)]
       struct PendingInviteResponse {
          id: usize,
          node_id: String,
