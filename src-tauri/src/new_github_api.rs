@@ -197,19 +197,38 @@ impl GithubAPI {
    ) -> crate::Result<models::Author> {
       const F: &str = "[GithubAPI::invite_collaborators]";
 
+      #[derive(Deserialize, Debug)]
+      struct InviteResponse {
+         id: usize,
+         node_id: String,
+         repository: models::Repository,
+         invitee: models::Author,
+         inviter: models::Author,
+         permissions: String,
+         created_at: String,
+         url: String,
+         html_url: String,
+      }
+
       log!("{F} about to invite collaborator with login: {login}");
       let path_n_query = format!("/repos/{owner}/{repo}/collaborators/{login}");
 
-      let (res_data, parts) = Self::request::<Value, Value>(Method::PUT, path_n_query, token, None).await?;
+      let (invite_response, parts) =
+         Self::request::<InviteResponse, Value>(Method::PUT, path_n_query, token, None).await?;
 
       let status = *parts.status();
       let was_successfull = status == reqwest::StatusCode::CREATED || status == reqwest::StatusCode::NO_CONTENT;
 
       if was_successfull {
-         log!("{F} successfully invited {login}, status: {status} response: {res_data:#?}");
-         Ok(())
+         log!(
+            "{F} successfully invited {login}, status: {status} invite-response-invitee: {}-{}",
+            invite_response.invitee.login,
+            invite_response.invitee.id
+         );
+         Ok((invite_response.invitee))
       } else {
-         let msg = format!("{F} failed to invite {login} to {owner}/{repo}, status: {status}, response: {res_data:#?}");
+         let msg =
+            format!("{F} failed to invite {login} to {owner}/{repo}, status: {status}, response: {invite_response:#?}");
          Err(msg)
       }
    }
