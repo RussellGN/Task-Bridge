@@ -278,7 +278,38 @@ impl GithubAPI {
       Ok(repos)
    }
 
-   pub async fn get_repo_collaborators(repo: &models::Repository) -> crate::Result<Vec<models::Author>> {}
+   pub async fn get_repo_collaborators(
+      repo: &models::Repository,
+      token: &AccessToken,
+   ) -> crate::Result<Vec<models::Author>> {
+      const F: &str = "[GithubAPI::get_repo_collaborators]";
+
+      let octo = create_authenticated_octo(&token.get_token())?;
+      log!("{F} fetching collaborators for repo '{}'", repo.name);
+      let collaborators = octo
+         .repos(
+            repo
+               .owner
+               .clone()
+               .expect(&format!("{F} '{}' repo somehow doesnt have owner", repo.name))
+               .login,
+            repo.name.clone(),
+         )
+         .list_collaborators()
+         .per_page(100)
+         .send()
+         .await
+         .map_err(|e| format!("{F} error fetching list of collaborators: {e}"))?;
+
+      if let Some(_) = collaborators.next {
+         log!("{F} TODO! repo has more than 100 collaborators , handle this",);
+      }
+
+      let collaborators = collaborators.items.into_iter().map(|c| c.author).collect::<Vec<_>>();
+      log!("{F} got {} collaborators, now returning", collaborators.len());
+
+      Ok(collaborators)
+   }
 
    pub async fn get_repo_collab_invitees(repo: &models::Repository) -> crate::Result<Vec<models::Author>> {}
 }
