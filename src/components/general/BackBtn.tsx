@@ -1,5 +1,5 @@
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 import { Button } from "../ui/button";
 
 type BackButtonProps = {
@@ -7,12 +7,13 @@ type BackButtonProps = {
    path?: string;
 };
 
-export default function BackBtn({ className, path }: BackButtonProps) {
+export default function BackBtn({ className }: BackButtonProps) {
+   const navigate = useNavigate();
+   const goBack = () => navigate(-1);
+
    return (
-      <Button asChild size="icon" variant="outline" className={className}>
-         <Link to={path || ".."}>
-            <ArrowLeft />
-         </Link>
+      <Button onClick={goBack} size="icon" variant="outline" className={className}>
+         <ArrowLeft />
       </Button>
    );
 }
