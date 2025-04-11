@@ -9,7 +9,7 @@ export default function AllProjectsTab() {
    const { projects, isLoading, errorMessage, syncProjects } = useLocalProjectsList();
 
    return (
-      <div>
+      <div className="px-5">
          <div className="mb-4 flex items-center justify-between gap-3">
             <h1 className="text-foreground/50 flex items-center gap-2">Locally created projects</h1>
 
