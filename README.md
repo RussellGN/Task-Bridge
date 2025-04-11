@@ -8,6 +8,9 @@ A software-project management solution with deep GitHub integration
 
 > **Notice:** Other installers and operating system versions will be available in due time.
 
+- **version 0.1.0**
+   - [exe - win x64](https://drive.google.com/file/d/15zUAJfXZvFTM3Ot_8-BOZT3a8TbyVHOw/view?usp=sharing)
+   - [msi - win x64](https://drive.google.com/file/d/1Z1APL9f9ZQtc1rI6qgXeQCacOZJHrn86/view?usp=sharing)
 - version 0.0.5
    - [exe - win x64](https://drive.google.com/file/d/1tLKWTlLjOZbV7KQpmly7489m24exTlrQ/view?usp=sharing)
 - version 0.0.4
