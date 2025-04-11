@@ -16,7 +16,6 @@ export default function useLocalProjectsList() {
          const projectIds = await store.get<string[]>("project-ids");
 
          if (projectIds === undefined) {
-            alertError(`${F} No projects found locally, trigger a sync with github or create a new project`);
             throw new Error("No projects found locally, trigger a sync with github or create a new project");
          } else {
             const projects = [] as Project[];
