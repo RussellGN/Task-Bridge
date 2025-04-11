@@ -80,8 +80,8 @@ pub async fn sync_projects_with_github<R: Runtime>(app: tauri::AppHandle<R>) -> 
          continue;
       }
 
-      let team = GithubAPI::get_repo_collaborators(&repo).await?;
-      let pending_invites = GithubAPI::get_repo_collab_invitees(&repo).await?;
+      let team = GithubAPI::get_repo_collaborators(&repo, &token).await?;
+      let pending_invites = GithubAPI::get_repo_collab_invitees(&repo, &token).await?;
       let project = Project::new(repo.name.clone(), false, team, pending_invites, repo);
       project.save_to_store(Arc::clone(&store))?;
    }
