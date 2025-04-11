@@ -1,12 +1,11 @@
-import { User } from "@/types/interfaces";
-import { cn } from "@/lib/utils";
+import { Author, User } from "@/types/interfaces";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export function UserAvatar({ user, className }: { user: User; className?: string }) {
+export function UserAvatar({ user }: { user: User | Author; className?: string }) {
    return (
-      <img
-         src={user.avatar_url}
-         alt={`${user.login}'s profile`}
-         className={cn("size-10 rounded-full bg-black shadow-md", className)}
-      />
+      <Avatar>
+         <AvatarImage src={user.avatar_url} />
+         <AvatarFallback>{user.login.charAt(0).toUpperCase()}</AvatarFallback>
+      </Avatar>
    );
 }
