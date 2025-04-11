@@ -43,4 +43,5 @@ export interface Project {
    team: Author[];
    pendingInvites: Author[];
    repo: Repository;
+   repoId: string;
 }

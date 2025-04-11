@@ -30,6 +30,7 @@ pub struct Project {
    team: Vec<models::Author>,
    pending_invites: Vec<models::Author>,
    repo: models::Repository,
+   repo_id: String,
 }
 
 impl Project {
@@ -43,6 +44,7 @@ impl Project {
       let creation_timestamp = chrono::Utc::now().timestamp_millis();
       let name = name.into();
       let id = format!("{name}-{creation_timestamp}",);
+      let repo_id = repo.id.to_string();
 
       Self {
          id,
@@ -52,6 +54,7 @@ impl Project {
          team,
          pending_invites,
          repo,
+         repo_id,
       }
    }
 
@@ -100,21 +103,42 @@ impl Project {
    pub fn save_to_store(&self, store: Arc<Store<impl Runtime>>) -> crate::Result {
       const F: &str = "[save]";
       let value = serde_json::to_value(self).map_err(|e| format!("{F} {}", e.to_string()))?;
-      let id = self.id.clone();
-      store.set(&id, value);
+      let project_id = self.id.clone();
+      store.set(&project_id, value);
 
+      // save project-ids in standalone vec
       if let Some(project_ids) = store.get("project-ids") {
          let mut project_ids = serde_json::from_value::<Vec<String>>(project_ids)
             .map_err(|e| format!("{F} could not deserialize project-ids: {e}"))?;
 
-         if project_ids.contains(&id) {
-            return Err(format!("{F} project with id '{id}' already exists in local store"));
+         if project_ids.contains(&project_id) {
+            return Err(format!(
+               "{F} project with id '{project_id}' already exists in local store"
+            ));
          } else {
-            project_ids.push(id);
+            project_ids.push(project_id);
             store.set("project-ids", project_ids);
          }
       } else {
-         store.set("project-ids", vec![id]);
+         store.set("project-ids", vec![project_id]);
+      }
+
+      // save repo-ids in standalone vec
+      let repo_id = self.repo_id.clone();
+      if let Some(repo_ids) = store.get("repo-ids") {
+         let mut repo_ids = serde_json::from_value::<Vec<String>>(repo_ids)
+            .map_err(|e| format!("{F} could not deserialize repo-ids: {e}"))?;
+
+         if repo_ids.contains(&repo_id) {
+            return Err(format!(
+               "{F} repo with id '{repo_id}' already has a project set-up and already exists in local store"
+            ));
+         } else {
+            repo_ids.push(repo_id);
+            store.set("repo-ids", repo_ids);
+         }
+      } else {
+         store.set("repo-ids", vec![repo_id]);
       }
 
       Ok(())

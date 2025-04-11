@@ -61,6 +61,25 @@ pub async fn sync_projects_with_github<R: Runtime>(app: tauri::AppHandle<R>) -> 
    // save them to store with project-name = repo-name
    log!("{F} converting repos to projects and saving to store");
    for repo in repos {
+      // first determine if repo already has project in store
+
+      let repo_already_has_project_in_store = if let Some(repo_ids) = store.get("repo-ids") {
+         let repo_ids =
+            serde_json::from_value::<Vec<String>>(repo_ids).map_err(|e| format!("{F} could not read repo-ids: {e}"))?;
+         repo_ids.contains(&repo.id.to_string())
+      } else {
+         false
+      };
+
+      if repo_already_has_project_in_store {
+         log!(
+            "{F} repo '{}' with id '{}' already has a project in store, skipping it!",
+            repo.name,
+            repo.id
+         );
+         continue;
+      }
+
       let team = GithubAPI::get_repo_collaborators(&repo).await?;
       let pending_invites = GithubAPI::get_repo_collab_invitees(&repo).await?;
       let project = Project::new(repo.name.clone(), false, team, pending_invites, repo);
