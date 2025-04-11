@@ -19,9 +19,9 @@ export default function useCreateProject() {
       onSuccess(project) {
          dbg("[useNewProjectTab]", project);
          alertInfo(`[useNewProjectTab] ${project.name} project was created!`);
-         client.setQueryData(["project", project.name], project);
+         client.setQueryData(["project", project.id], project);
          client.setQueryData(["projects"], (prev: Project[] | null) => (prev ? [...prev, project] : [project]));
-         navigate("/project-dashboard/" + project.name);
+         navigate("/project-dashboard/" + project.id);
       },
    });
 

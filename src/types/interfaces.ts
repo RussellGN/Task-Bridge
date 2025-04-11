@@ -36,6 +36,11 @@ export interface NewProjectPayload {
 }
 
 export interface Project {
+   id: string;
    name: string;
+   locallyCreated: boolean;
+   creationTimestamp: number;
+   team: Author[];
+   pendingInvites: Author[];
    repo: Repository;
 }

@@ -5,14 +5,14 @@ import useGetProject from "@/hooks/backend-api-hooks/useGetProject";
 import { useParams } from "react-router";
 
 export default function ProjectDashboard() {
-   const { projectName } = useParams();
-   const { project, isLoading, errorMessage } = useGetProject(projectName as string);
+   const { projectId } = useParams();
+   const { project, isLoading, errorMessage } = useGetProject(projectId as string);
 
    return (
       <div>
          <div className="mb-5 flex items-center gap-2">
             <BackBtn path="/home?tab=all" />
-            <h1 className="text-lg font-semibold italic">Project Dashboard/{projectName}</h1>
+            <h1 className="text-lg font-semibold italic">Project Dashboard/{project?.name || projectId}</h1>
          </div>
 
          <ErrorDisplay containerClassName="mb-3" error={errorMessage} />

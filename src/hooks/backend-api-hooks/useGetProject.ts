@@ -4,17 +4,17 @@ import { Project } from "@/types/interfaces";
 import { useQuery } from "@tanstack/react-query";
 import { load } from "@tauri-apps/plugin-store";
 
-export default function useGetProject(projectName: string) {
+export default function useGetProject(projectId: string) {
    const { data, isLoading, error } = useQuery({
-      queryKey: ["project", projectName],
+      queryKey: ["project", projectId],
       queryFn: async () => {
          const store = await load(STORE_PATH);
-         const project = await store.get<Project>(projectName);
+         const project = await store.get<Project>(projectId);
          if (project) return project;
-         alertError(`[useGetProject] Project '${projectName}' not found`);
-         throw new Error(`Project '${projectName}' could not be found`);
+         alertError(`[useGetProject] Project with id '${projectId}' not found`);
+         throw new Error(`Project with id '${projectId}' could not be found`);
       },
-      enabled: !!projectName,
+      enabled: !!projectId,
    });
 
    const errorMessage = error instanceof Error ? error.message : error;

@@ -13,24 +13,24 @@ export default function useLocalProjectsList() {
       queryKey: ["projects"],
       queryFn: async () => {
          const store = await load(STORE_PATH);
-         const projectNames = await store.get<string[]>("project-names");
+         const projectIds = await store.get<string[]>("project-ids");
 
-         if (projectNames === undefined) {
+         if (projectIds === undefined) {
             alertError(`${F} No projects found locally, trigger a sync with github or create a new project`);
             throw new Error("No projects found locally, trigger a sync with github or create a new project");
          } else {
             const projects = [] as Project[];
 
-            for (const name of projectNames) {
-               const project = await store.get<Project>(name);
+            for (const id of projectIds) {
+               const project = await store.get<Project>(id);
                if (project) projects.push(project);
             }
 
-            if (projects.length !== projectNames.length) {
+            if (projects.length !== projectIds.length) {
                alertError(
-                  `${F} Only ${projects.length} of ${projectNames.length} were found in the local store. Please sync with Github to update the project list.`,
+                  `${F} Only ${projects.length} of ${projectIds.length} were found in the local store. Please sync with Github to update the project list.`,
                );
-               dbg(F, projectNames, projects);
+               dbg(F, projectIds, projects);
             }
 
             return projects;

@@ -11,7 +11,7 @@ export const STORE_PATH = "store.json";
 export const ROUTES = [
    { path: "/", component: Signin },
    { path: "/home", component: Home },
-   { path: "/project-dashboard/:projectName", component: ProjectDashboard },
+   { path: "/project-dashboard/:projectId", component: ProjectDashboard },
    { path: "*", component: NotFound },
 ];
 

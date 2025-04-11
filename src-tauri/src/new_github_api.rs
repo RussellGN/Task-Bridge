@@ -189,7 +189,12 @@ impl GithubAPI {
       Ok(repo)
    }
 
-   pub async fn invite_collaborator(login: &str, token: &AccessToken, owner: &str, repo: &str) -> crate::Result {
+   pub async fn invite_collaborator(
+      login: &str,
+      token: &AccessToken,
+      owner: &str,
+      repo: &str,
+   ) -> crate::Result<models::Author> {
       const F: &str = "[GithubAPI::invite_collaborators]";
 
       log!("{F} about to invite collaborator with login: {login}");
@@ -253,4 +258,8 @@ impl GithubAPI {
 
       Ok(repos)
    }
+
+   pub async fn get_repo_collaborators(repo: &models::Repository) -> crate::Result<Vec<models::Author>> {}
+
+   pub async fn get_repo_collab_invitees(repo: &models::Repository) -> crate::Result<Vec<models::Author>> {}
 }
