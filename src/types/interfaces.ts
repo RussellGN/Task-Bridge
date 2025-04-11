@@ -4,6 +4,7 @@ export interface User {
    login: string;
    avatar_url: string;
    email: string | undefined;
+   url?: string | undefined;
 }
 
 export interface Author {
