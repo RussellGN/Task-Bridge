@@ -131,3 +131,15 @@
 ::-webkit-scrollbar-track {
    @apply bg-foreground/20;
 }
+
+._avatar-item-sizeable {
+   @apply size-[40px] shadow;
+}
+
+._avatar-item:nth-child(n + 2) {
+   @apply ml-[-20px];
+}
+
+._avatar-items:hover ._avatar-item:nth-child(n + 2) {
+   @apply ml-[3px];
+}

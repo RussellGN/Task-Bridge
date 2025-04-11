@@ -1,17 +1,22 @@
-import { UserAvatar } from "@/components/general/UserAvatar";
 import { Project } from "@/types/interfaces";
+import TeamAvatars from "./TeamAvatars";
+import useProjectControls from "@/hooks/component-hooks/useProjectControls";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
+import { Settings } from "lucide-react";
 
 export default function ProjectControls({ project }: { project: Project | undefined }) {
+   const { team } = useProjectControls(project);
+
    return (
       <div className="flex items-center gap-3">
-         <div className="relative">
-            {project?.team.map((member, index) => (
-               <Link key={member.id} to={member.url} target="_blank" className={`absolute right-${index * 10}`}>
-                  <UserAvatar user={member} />
-               </Link>
-            ))}
-         </div>
+         <Button asChild size="icon" variant="outline">
+            <Link to="/settings">
+               <Settings />
+            </Link>
+         </Button>
+
+         <TeamAvatars team={team} />
       </div>
    );
 }
