@@ -225,7 +225,7 @@ impl GithubAPI {
             invite_response.invitee.login,
             invite_response.invitee.id
          );
-         Ok((invite_response.invitee))
+         Ok(invite_response.invitee)
       } else {
          let msg =
             format!("{F} failed to invite {login} to {owner}/{repo}, status: {status}, response: {invite_response:#?}");
