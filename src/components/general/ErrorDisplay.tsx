@@ -11,9 +11,11 @@ export default function ErrorDisplay({ error, containerClassName, textClassName 
    if (!error) return;
    return (
       <div className={containerClassName}>
-         <p className={cn("text-DANGER flex items-center gap-1", textClassName)}>
-            <AlertTriangle className="-mb-0.5" size={17} />
-            {error}
+         <p className={cn("text-DANGER flex items-start gap-2", textClassName)}>
+            <span className="inline-block w-fit pt-1.5">
+               <AlertTriangle size={17} />
+            </span>
+            <span>{error}</span>
          </p>
       </div>
    );
