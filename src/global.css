@@ -143,3 +143,7 @@
 ._avatar-items:hover ._avatar-item:nth-child(n + 2) {
    @apply ml-[3px];
 }
+
+.lucide {
+   @apply size-[17px];
+}
