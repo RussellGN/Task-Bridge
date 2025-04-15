@@ -46,3 +46,35 @@ export interface Project {
    repo: Repository;
    repoId: string;
 }
+
+export interface Issue {
+   id: number;
+   nodeId: string;
+   url: string;
+   repositoryUrl: string;
+   labelsUrl: string;
+   commentsUrl: string;
+   eventsUrl: string;
+   htmlUrl: string;
+   number: number;
+   state: string;
+   stateReason: string | undefined;
+   title: string;
+   body: string | undefined;
+   bodyText: string | undefined;
+   bodyHtml: string | undefined;
+   user: Author;
+   labels: string[];
+   assignee: Author | undefined;
+   assignees: Author[];
+   authorAssociation: string;
+   milestone: string | undefined;
+   locked: boolean;
+   activeLockReason: string | undefined;
+   comments: number;
+   pullRequest: string | undefined;
+   closedAt: string;
+   closedBy: Author | undefined;
+   createdAt: string;
+   updatedAt: string;
+}
