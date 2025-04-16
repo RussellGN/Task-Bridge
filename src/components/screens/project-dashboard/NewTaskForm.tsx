@@ -1,6 +1,13 @@
 import useNewTaskForm from "@/hooks/component-hooks/useNewTaskForm";
 import { ArrowRight, NotebookPen, Plus } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+   Dialog,
+   DialogContent,
+   DialogDescription,
+   DialogHeader,
+   DialogTitle,
+   DialogTrigger,
+} from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +33,7 @@ export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
          <DialogContent>
             <DialogHeader>
                <DialogTitle>New Task</DialogTitle>
+               <DialogDescription hidden>Create a new task.</DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="py-8">
