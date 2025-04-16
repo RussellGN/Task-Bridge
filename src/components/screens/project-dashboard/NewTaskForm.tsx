@@ -1,5 +1,5 @@
 import useNewTaskForm from "@/hooks/component-hooks/useNewTaskForm";
-import { ArrowRight, NotebookPen, Plus } from "lucide-react";
+import { ArrowRight, Check, NotebookPen, Plus } from "lucide-react";
 import {
    Dialog,
    DialogContent,
@@ -23,18 +23,24 @@ type NewTaskFormProps = {
 };
 
 export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
-   const { open, setOpen, setIsDraft, handleSubmit } = useNewTaskForm();
+   const { open, taskToEdit, setOpen, setIsDraft, handleSubmit, removeTaskToEdit } = useNewTaskForm();
 
    return (
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+         open={open}
+         onOpenChange={(o) => {
+            removeTaskToEdit();
+            setOpen(o);
+         }}
+      >
          <DialogTrigger className="btn btn-PRIMARY">
             New Task <Plus />
          </DialogTrigger>
 
          <DialogContent>
             <DialogHeader>
-               <DialogTitle>New Task</DialogTitle>
-               <DialogDescription hidden>Create a new task.</DialogDescription>
+               <DialogTitle>{taskToEdit ? "Edit Task" : "New Task"}</DialogTitle>
+               <DialogDescription hidden>{taskToEdit ? "Edit existing task" : "Create a new task."}</DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="py-8">
@@ -42,14 +48,21 @@ export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
                   <Label htmlFor="title" className="mb-2 min-w-1/5 text-nowrap">
                      Title<span className="text-PRIMARY">*</span>
                   </Label>
-                  <Input type="text" name="title" maxLength={40} minLength={2} required />
+                  <Input
+                     type="text"
+                     name="title"
+                     maxLength={40}
+                     minLength={2}
+                     required
+                     defaultValue={taskToEdit?.title}
+                  />
                </div>
 
                <div className="mb-5 items-center gap-10 lg:flex">
                   <Label htmlFor="body" className="mb-2 min-w-1/5 text-nowrap">
                      Description
                   </Label>
-                  <Textarea name="body" maxLength={300} minLength={2} rows={2} />
+                  <Textarea name="body" maxLength={300} minLength={2} rows={2} defaultValue={taskToEdit?.body} />
                </div>
 
                <div className="mb-5 items-center gap-10 lg:flex">
@@ -57,9 +70,9 @@ export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
                      Priority
                   </Label>
 
-                  <Select name="priority" defaultValue="normal">
+                  <Select name="priority" defaultValue={taskToEdit?.priority || "normal"}>
                      <SelectTrigger>
-                        <SelectValue placeholder="Normal" />
+                        <SelectValue placeholder={taskToEdit?.priority || "normal"} />
                      </SelectTrigger>
                      <SelectContent>
                         {TASK_PRIORITIES.map((priority) => (
@@ -75,9 +88,20 @@ export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
                   <Label htmlFor="assignee" className="mb-2 min-w-1/5 text-nowrap">
                      Assign to
                   </Label>
-                  <Select name="assignee">
+                  <Select name="assignee" defaultValue={taskToEdit?.assignee?.login}>
                      <SelectTrigger>
-                        <SelectValue placeholder="Assign to" />
+                        <SelectValue
+                           placeholder={
+                              taskToEdit?.assignee ? (
+                                 <>
+                                    <UserAvatar user={taskToEdit.assignee} className="size-4.5" />
+                                    {taskToEdit.assignee.login}
+                                 </>
+                              ) : (
+                                 "Assign to"
+                              )
+                           }
+                        />
                      </SelectTrigger>
                      <SelectContent>
                         {team.map((user) => (
@@ -97,13 +121,21 @@ export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
                </div>
 
                <div className="mt-10 flex justify-end gap-3">
-                  <Button type="submit" onClick={() => setIsDraft(true)}>
-                     Save as draft <NotebookPen />
-                  </Button>
+                  {taskToEdit ? (
+                     <Button type="submit">
+                        Save updates <Check />
+                     </Button>
+                  ) : (
+                     <>
+                        <Button type="submit" onClick={() => setIsDraft(true)}>
+                           Save as draft <NotebookPen />
+                        </Button>
 
-                  <Button variant="PRIMARY" type="submit" onClick={() => setIsDraft(false)}>
-                     Create <ArrowRight />
-                  </Button>
+                        <Button variant="PRIMARY" type="submit" onClick={() => setIsDraft(false)}>
+                           Create <ArrowRight />
+                        </Button>
+                     </>
+                  )}
                </div>
             </form>
          </DialogContent>
