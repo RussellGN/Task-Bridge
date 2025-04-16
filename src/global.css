@@ -147,3 +147,15 @@
 .lucide {
    @apply size-[17px];
 }
+
+@layer components {
+   .btn {
+      @apply bg-foreground/20 hover:bg-foreground/30 flex w-full items-center justify-center gap-2 rounded-sm px-3 py-1.5 font-semibold shadow-lg transition-all active:scale-[95%];
+   }
+   .btn .lucide {
+      @apply mt-0.5 size-[18px] stroke-3;
+   }
+   .btn-PRIMARY {
+      @apply bg-PRIMARY hover:bg-PRIMARY/80 text-black;
+   }
+}
