@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Author } from "@/types/interfaces";
 import { Textarea } from "@/components/ui/textarea";
 import { UserAvatar } from "@/components/general/UserAvatar";
+import { TASK_PRIORITIES } from "@/lib/constants";
 
 type NewTaskFormProps = {
    team: Author[];
@@ -61,10 +62,11 @@ export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
                         <SelectValue placeholder="Normal" />
                      </SelectTrigger>
                      <SelectContent>
-                        <SelectItem value="urgent">Urgent</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                        <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="low">Low</SelectItem>
+                        {TASK_PRIORITIES.map((priority) => (
+                           <SelectItem key={priority} value={priority}>
+                              {priority}
+                           </SelectItem>
+                        ))}
                      </SelectContent>
                   </Select>
                </div>

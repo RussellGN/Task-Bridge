@@ -3,6 +3,7 @@ import { random_global_auth_keyword } from "./utils";
 import Home from "@/routes/Home";
 import NotFound from "@/routes/NotFound";
 import ProjectDashboard from "@/routes/ProjectDashboard";
+import { TaskPriority } from "@/types/types";
 
 export const GITHUB_AUTH_URL = `https://github.com/apps/Task-Bridge/installations/new?prompt=select_account&state=${random_global_auth_keyword()}`;
 
@@ -16,3 +17,5 @@ export const ROUTES = [
 ];
 
 export const TEAM_LOGINS_SEPERATOR = "-;;-";
+
+export const TASK_PRIORITIES: TaskPriority[] = ["low", "normal", "high", "urgent"];
