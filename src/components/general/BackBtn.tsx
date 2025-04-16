@@ -7,12 +7,13 @@ type BackButtonProps = {
    path?: string;
 };
 
-export default function BackBtn({ className }: BackButtonProps) {
+export default function BackBtn({ className, path }: BackButtonProps) {
    const navigate = useNavigate();
    const goBack = () => navigate(-1);
+   const goToPath = () => navigate(path || "/");
 
    return (
-      <Button onClick={goBack} size="icon" variant="outline" className={className}>
+      <Button onClick={path ? goToPath : goBack} size="icon" variant="outline" className={className}>
          <ArrowLeft />
       </Button>
    );
