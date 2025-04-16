@@ -1,4 +1,4 @@
-import { Issue, Project } from "@/types/interfaces";
+import { Project, Task } from "@/types/interfaces";
 import { LucideIcon } from "lucide-react";
 import KanbanTaskCard from "./KanbanTaskCard";
 import NewTaskForm from "./NewTaskForm";
@@ -7,7 +7,7 @@ type KanbanColumnProps = {
    project: Project;
    title: string;
    Icon: LucideIcon;
-   tasks: Issue[];
+   tasks: Task[];
    newTaskForm?: boolean;
 };
 
