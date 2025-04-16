@@ -1,4 +1,4 @@
-import { Author, Issue } from "@/types/interfaces";
+import { Author, Task } from "@/types/interfaces";
 
 export const author: Author = {
    avatar_url: "https://avatars.githubusercontent.com/u/131165484?v=4",
@@ -22,7 +22,7 @@ export const author: Author = {
    url: "https://api.github.com/users/websolutionsharare",
 };
 
-export const sampleTasks: Issue[] = [
+export const sampleTasks: Task[] = [
    {
       id: 1,
       nodeId: "MDU6SXNzdWUx",
@@ -87,6 +87,7 @@ export const sampleTasks: Issue[] = [
       updatedAt: "2023-01-10T16:20:00Z",
    },
    {
+      isDraft: true,
       id: 3,
       nodeId: "MDU6SXNzdWUz",
       url: "https://api.github.com/repos/octocat/Hello-World/issues/3",
@@ -179,8 +180,8 @@ export const sampleTasks: Issue[] = [
       createdAt: "2022-12-01T10:00:00Z",
       updatedAt: "2023-01-12T18:00:00Z",
    },
-   // Additional 25 issues would follow the same pattern...
    {
+      isDraft: true,
       id: 6,
       nodeId: "MDU6SXNzdWU2",
       url: "https://api.github.com/repos/octocat/Hello-World/issues/6",

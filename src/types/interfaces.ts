@@ -1,4 +1,5 @@
 import Repository from "./Repository";
+import { TaskPriority } from "./types";
 
 export interface User {
    login: string;
@@ -77,4 +78,9 @@ export interface Issue {
    closedBy: Author | undefined;
    createdAt: string;
    updatedAt: string;
+}
+
+export interface Task extends Issue {
+   isDraft?: boolean;
+   priority?: TaskPriority;
 }
