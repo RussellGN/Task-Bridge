@@ -6,7 +6,7 @@ import { ChevronsDown, ChevronsUp, EllipsisVertical } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 
-export default function KanbanIssueCard({ issue }: { issue: Issue }) {
+export default function KanbanTaskCard({ task }: { task: Issue }) {
    const [open, setOpen] = useState(false);
    const toggleOpen = () => setOpen((prev) => !prev);
 
@@ -24,12 +24,12 @@ export default function KanbanIssueCard({ issue }: { issue: Issue }) {
                         <ChevronsDown className="text-PRIMARY mt-0.5" />
                      )}
                   </div>
-                  <span className={open ? "" : "line-clamp-1"}>{issue.title}</span>
+                  <span className={open ? "" : "line-clamp-1"}>{task.title}</span>
                </CollapsibleTrigger>
 
                <div className="flex items-center gap-1">
-                  <Link to={issue.assignee!.html_url}>
-                     <UserAvatar user={issue.assignee!} className="size-5" />
+                  <Link to={task.assignee!.html_url}>
+                     <UserAvatar user={task.assignee!} className="size-5" />
                   </Link>
 
                   <Button variant="ghost" size="icon" className="size-5 cursor-pointer">
@@ -39,7 +39,7 @@ export default function KanbanIssueCard({ issue }: { issue: Issue }) {
             </div>
 
             <CollapsibleContent className="bg-foreground/5 mt-2 rounded-sm border-t-1 px-1 py-2 text-xs">
-               <p>{issue.body || "no description"}</p>
+               <p>{task.body || "no description"}</p>
             </CollapsibleContent>
          </Collapsible>
       </div>

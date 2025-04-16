@@ -22,7 +22,7 @@ export const author: Author = {
    url: "https://api.github.com/users/websolutionsharare",
 };
 
-export const sampleIssues: Issue[] = [
+export const sampleTasks: Issue[] = [
    {
       id: 1,
       nodeId: "MDU6SXNzdWUx",
