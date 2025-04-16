@@ -23,8 +23,8 @@ export default function KanbanColumn({ project, title, Icon, issues, newIssueFor
          </h2>
 
          <div className="flex grow flex-col gap-3 overflow-y-auto pr-1">
-            {issues.map((issue) => (
-               <div key={issue.id} className="w-full">
+            {issues.map((issue, index) => (
+               <div key={index} className="w-full">
                   <KanbanIssueCard issue={issue} />
                </div>
             ))}
