@@ -46,6 +46,7 @@ export interface Project {
    pendingInvites: Author[];
    repo: Repository;
    repoId: string;
+   tasks?: Task[] | undefined | null;
 }
 
 export interface Issue {
