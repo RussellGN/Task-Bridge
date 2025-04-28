@@ -1,14 +1,13 @@
 import { Project } from "@/types/interfaces";
 import KanbanColumn from "./KanbanColumn";
 import { CheckCircleIcon, Loader, Search, Timer } from "lucide-react";
-import { sampleTasks } from "@/lib/sample-data";
 
 export default function KanbanBoard({ project }: { project: Project }) {
    const columns = [
-      { title: "Backlog", Icon: Timer, tasks: sampleTasks, newTaskForm: true },
-      { title: "In Progress", Icon: Loader, tasks: sampleTasks, newTaskForm: false },
-      { title: "Under Review", Icon: Search, tasks: sampleTasks, newTaskForm: false },
-      { title: "Done", Icon: CheckCircleIcon, tasks: sampleTasks, newTaskForm: false },
+      { title: "Backlog", Icon: Timer, tasks: project.tasks || [], newTaskForm: true },
+      { title: "In Progress", Icon: Loader, tasks: project.tasks || [], newTaskForm: false },
+      { title: "Under Review", Icon: Search, tasks: project.tasks || [], newTaskForm: false },
+      { title: "Done", Icon: CheckCircleIcon, tasks: project.tasks || [], newTaskForm: false },
    ];
 
    return (
