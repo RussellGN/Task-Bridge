@@ -6,7 +6,7 @@ use tauri::{AppHandle, Runtime};
 use crate::{
    log,
    new_github_api::GithubAPI,
-   project::{Project, ProjectPayload},
+   project::{task::Task, Project, ProjectPayload},
    utils::{dbg_store, get_store, get_token},
 };
 
@@ -59,10 +59,10 @@ pub async fn sync_projects_with_github<R: Runtime>(app: tauri::AppHandle<R>) -> 
    let repos = GithubAPI::get_repos(&token, None).await?;
 
    // save them to store with project-name = repo-name
-   log!("{F} converting repos to projects and saving to store");
+   // (making sure to fecth the repo's issues if it has any, and converting them to tasks)
+   log!("{F} converting repos to projects (with tasks if any) and saving to store");
    for repo in repos {
       // first determine if repo already has project in store
-
       let repo_already_has_project_in_store = if let Some(repo_ids) = store.get("repo-ids") {
          let repo_ids =
             serde_json::from_value::<Vec<String>>(repo_ids).map_err(|e| format!("{F} could not read repo-ids: {e}"))?;
@@ -81,8 +81,19 @@ pub async fn sync_projects_with_github<R: Runtime>(app: tauri::AppHandle<R>) -> 
       }
 
       let team = GithubAPI::get_repo_collaborators(&repo, &token).await?;
+
       let pending_invites = GithubAPI::get_repo_collab_invitees(&repo, &token).await?;
-      let project = Project::new(repo.name.clone(), false, team, pending_invites, repo);
+
+      let tasks = if repo.has_issues.unwrap_or(false) {
+         let issues = GithubAPI::get_repo_issues(&repo, &token).await?;
+         let tasks = issues.into_iter().map(|issue| Task::from_issue(issue)).collect();
+         Some(tasks)
+      } else {
+         None
+      };
+
+      let project = Project::new(repo.name.clone(), false, team, pending_invites, repo, tasks);
+
       project.save_to_store(Arc::clone(&store))?;
    }
 

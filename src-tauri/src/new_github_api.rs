@@ -1,5 +1,6 @@
 use std::fmt::{Debug, Display};
 
+use futures_util::StreamExt;
 use octocrab::models;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::Value;
@@ -354,5 +355,50 @@ impl GithubAPI {
       log!("{F} got {} collab invites for repo '{}'", invites.len(), repo.name);
 
       Ok(invites)
+   }
+
+   pub async fn get_repo_issues(
+      repo: &models::Repository,
+      token: &AccessToken,
+   ) -> crate::Result<Vec<models::issues::Issue>> {
+      const F: &str = "[GithubAPI::get_repo_issues]";
+
+      log!("{F} fetching issues for repo '{}'", repo.name);
+
+      let octo = create_authenticated_octo(&token.get_token())?;
+      let owner = repo
+         .owner
+         .clone()
+         .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name));
+
+      let issues_stream = octo
+         .issues(&owner.login, &repo.name)
+         .list()
+         .send()
+         .await
+         .map_err(|e| {
+            format!(
+               "{F} failed to fetch issues at {}/{}. Error: {e}",
+               owner.login, repo.name
+            )
+         })?
+         .into_stream(&octo);
+
+      let mut issues_stream = Box::pin(issues_stream);
+
+      log!("{F} streaming issues into local vec",);
+      let mut all_issues = vec![];
+      while let Some(response) = issues_stream.next().await {
+         match response {
+            Ok(issue) => all_issues.push(issue),
+            Err(e) => return Err(format!("{F} failed to fetch next issue in loop: {e}")),
+         };
+      }
+      log!(
+         "{F} done streaming issues into local vec, now returning {} issues",
+         all_issues.len()
+      );
+
+      Ok(all_issues)
    }
 }
