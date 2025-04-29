@@ -3,37 +3,13 @@ use std::fmt::Display;
 use octocrab::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum TaskPriority {
    Low,
    Normal,
    High,
    Urgent,
-}
-
-impl Serialize for TaskPriority {
-   fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-   where
-      S: serde::Serializer,
-   {
-      serializer.serialize_str(&self.to_string())
-   }
-}
-
-impl<'de> Deserialize<'de> for TaskPriority {
-   fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-   where
-      D: serde::Deserializer<'de>,
-   {
-      let s = String::deserialize(deserializer)?;
-      match s.as_str() {
-         "low" => Ok(TaskPriority::Low),
-         "normal" => Ok(TaskPriority::Normal),
-         "high" => Ok(TaskPriority::High),
-         "urgent" => Ok(TaskPriority::Urgent),
-         _ => Err(serde::de::Error::custom(format!("Invalid task priority: {}", s))),
-      }
-   }
 }
 
 impl Display for TaskPriority {
@@ -53,8 +29,8 @@ impl Display for TaskPriority {
 
 impl TaskPriority {
    pub fn from_label(label: models::Label) -> Self {
-      let s = label.description.unwrap_or("normal".into());
-      let priority = serde_json::from_str::<TaskPriority>(&s).unwrap_or(TaskPriority::Normal);
+      let s = label.name.trim().to_lowercase().replace("-priority", "");
+      let priority = serde_json::from_str::<TaskPriority>(&format!("\"{s}\"")).unwrap_or(TaskPriority::Normal);
       priority
    }
 }
@@ -81,7 +57,7 @@ impl Task {
       let priority = issue
          .labels
          .iter()
-         .find(|label| label.name.to_lowercase() == "has-priority")
+         .find(|label| label.name.to_lowercase().trim().ends_with("-priority"))
          .map(|label| TaskPriority::from_label(label.clone()))
          .unwrap_or(TaskPriority::Normal);
 
