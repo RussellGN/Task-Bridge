@@ -17,7 +17,7 @@ export default function KanbanDraftTaskCard({ draft }: { draft: DraftTask }) {
    return (
       <div className="bg-background border-foreground/40 relative rounded-md border px-2 py-3 shadow">
          <Collapsible open={open} onOpenChange={toggleOpen}>
-            <div className={`flex ${open ? "items-start" : "items-center"} justify-between gap-2`}>
+            <div className={`flex ${open ? "items-start" : "items-center"} justify-between gap-3`}>
                <CollapsibleTrigger
                   className={`hover:text-foreground/100 text-foreground/90 flex grow cursor-pointer items-start gap-1 text-left text-sm transition-all`}
                >
@@ -38,9 +38,9 @@ export default function KanbanDraftTaskCard({ draft }: { draft: DraftTask }) {
                </CollapsibleTrigger>
 
                <div className="flex items-center gap-1">
-                  <PriorityIndicator priority={draft.priority || undefined} />
-
                   {draft.assignee && <UserAvatar user={draft.assignee} className="size-5" />}
+
+                  <PriorityIndicator priority={draft.priority || undefined} />
 
                   <DropdownMenu>
                      <DropdownMenuTrigger
