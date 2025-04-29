@@ -1,4 +1,4 @@
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import InfoTooltip from "@/components/general/InfoTooltip";
 import { cn } from "@/lib/utils";
 import { TaskPriority } from "@/types/types";
 
@@ -20,13 +20,9 @@ export default function PriorityIndicator({ priority, className }: PriorityIndic
    if (bg === "bg-grey-500" && priority !== "low") return null;
 
    return (
-      <TooltipProvider>
-         <Tooltip>
-            <TooltipTrigger className={cn("mx-1 inline-block size-2 rounded-full", bg, className)}></TooltipTrigger>
-            <TooltipContent>
-               <p>{priority} priority</p>
-            </TooltipContent>
-         </Tooltip>
-      </TooltipProvider>
+      <InfoTooltip
+         trigger={<div className={cn("block size-2 rounded-full", bg, className)} />}
+         content={<>{priority} - priority</>}
+      />
    );
 }
