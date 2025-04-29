@@ -10,14 +10,16 @@ type PriorityIndicatorProps = {
 export default function PriorityIndicator({ priority, className }: PriorityIndicatorProps) {
    const bg =
       priority === "urgent"
-         ? "bg-red-500"
+         ? "bg-DANGER"
          : priority === "high"
-           ? "bg-yellow-500"
+           ? "bg-WARNING"
            : priority === "normal"
-             ? "bg-green-500"
-             : "bg-grey-500";
+             ? "bg-SUCCESS"
+             : "bg-foreground";
 
-   if (bg === "bg-grey-500" && priority !== "low") return null;
+   console.log(priority !== "low");
+
+   if (bg === "bg-foreground" && priority !== "low") return null;
 
    return (
       <InfoTooltip
