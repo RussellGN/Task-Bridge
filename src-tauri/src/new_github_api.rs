@@ -98,19 +98,18 @@ impl GithubAPI {
 
       // log request
       log!(
-         "\n{F} -- request built successfully, request :-> {} {}?{} | body content-length = {} MBs \n  |\n-- headers set = {:?}\n",
+         "{F} -- request built successfully, request :-> {} {}?{} | body content-length = {} MBs",
          req.method(),
          req.url().path(),
          req.url().query().unwrap_or(""),
          req.headers()
-         .get(header::CONTENT_LENGTH)
-         .unwrap_or(&HeaderValue::from_static("0"))
-         .to_str()
-         .unwrap_or("0")
-         .parse::<usize>()
-         .unwrap_or(0)
-         / (1024 * 1024),
-         req.headers().keys().map(ToString::to_string).collect::<Vec<_>>(),
+            .get(header::CONTENT_LENGTH)
+            .unwrap_or(&HeaderValue::from_static("0"))
+            .to_str()
+            .unwrap_or("0")
+            .parse::<usize>()
+            .unwrap_or(0)
+            / (1024 * 1024),
       );
 
       // send request
@@ -123,22 +122,23 @@ impl GithubAPI {
          Ok(res) => {
             // log response
             log!(
-               "\n{F} -- request sent, got response :-> status - {} @ {}?{} | returned {} with content-length = {} MBs \n  |\n-- headers returned = {:?}\n",
+               "{F} -- request sent, got response :-> status - {} @ {}?{} | returned {} with content-length = {} MBs",
                res.status(),
                res.url().path(),
                res.url().query().unwrap_or(""),
                res.headers()
                   .get(header::CONTENT_TYPE)
-                  .unwrap_or(&HeaderValue::from_static("N/A")).to_str().unwrap_or("N/A"),
-                  res.headers()
-                     .get(header::CONTENT_LENGTH)
-                     .unwrap_or(&HeaderValue::from_static("0"))
-                     .to_str()
-                     .unwrap_or("0")
-                     .parse::<usize>()
-                     .unwrap_or(0)
-                     / (1024 * 1024),
-               res.headers().keys().map(ToString::to_string).collect::<Vec<_>>(),
+                  .unwrap_or(&HeaderValue::from_static("N/A"))
+                  .to_str()
+                  .unwrap_or("N/A"),
+               res.headers()
+                  .get(header::CONTENT_LENGTH)
+                  .unwrap_or(&HeaderValue::from_static("0"))
+                  .to_str()
+                  .unwrap_or("0")
+                  .parse::<usize>()
+                  .unwrap_or(0)
+                  / (1024 * 1024),
             );
 
             // create response parts
