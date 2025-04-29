@@ -1,6 +1,6 @@
-use std::{collections::HashMap, sync::Arc};
-
+use colored::Colorize;
 use octocrab::{Octocrab, OctocrabBuilder};
+use std::{collections::HashMap, sync::Arc};
 use tauri::{AppHandle, Runtime};
 use tauri_plugin_store::{Store, StoreExt};
 
@@ -12,15 +12,36 @@ macro_rules! log {
       println!();
    };
    ($($arg:tt)*) => {{
-      println!($($arg)*);
+      use colored::Colorize;
+      print!("{}", "|".purple());
+      print!("{}", "--> ".yellow());
+      let s = format!($($arg)*);
+
+      let (func_name, msg) = if s.starts_with("[") {
+         let split = s.split("]")
+            .collect::<Vec<_>>();
+
+            let func_name =
+            split.first()
+            .unwrap_or(&"[")
+            .get(1..)
+            .unwrap_or("");
+
+            let msg = split.get(1).unwrap_or(&s.as_str()).to_string();
+         (func_name, msg)
+      } else {
+         ("", s)
+      };
+      print!("{} {msg}", func_name.cyan());
+      println!("\n{}", "|".purple());
    }};
 }
 
 pub fn dbg_store(store: &Store<impl Runtime>) {
    let store = store.entries();
-   println!("-------------store debug--------------");
+   println!("{}", "-------------store debug--------------".cyan());
    println!("{store:#?}");
-   println!("--------------------------------------");
+   println!("{}", "--------------------------------------".cyan());
 }
 
 pub fn get_env_vars() -> crate::Result<HashMap<String, String>> {
