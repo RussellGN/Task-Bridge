@@ -4,7 +4,7 @@ import useKanbanBoard from "@/hooks/component-hooks/useKanbanBoard";
 
 export default function KanbanBoard({ project }: { project: Project }) {
    const { columns } = useKanbanBoard(project);
-   console.log(columns);
+
    return (
       <div className="grid grow grid-cols-4 gap-3">
          {columns.map((column, index) => (
