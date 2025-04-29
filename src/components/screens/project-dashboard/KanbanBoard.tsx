@@ -1,39 +1,10 @@
 import { Project } from "@/types/interfaces";
 import KanbanColumn from "./KanbanColumn";
-import { CheckCircleIcon, Loader, Search, Timer } from "lucide-react";
+import useKanbanBoard from "@/hooks/component-hooks/useKanbanBoard";
 
 export default function KanbanBoard({ project }: { project: Project }) {
-   const columns = [
-      {
-         title: "Backlog",
-         Icon: Timer,
-         tasks: project.tasks || [],
-         draftTasks: project.draftTasks || [],
-         newTaskForm: true,
-      },
-      {
-         title: "In Progress",
-         Icon: Loader,
-         tasks: project.tasks || [],
-         draftTasks: project.draftTasks || [],
-         newTaskForm: false,
-      },
-      {
-         title: "Under Review",
-         Icon: Search,
-         tasks: project.tasks || [],
-         draftTasks: project.draftTasks || [],
-         newTaskForm: false,
-      },
-      {
-         title: "Done",
-         Icon: CheckCircleIcon,
-         tasks: project.tasks || [],
-         draftTasks: project.draftTasks || [],
-         newTaskForm: false,
-      },
-   ];
-
+   const { columns } = useKanbanBoard(project);
+   console.log(columns);
    return (
       <div className="grid grow grid-cols-4 gap-3">
          {columns.map((column, index) => (
