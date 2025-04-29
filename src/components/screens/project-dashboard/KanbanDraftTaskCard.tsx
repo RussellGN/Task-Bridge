@@ -1,7 +1,7 @@
 import { UserAvatar } from "@/components/general/UserAvatar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Task } from "@/types/interfaces";
-import { ChevronsDown, ChevronsUp, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
+import { DraftTask } from "@/types/interfaces";
+import { CheckSquare, ChevronsDown, ChevronsUp, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router";
 import PriorityIndicator from "./PriorityIndicator";
 import {
@@ -10,10 +10,10 @@ import {
    DropdownMenuItem,
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import useKanbanTaskCard from "@/hooks/component-hooks/useKanbanTaskCard";
+import useKanbanDraftTaskCard from "@/hooks/component-hooks/useKanbanDraftTaskCard";
 
-export default function KanbanTaskCard({ task }: { task: Task }) {
-   const { open, toggleOpen, editTask, deleteTask } = useKanbanTaskCard(task);
+export default function KanbanDraftTaskCard({ draft }: { draft: DraftTask }) {
+   const { open, toggleOpen, setDraftToReady, editDraft, deleteDraft } = useKanbanDraftTaskCard(draft);
 
    return (
       <div className="bg-background border-foreground/40 relative rounded-md border px-2 py-3 shadow">
@@ -29,17 +29,21 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
                         <ChevronsDown className="text-PRIMARY mt-0.5" />
                      )}
                   </div>
+
                   <span className={open ? "" : "line-clamp-1"}>
-                     <span className="text-PRIMARY">{task.innerIssue.number}.</span> {task.innerIssue.title}
+                     <span className="text-foreground/50 border-foreground/50 rounded-xs border px-0.5 italic">
+                        Draft
+                     </span>{" "}
+                     {draft.title}
                   </span>
                </CollapsibleTrigger>
 
                <div className="flex items-center gap-1">
-                  <PriorityIndicator priority={task.priority} />
+                  <PriorityIndicator priority={draft.priority || undefined} />
 
-                  {/* TODO: its possible assignee may get removed */}
-                  <Link to={task.innerIssue.assignee!.html_url}>
-                     <UserAvatar user={task.innerIssue.assignee!} className="size-5" />
+                  {/* TODO: its possible there may be no assignee */}
+                  <Link to={draft.assignee!.html_url}>
+                     <UserAvatar user={draft.assignee!} className="size-5" />
                   </Link>
 
                   <DropdownMenu>
@@ -51,11 +55,15 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
                      </DropdownMenuTrigger>
 
                      <DropdownMenuContent side="right" align="start" className="border-foreground border">
-                        <DropdownMenuItem onClick={editTask}>
+                        <DropdownMenuItem onClick={setDraftToReady}>
+                           <CheckSquare />
+                           Set To {"'Ready'"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={editDraft}>
                            <Pencil />
                            Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={deleteTask}>
+                        <DropdownMenuItem onClick={deleteDraft}>
                            <Trash2 />
                            Delete
                         </DropdownMenuItem>
@@ -65,7 +73,7 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
             </div>
 
             <CollapsibleContent className="bg-foreground/10 border-foreground/40 mt-2 rounded-sm border p-2 text-sm">
-               <p>{task.innerIssue.body || "no description"}</p>
+               <p>{draft.body || "no description"}</p>
             </CollapsibleContent>
          </Collapsible>
       </div>

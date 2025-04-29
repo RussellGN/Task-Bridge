@@ -1,29 +1,25 @@
-import { sampleTasks } from "@/lib/sample-data";
 import { alertInfo, alertSuccess, wait } from "@/lib/utils";
-import { Task } from "@/types/interfaces";
-import React, { useEffect } from "react";
+import { DraftTask, Task } from "@/types/interfaces";
+import React from "react";
 import { useSearchParams } from "react-router";
 
-export default function useNewTaskForm() {
-   const [searchParams, setSearchParams] = useSearchParams();
-   const [taskToEdit, setTaskToEdit] = React.useState<Task | undefined>();
+export default function useNewTaskForm(tasks: Task[], drafts: DraftTask[]) {
    const [open, setOpen] = React.useState(false);
-   const [isDraft, setIsDraft] = React.useState(taskToEdit?.isDraft || false);
+   const [isDraft, setIsDraft] = React.useState(false);
+   const [searchParams, setSearchParams] = useSearchParams();
 
-   useEffect(() => {
-      const taskTodEditId = searchParams.get("edit_task");
-      const task = sampleTasks.find((task) => task.id.toString() === taskTodEditId);
-      if (task) {
-         setTaskToEdit(task);
-         setOpen(true);
-         setIsDraft(!!task.isDraft);
-      }
-   }, [searchParams]);
+   const taskToEditId = searchParams.get("edit_task");
+   const draftToEditId = searchParams.get("edit_draft");
 
-   function removeTaskToEdit() {
-      setTaskToEdit(undefined);
+   const taskToEdit = tasks.find((task) => task.innerIssue.id.toString() === taskToEditId);
+   const draftToEdit = drafts.find((draft) => draft.id.toString() === draftToEditId);
+
+   const isDraftFinal = !!draftToEditId || isDraft;
+
+   function removeItemToEdit() {
       setSearchParams((prev) => {
          prev.delete("edit_task");
+         prev.delete("edit_draft");
          return prev;
       });
    }
@@ -32,29 +28,36 @@ export default function useNewTaskForm() {
       e.preventDefault();
       const data = Object.fromEntries(new FormData(e.currentTarget));
 
-      if (taskToEdit) {
-         console.log("saving updated task", data, isDraft);
-         alertInfo("Saving updated task...");
-      } else {
-         console.log("creating", data, isDraft);
-         alertInfo(isDraft ? "Saving draft..." : "Creating task...");
-      }
+      if (taskToEdit) alertInfo("Saving updated task...");
+      else alertInfo(isDraftFinal ? "Saving draft..." : "Creating task...");
 
       wait(2).then(() => {
-         removeTaskToEdit();
-         setOpen(false);
-         setIsDraft(false);
+         console.log(data);
          if (taskToEdit) alertSuccess("Task updated!");
-         else alertSuccess(isDraft ? "Draft saved!" : "Task created!");
+         else alertSuccess(isDraftFinal ? "Draft saved!" : "Task created!");
+         removeItemToEdit();
+         setOpen(false);
       });
    }
 
+   function onOpenChange(open: boolean) {
+      if (!open) removeItemToEdit();
+      setOpen(open);
+   }
+
+   const itemToEdit = {
+      id: taskToEdit?.innerIssue.id || draftToEdit?.id,
+      title: taskToEdit?.innerIssue.title || draftToEdit?.title,
+      body: taskToEdit?.innerIssue.body || draftToEdit?.body || undefined,
+      priority: taskToEdit?.priority || draftToEdit?.priority,
+      assignee: taskToEdit?.innerIssue.assignee || draftToEdit?.assignee,
+   };
+
    return {
-      open,
-      taskToEdit,
-      setOpen,
+      open: open || !!taskToEdit || !!draftToEdit,
+      itemToEdit,
       setIsDraft,
+      onOpenChange,
       handleSubmit,
-      removeTaskToEdit,
    };
 }

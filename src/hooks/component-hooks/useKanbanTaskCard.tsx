@@ -7,27 +7,22 @@ export default function useKanbanTaskCard(task: Task) {
    const toggleOpen = () => setOpen((prev) => !prev);
    const [, setSearchParams] = useSearchParams();
 
-   function setTaskToReady() {
-      console.log("Task is now ready", task.id);
-   }
-
    function editTask() {
-      console.log("Editing task", task.id);
+      console.log("Editing task", task.innerIssue.id);
       setSearchParams((prev) => {
-         prev.set("edit_task", task.id.toString());
+         prev.set("edit_task", task.innerIssue.id.toString());
          return prev;
       });
    }
 
    function deleteTask() {
-      console.log("Deleting task", task.id);
+      console.log("Deleting task", task.innerIssue.id);
    }
 
    return {
       open,
-      toggleOpen,
-      setTaskToReady,
       editTask,
       deleteTask,
+      toggleOpen,
    };
 }

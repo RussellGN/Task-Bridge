@@ -61,10 +61,19 @@ impl TaskPriority {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
+pub struct DraftTask {
+   id: String,
+   title: String,
+   body: Option<String>,
+   assignee: Option<models::Author>,
+   priority: Option<TaskPriority>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct Task {
-   is_draft: Option<bool>,
    priority: TaskPriority,
-   inner_issue: Option<models::issues::Issue>,
+   inner_issue: models::issues::Issue,
 }
 
 impl Task {
@@ -77,9 +86,8 @@ impl Task {
          .unwrap_or(TaskPriority::Normal);
 
       Self {
-         is_draft: Some(false),
          priority,
-         inner_issue: Some(issue),
+         inner_issue: issue,
       }
    }
 }

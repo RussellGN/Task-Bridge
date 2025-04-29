@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Author } from "@/types/interfaces";
+import { Author, DraftTask, Task } from "@/types/interfaces";
 import { Textarea } from "@/components/ui/textarea";
 import { UserAvatar } from "@/components/general/UserAvatar";
 import { TASK_PRIORITIES } from "@/lib/constants";
@@ -20,27 +20,23 @@ import { TASK_PRIORITIES } from "@/lib/constants";
 type NewTaskFormProps = {
    team: Author[];
    pendingTeam?: Author[];
+   tasks: Task[];
+   drafts: DraftTask[];
 };
 
-export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
-   const { open, taskToEdit, setOpen, setIsDraft, handleSubmit, removeTaskToEdit } = useNewTaskForm();
+export default function NewTaskForm({ team, drafts, tasks, pendingTeam }: NewTaskFormProps) {
+   const { open, setIsDraft, itemToEdit, handleSubmit, onOpenChange } = useNewTaskForm(tasks, drafts);
 
    return (
-      <Dialog
-         open={open}
-         onOpenChange={(o) => {
-            removeTaskToEdit();
-            setOpen(o);
-         }}
-      >
+      <Dialog open={open} onOpenChange={onOpenChange}>
          <DialogTrigger className="btn btn-PRIMARY">
             New Task <Plus />
          </DialogTrigger>
 
          <DialogContent>
             <DialogHeader>
-               <DialogTitle>{taskToEdit ? "Edit Task" : "New Task"}</DialogTitle>
-               <DialogDescription hidden>{taskToEdit ? "Edit existing task" : "Create a new task."}</DialogDescription>
+               <DialogTitle>{itemToEdit ? "Edit Task" : "New Task"}</DialogTitle>
+               <DialogDescription hidden>{itemToEdit ? "Edit existing task" : "Create a new task."}</DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="py-8">
@@ -54,7 +50,7 @@ export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
                      maxLength={40}
                      minLength={2}
                      required
-                     defaultValue={taskToEdit?.title}
+                     defaultValue={itemToEdit?.title}
                   />
                </div>
 
@@ -62,7 +58,7 @@ export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
                   <Label htmlFor="body" className="mb-2 min-w-1/5 text-nowrap">
                      Description
                   </Label>
-                  <Textarea name="body" maxLength={300} minLength={2} rows={2} defaultValue={taskToEdit?.body} />
+                  <Textarea name="body" maxLength={300} minLength={2} rows={2} defaultValue={itemToEdit?.body} />
                </div>
 
                <div className="mb-5 items-center gap-10 lg:flex">
@@ -70,9 +66,9 @@ export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
                      Priority
                   </Label>
 
-                  <Select name="priority" defaultValue={taskToEdit?.priority || "normal"}>
+                  <Select name="priority" defaultValue={itemToEdit?.priority || "normal"}>
                      <SelectTrigger>
-                        <SelectValue placeholder={taskToEdit?.priority || "normal"} />
+                        <SelectValue placeholder={itemToEdit?.priority || "normal"} />
                      </SelectTrigger>
                      <SelectContent>
                         {TASK_PRIORITIES.map((priority) => (
@@ -88,14 +84,15 @@ export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
                   <Label htmlFor="assignee" className="mb-2 min-w-1/5 text-nowrap">
                      Assign to
                   </Label>
-                  <Select name="assignee" defaultValue={taskToEdit?.assignee?.login}>
+
+                  <Select name="assignee" defaultValue={itemToEdit?.assignee?.login}>
                      <SelectTrigger>
                         <SelectValue
                            placeholder={
-                              taskToEdit?.assignee ? (
+                              itemToEdit?.assignee ? (
                                  <>
-                                    <UserAvatar user={taskToEdit.assignee} className="size-4.5" />
-                                    {taskToEdit.assignee.login}
+                                    <UserAvatar user={itemToEdit.assignee} className="size-4.5" />
+                                    {itemToEdit.assignee.login}
                                  </>
                               ) : (
                                  "Assign to"
@@ -103,6 +100,7 @@ export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
                            }
                         />
                      </SelectTrigger>
+
                      <SelectContent>
                         {team.map((user) => (
                            <SelectItem key={user.login} value={user.login}>
@@ -121,7 +119,7 @@ export default function NewTaskForm({ team, pendingTeam }: NewTaskFormProps) {
                </div>
 
                <div className="mt-10 flex justify-end gap-3">
-                  {taskToEdit ? (
+                  {itemToEdit ? (
                      <Button type="submit">
                         Save updates <Check />
                      </Button>

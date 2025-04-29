@@ -46,7 +46,8 @@ export interface Project {
    pendingInvites: Author[];
    repo: Repository;
    repoId: string;
-   tasks?: Task[] | undefined | null;
+   tasks: Task[] | null;
+   draftTasks: DraftTask[] | null;
 }
 
 export interface Issue {
@@ -81,7 +82,15 @@ export interface Issue {
    updatedAt: string;
 }
 
-export interface Task extends Issue {
-   isDraft?: boolean;
-   priority?: TaskPriority;
+export interface Task {
+   priority: TaskPriority;
+   innerIssue: Issue;
+}
+
+export interface DraftTask {
+   id: string;
+   title: string;
+   body: string | null;
+   assignee: Author | null;
+   priority: TaskPriority | null;
 }

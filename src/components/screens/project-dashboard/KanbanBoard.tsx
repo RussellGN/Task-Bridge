@@ -4,10 +4,34 @@ import { CheckCircleIcon, Loader, Search, Timer } from "lucide-react";
 
 export default function KanbanBoard({ project }: { project: Project }) {
    const columns = [
-      { title: "Backlog", Icon: Timer, tasks: project.tasks || [], newTaskForm: true },
-      { title: "In Progress", Icon: Loader, tasks: project.tasks || [], newTaskForm: false },
-      { title: "Under Review", Icon: Search, tasks: project.tasks || [], newTaskForm: false },
-      { title: "Done", Icon: CheckCircleIcon, tasks: project.tasks || [], newTaskForm: false },
+      {
+         title: "Backlog",
+         Icon: Timer,
+         tasks: project.tasks || [],
+         draftTasks: project.draftTasks || [],
+         newTaskForm: true,
+      },
+      {
+         title: "In Progress",
+         Icon: Loader,
+         tasks: project.tasks || [],
+         draftTasks: project.draftTasks || [],
+         newTaskForm: false,
+      },
+      {
+         title: "Under Review",
+         Icon: Search,
+         tasks: project.tasks || [],
+         draftTasks: project.draftTasks || [],
+         newTaskForm: false,
+      },
+      {
+         title: "Done",
+         Icon: CheckCircleIcon,
+         tasks: project.tasks || [],
+         draftTasks: project.draftTasks || [],
+         newTaskForm: false,
+      },
    ];
 
    return (
@@ -20,6 +44,7 @@ export default function KanbanBoard({ project }: { project: Project }) {
                Icon={column.Icon}
                newTaskForm={column.newTaskForm}
                tasks={column.tasks}
+               draftTasks={column.draftTasks}
             />
          ))}
       </div>

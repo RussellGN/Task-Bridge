@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use octocrab::models;
 use serde::{Deserialize, Serialize};
-use task::Task;
+use task::{DraftTask, Task};
 use tauri::Runtime;
 use tauri_plugin_store::Store;
 
@@ -35,6 +35,7 @@ pub struct Project {
    repo: models::Repository,
    repo_id: String,
    tasks: Option<Vec<Task>>,
+   draft_tasks: Option<Vec<DraftTask>>,
 }
 
 impl Project {
@@ -45,6 +46,7 @@ impl Project {
       pending_invites: Vec<models::Author>,
       repo: models::Repository,
       tasks: Option<Vec<Task>>,
+      draft_tasks: Option<Vec<DraftTask>>,
    ) -> Self {
       let creation_timestamp = chrono::Utc::now().timestamp_millis();
       let name = name.into();
@@ -61,6 +63,7 @@ impl Project {
          repo,
          repo_id,
          tasks,
+         draft_tasks,
       }
    }
 
@@ -102,7 +105,7 @@ impl Project {
       }
 
       // final step : save project to store and return
-      let project = Self::new(payload.name, true, vec![], pending_invites, repo, None);
+      let project = Self::new(payload.name, true, vec![], pending_invites, repo, None, None);
       project.save_to_store(store)?;
       log!("{F} final step complete! project saved to store. Now returning project: project");
 
