@@ -4,7 +4,7 @@ use futures_util::StreamExt;
 use octocrab::models;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::Value;
-use tauri::http::{header, Method};
+use tauri::http::{header, HeaderValue, Method};
 use tauri_plugin_http::reqwest;
 
 use crate::{auth::AccessToken, log, utils::create_authenticated_octo};
@@ -97,7 +97,21 @@ impl GithubAPI {
          .map_err(|e| format!("{F} failed to build request, error: {}", e.to_string()))?;
 
       // log request
-      log!("{F} request built successfully, request: {req:#?}");
+      log!(
+         "\n{F} -- request built successfully, request :-> {} {}?{} | body content-length = {} MBs \n  |\n-- headers set = {:?}\n",
+         req.method(),
+         req.url().path(),
+         req.url().query().unwrap_or(""),
+         req.headers()
+         .get(header::CONTENT_LENGTH)
+         .unwrap_or(&HeaderValue::from_static("0"))
+         .to_str()
+         .unwrap_or("0")
+         .parse::<usize>()
+         .unwrap_or(0)
+         / (1024 * 1024),
+         req.headers().keys().map(ToString::to_string).collect::<Vec<_>>(),
+      );
 
       // send request
       let res = reqwest::Client::new()
@@ -105,44 +119,48 @@ impl GithubAPI {
          .await
          .map_err(|e| format!("{F} error sending request, error: {}", e.to_string()))?;
 
-      // log response
-      log!("{F} request sent, got response: {res:#?}");
+      match res.error_for_status() {
+         Ok(res) => {
+            // log response
+            log!(
+               "\n{F} -- request sent, got response :-> status - {} @ {}?{} | returned {} with content-length = {} MBs \n  |\n-- headers returned = {:?}\n",
+               res.status(),
+               res.url().path(),
+               res.url().query().unwrap_or(""),
+               res.headers()
+                  .get(header::CONTENT_TYPE)
+                  .unwrap_or(&HeaderValue::from_static("N/A")).to_str().unwrap_or("N/A"),
+                  res.headers()
+                     .get(header::CONTENT_LENGTH)
+                     .unwrap_or(&HeaderValue::from_static("0"))
+                     .to_str()
+                     .unwrap_or("0")
+                     .parse::<usize>()
+                     .unwrap_or(0)
+                     / (1024 * 1024),
+               res.headers().keys().map(ToString::to_string).collect::<Vec<_>>(),
+            );
 
-      // create response parts
-      let parts = GithubResponseParts {
-         status: res.status(),
-         headers: res.headers().clone(),
-         url: res.url().clone(),
-      };
-      log!("{F} response parts: {parts:#?}");
+            // create response parts
+            let parts = GithubResponseParts {
+               status: res.status(),
+               headers: res.headers().clone(),
+               url: res.url().clone(),
+            };
 
-      // handle error status codes
-      let status_code = parts.status.as_u16();
-      if status_code > 399 {
-         let err_msg_value = res
-            .json::<Value>()
-            .await
-            .map_err(|e| format!("{F} Could not decode error-response body: {e}",))?;
+            // log and return reponse data
+            let json_data = res
+               .json::<R>()
+               .await
+               .map_err(|e| format!("{F} error reading response body: {e}",))?;
 
-         if let Ok(err_msg) = serde_json::from_value::<GithubAPIError>(err_msg_value.clone()) {
-            log!("{F} received error response: {err_msg}");
-            return Err(err_msg.to_string());
-         } else {
-            log!("{F} received error response: {err_msg_value:#?}");
-            return Err(format!(
-               "{F} received error response, with status '{status_code}', and data: {err_msg_value:#?}",
-            ));
+            Ok((json_data, parts))
+         }
+         Err(e) => {
+            let status_code = e.status().expect(&format!("{F} no error status code found: {e}"));
+            return Err(format!("{F} received error response with status '{status_code}', {e}",));
          }
       }
-
-      // log and return reponse data
-      let json_data = res
-         .json::<R>()
-         .await
-         .map_err(|e| format!("{F} error reading response body: {e}",))?;
-      log!("{F} response json: {json_data:#?}");
-
-      Ok((json_data, parts))
    }
 
    pub async fn search_users(search: &str, token: &AccessToken) -> crate::Result<Vec<models::Author>> {
@@ -229,8 +247,7 @@ impl GithubAPI {
          );
          Ok(invite_response.invitee)
       } else {
-         let msg =
-            format!("{F} failed to invite {login} to {owner}/{repo}, status: {status}, response: {invite_response:#?}");
+         let msg = format!("{F} failed to invite {login} to {owner}/{repo}, status: {status}",);
          Err(msg)
       }
    }
