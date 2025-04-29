@@ -2,7 +2,6 @@ import { UserAvatar } from "@/components/general/UserAvatar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Task } from "@/types/interfaces";
 import { ChevronsDown, ChevronsUp, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
-import { Link } from "react-router";
 import PriorityIndicator from "./PriorityIndicator";
 import {
    DropdownMenu,
@@ -37,11 +36,7 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
                <div className="flex items-center gap-1">
                   <PriorityIndicator priority={task.priority} />
 
-                  {task.innerIssue.assignee && (
-                     <Link to={task.innerIssue.assignee.html_url}>
-                        <UserAvatar user={task.innerIssue.assignee} className="size-5" />
-                     </Link>
-                  )}
+                  {task.innerIssue.assignee && <UserAvatar user={task.innerIssue.assignee} className="size-5" />}
 
                   <DropdownMenu>
                      <DropdownMenuTrigger

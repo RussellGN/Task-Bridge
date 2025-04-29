@@ -2,7 +2,6 @@ import { UserAvatar } from "@/components/general/UserAvatar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DraftTask } from "@/types/interfaces";
 import { CheckSquare, ChevronsDown, ChevronsUp, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
-import { Link } from "react-router";
 import PriorityIndicator from "./PriorityIndicator";
 import {
    DropdownMenu,
@@ -41,11 +40,7 @@ export default function KanbanDraftTaskCard({ draft }: { draft: DraftTask }) {
                <div className="flex items-center gap-1">
                   <PriorityIndicator priority={draft.priority || undefined} />
 
-                  {draft.assignee && (
-                     <Link to={draft.assignee.html_url}>
-                        <UserAvatar user={draft.assignee} className="size-5" />
-                     </Link>
-                  )}
+                  {draft.assignee && <UserAvatar user={draft.assignee} className="size-5" />}
 
                   <DropdownMenu>
                      <DropdownMenuTrigger
