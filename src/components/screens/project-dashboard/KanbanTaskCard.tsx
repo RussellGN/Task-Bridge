@@ -10,6 +10,8 @@ import {
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import useKanbanTaskCard from "@/hooks/component-hooks/useKanbanTaskCard";
+import { AssigneesAvatars } from "@/components/general/AssigneesAvatars";
+import InfoTooltip from "@/components/general/InfoTooltip";
 
 export default function KanbanTaskCard({ task }: { task: Task }) {
    const { open, toggleOpen, editTask, deleteTask } = useKanbanTaskCard(task);
@@ -17,7 +19,7 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
    return (
       <div className="bg-background border-foreground/40 relative rounded-md border px-2 py-3 shadow">
          <Collapsible open={open} onOpenChange={toggleOpen}>
-            <div className={`flex ${open ? "items-start" : "items-center"} justify-between gap-2`}>
+            <div className={`flex ${open ? "items-start" : "items-center"} justify-between gap-3`}>
                <CollapsibleTrigger
                   className={`hover:text-foreground/100 text-foreground/90 flex grow cursor-pointer items-start gap-1 text-left text-sm transition-all`}
                >
@@ -33,10 +35,23 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
                   </span>
                </CollapsibleTrigger>
 
-               <div className="flex items-center gap-1">
-                  <PriorityIndicator priority={task.priority} />
+               <div className="flex items-center gap-2">
+                  {task.innerIssue.assignees?.length > 1 ? (
+                     <AssigneesAvatars assignees={task.innerIssue.assignees} />
+                  ) : task.innerIssue.assignee ? (
+                     <InfoTooltip
+                        trigger={<UserAvatar user={task.innerIssue.assignee} className="size-5" />}
+                        content={
+                           <>
+                              Assigned to <b>{task.innerIssue.assignee.login} </b>
+                           </>
+                        }
+                     />
+                  ) : (
+                     ""
+                  )}
 
-                  {task.innerIssue.assignee && <UserAvatar user={task.innerIssue.assignee} className="size-5" />}
+                  <PriorityIndicator priority={task.priority} className="ml-1" />
 
                   <DropdownMenu>
                      <DropdownMenuTrigger
@@ -46,7 +61,7 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
                         <EllipsisVertical />
                      </DropdownMenuTrigger>
 
-                     <DropdownMenuContent side="right" align="start" className="border-foreground border">
+                     <DropdownMenuContent side="right" align="start" className="border-foreground/50 border">
                         <DropdownMenuItem onClick={editTask}>
                            <Pencil />
                            Edit
