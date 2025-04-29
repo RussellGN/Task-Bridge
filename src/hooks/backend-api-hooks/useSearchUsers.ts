@@ -3,11 +3,11 @@ import { alertError, logInfo } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
+import { MINIMUM_ALLOWABLE_FETCH_INTERVAL_IN_MS } from "@/lib/constants";
 
 /** get query matching users from cache, or github if not found. */
 export default function useSearchUsers(query: string) {
    const [lastFetchHappenedAt, setLastFetchHappenedAt] = useState(0);
-   const MINIMUM_ALLOWABLE_FETCH_INTERVAL_IN_MS = 7500; // 7.5 seconds (8 times per minute)
 
    const { data, error, isLoading, refetch } = useQuery<Author[], string>({
       queryKey: ["users", query],
