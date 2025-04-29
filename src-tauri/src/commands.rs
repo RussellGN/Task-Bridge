@@ -99,3 +99,45 @@ pub async fn sync_projects_with_github<R: Runtime>(app: tauri::AppHandle<R>) -> 
 
    Ok(())
 }
+
+#[tauri::command]
+pub async fn sync_project_with_github<R: Runtime>(app: tauri::AppHandle<R>, project_id: String) -> crate::Result {
+   const F: &str = "[sync_project_with_github]";
+
+   let store = get_store(app)?;
+   let token = get_token(&store)?;
+
+   let mut project = match store.get(&project_id) {
+      Some(val) => serde_json::from_value::<Project>(val).map_err(|e| format!("{F} could not read project: {e}"))?,
+      None => return Err(format!("{F} project with id '{project_id}' does not exist locally.")),
+   };
+
+   // fetch project's updated repo, team, pending_invotes and issues if it has any (converting them to tasks)
+   log!(
+      "{F} fetching project's updated repo, team, pending_invotes and issues if it has any (converting them to tasks)"
+   );
+
+   let updated_repo: models::Repository = GithubAPI::get_updated_repo(&project.get_repo(), &token).await?;
+
+   let updated_team = GithubAPI::get_repo_collaborators(&updated_repo, &token).await?;
+
+   let updated_pending_invites = GithubAPI::get_repo_collab_invitees(&updated_repo, &token).await?;
+
+   let updated_tasks = if updated_repo.has_issues.unwrap_or(false) {
+      let updated_issues = GithubAPI::get_repo_issues(&updated_repo, &token).await?;
+      let updated_tasks = updated_issues
+         .into_iter()
+         .map(|issue| Task::from_issue(issue))
+         .collect();
+      Some(updated_tasks)
+   } else {
+      None
+   };
+
+   project.update(updated_team, updated_pending_invites, updated_repo, updated_tasks);
+
+   // save updated project to store
+   project.save_updates_to_store(Arc::clone(&store))?;
+
+   Ok(())
+}

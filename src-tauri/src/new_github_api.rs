@@ -418,4 +418,29 @@ impl GithubAPI {
 
       Ok(all_issues)
    }
+
+   pub async fn get_updated_repo(
+      old_repo: &models::Repository,
+      token: &AccessToken,
+   ) -> crate::Result<models::Repository> {
+      const F: &str = "[GithubAPI::get_updated_repo]";
+
+      log!("{F} fetching updated {} repo", old_repo.name);
+
+      let octo = create_authenticated_octo(&token.get_token())?;
+
+      let owner = old_repo
+         .owner
+         .clone()
+         .expect(&format!("{F} '{}' repo somehow does not have an owner", old_repo.name));
+
+      let updated_repo = octo.repos(&owner.login, &old_repo.name).get().await.map_err(|e| {
+         format!(
+            "{F} failed to fetch updated {} repo at {}/{}. Error: {e}",
+            old_repo.name, owner.login, old_repo.name
+         )
+      })?;
+
+      Ok(updated_repo)
+   }
 }

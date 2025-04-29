@@ -1,10 +1,13 @@
 import { Author, Project } from "@/types/interfaces";
+import useSyncProjectWithGitHub from "../backend-api-hooks/useSyncProjectWithGitHub";
 
-export default function useProjectControls(project: Project | undefined) {
+export default function useProjectControls(project: Project) {
    const team: (Author & { pending?: boolean })[] = [
       ...(project?.team || []),
       ...(project?.pendingInvites.map((t) => ({ ...t, pending: true })) || []),
    ];
 
-   return { team };
+   const { isSyncing, syncProjectWithGitHub } = useSyncProjectWithGitHub(project);
+
+   return { team, isSyncing, syncProjectWithGitHub };
 }

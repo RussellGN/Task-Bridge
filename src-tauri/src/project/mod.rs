@@ -67,6 +67,19 @@ impl Project {
       }
    }
 
+   pub fn update(
+      &mut self,
+      team: Vec<models::Author>,
+      pending_invites: Vec<models::Author>,
+      repo: models::Repository,
+      tasks: Option<Vec<Task>>,
+   ) {
+      self.team = team;
+      self.pending_invites = pending_invites;
+      self.repo = repo;
+      self.tasks = tasks;
+   }
+
    pub async fn create_and_save(payload: ProjectPayload, store: Arc<Store<impl Runtime>>) -> crate::Result<Self> {
       const F: &str = "[create_and_save]";
       let token = get_token(&store)?;
@@ -113,7 +126,7 @@ impl Project {
    }
 
    pub fn save_to_store(&self, store: Arc<Store<impl Runtime>>) -> crate::Result {
-      const F: &str = "[save]";
+      const F: &str = "[save_to_store]";
       let value = serde_json::to_value(self).map_err(|e| format!("{F} {}", e.to_string()))?;
       let project_id = self.id.clone();
       store.set(&project_id, value);
@@ -154,5 +167,16 @@ impl Project {
       }
 
       Ok(())
+   }
+
+   pub fn save_updates_to_store(&self, store: Arc<Store<impl Runtime>>) -> crate::Result {
+      const F: &str = "[save_updates_to_store]";
+      let value = serde_json::to_value(self).map_err(|e| format!("{F} {}", e.to_string()))?;
+      store.set(&self.id, value);
+      Ok(())
+   }
+
+   pub fn get_repo(&self) -> &models::Repository {
+      &self.repo
    }
 }
