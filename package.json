@@ -9,6 +9,8 @@
       "preview": "vite preview",
       "tauri": "tauri",
       "lint": "eslint src",
+      "check-types": "tsc --noEmit",
+      "qc": "pnpm check-types && pnpm lint",
       "fmt": "prettier . --write",
       "check-fmt": "prettier . --check"
    },
