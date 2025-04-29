@@ -37,10 +37,11 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
                <div className="flex items-center gap-1">
                   <PriorityIndicator priority={task.priority} />
 
-                  {/* TODO: its possible assignee may get removed */}
-                  <Link to={task.innerIssue.assignee!.html_url}>
-                     <UserAvatar user={task.innerIssue.assignee!} className="size-5" />
-                  </Link>
+                  {task.innerIssue.assignee && (
+                     <Link to={task.innerIssue.assignee.html_url}>
+                        <UserAvatar user={task.innerIssue.assignee} className="size-5" />
+                     </Link>
+                  )}
 
                   <DropdownMenu>
                      <DropdownMenuTrigger

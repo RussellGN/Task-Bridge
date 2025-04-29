@@ -41,10 +41,11 @@ export default function KanbanDraftTaskCard({ draft }: { draft: DraftTask }) {
                <div className="flex items-center gap-1">
                   <PriorityIndicator priority={draft.priority || undefined} />
 
-                  {/* TODO: its possible there may be no assignee */}
-                  <Link to={draft.assignee!.html_url}>
-                     <UserAvatar user={draft.assignee!} className="size-5" />
-                  </Link>
+                  {draft.assignee && (
+                     <Link to={draft.assignee.html_url}>
+                        <UserAvatar user={draft.assignee} className="size-5" />
+                     </Link>
+                  )}
 
                   <DropdownMenu>
                      <DropdownMenuTrigger
