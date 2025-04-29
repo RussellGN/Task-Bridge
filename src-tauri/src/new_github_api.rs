@@ -98,18 +98,20 @@ impl GithubAPI {
 
       // log request
       log!(
-         "{F} -- request built successfully, request :-> {} {}?{} | body content-length = {} MBs",
+         "{F} -- request built successfully, request :-> {} {}?{} | body content-length = {} KBs",
          req.method(),
          req.url().path(),
          req.url().query().unwrap_or(""),
-         req.headers()
+         (req
+            .headers()
             .get(header::CONTENT_LENGTH)
             .unwrap_or(&HeaderValue::from_static("0"))
             .to_str()
             .unwrap_or("0")
-            .parse::<usize>()
-            .unwrap_or(0)
-            / (1024 * 1024),
+            .parse::<f64>()
+            .unwrap_or(0f64)
+            / 1024f64)
+            .round(),
       );
 
       // send request
@@ -122,7 +124,7 @@ impl GithubAPI {
          Ok(res) => {
             // log response
             log!(
-               "{F} -- request sent, got response :-> status - {} @ {}?{} | returned {} with content-length = {} MBs",
+               "{F} -- request sent, got response :-> status - {} @ {}?{} | returned {} with content-length = {} KBs",
                res.status(),
                res.url().path(),
                res.url().query().unwrap_or(""),
@@ -131,14 +133,16 @@ impl GithubAPI {
                   .unwrap_or(&HeaderValue::from_static("N/A"))
                   .to_str()
                   .unwrap_or("N/A"),
-               res.headers()
+               (res
+                  .headers()
                   .get(header::CONTENT_LENGTH)
                   .unwrap_or(&HeaderValue::from_static("0"))
                   .to_str()
                   .unwrap_or("0")
-                  .parse::<usize>()
-                  .unwrap_or(0)
-                  / (1024 * 1024),
+                  .parse::<f64>()
+                  .unwrap_or(0f64)
+                  / 1024f64)
+                  .round(),
             );
 
             // create response parts
