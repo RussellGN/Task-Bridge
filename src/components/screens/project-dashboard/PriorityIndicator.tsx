@@ -17,8 +17,6 @@ export default function PriorityIndicator({ priority, className }: PriorityIndic
              ? "bg-SUCCESS"
              : "bg-foreground";
 
-   console.log(priority !== "low");
-
    if (bg === "bg-foreground" && priority !== "low") return null;
 
    return (
