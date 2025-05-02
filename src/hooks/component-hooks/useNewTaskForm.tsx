@@ -53,7 +53,10 @@ export default function useNewTaskForm(tasks: Task[], drafts: DraftTask[]) {
       assignee: taskToEdit?.innerIssue.assignee || draftToEdit?.assignee,
    };
 
+   const isEditing = !!taskToEdit || !!draftToEdit;
+
    return {
+      isEditing,
       open: open || !!taskToEdit || !!draftToEdit,
       itemToEdit,
       setIsDraft,

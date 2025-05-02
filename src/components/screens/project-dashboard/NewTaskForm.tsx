@@ -25,7 +25,7 @@ type NewTaskFormProps = {
 };
 
 export default function NewTaskForm({ team, drafts, tasks, pendingTeam }: NewTaskFormProps) {
-   const { open, setIsDraft, itemToEdit, handleSubmit, onOpenChange } = useNewTaskForm(tasks, drafts);
+   const { open, isEditing, itemToEdit, setIsDraft, handleSubmit, onOpenChange } = useNewTaskForm(tasks, drafts);
 
    return (
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -35,8 +35,8 @@ export default function NewTaskForm({ team, drafts, tasks, pendingTeam }: NewTas
 
          <DialogContent>
             <DialogHeader>
-               <DialogTitle>{itemToEdit ? "Edit Task" : "New Task"}</DialogTitle>
-               <DialogDescription hidden>{itemToEdit ? "Edit existing task" : "Create a new task."}</DialogDescription>
+               <DialogTitle>{isEditing ? "Edit Task" : "New Task"}</DialogTitle>
+               <DialogDescription hidden>{isEditing ? "Edit existing task" : "Create a new task."}</DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="py-8">
@@ -119,7 +119,7 @@ export default function NewTaskForm({ team, drafts, tasks, pendingTeam }: NewTas
                </div>
 
                <div className="mt-10 flex justify-end gap-3">
-                  {itemToEdit ? (
+                  {isEditing ? (
                      <Button type="submit">
                         Save updates <Check />
                      </Button>
