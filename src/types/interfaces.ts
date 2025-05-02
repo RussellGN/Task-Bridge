@@ -60,7 +60,7 @@ export interface Issue {
    events_url: string;
    html_url: string;
    number: number;
-   state: string;
+   state: "open" | "closed";
    state_reason: string | undefined;
    title: string;
    body: string | undefined;
