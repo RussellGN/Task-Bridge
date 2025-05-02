@@ -36,7 +36,6 @@ impl TaskPriority {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
 pub struct DraftTask {
    id: String,
    title: String,
@@ -46,7 +45,6 @@ pub struct DraftTask {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
 pub struct Task {
    priority: TaskPriority,
    inner_issue: models::issues::Issue,

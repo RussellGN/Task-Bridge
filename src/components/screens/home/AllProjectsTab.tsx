@@ -30,7 +30,7 @@ export default function AllProjectsTab() {
          ) : (
             <div className="flex max-h-[80vh] flex-wrap overflow-y-auto">
                {projects
-                  ?.filter((p) => p.locallyCreated)
+                  ?.filter((p) => p.locally_created)
                   .map((project, index) => <ProjectCard key={index} project={project} />)}
 
                <div className="text-foreground/50 my-10 flex w-full items-center gap-2">
@@ -38,7 +38,7 @@ export default function AllProjectsTab() {
                   <DownloadCloud />
                </div>
                {projects
-                  ?.filter((p) => !p.locallyCreated)
+                  ?.filter((p) => !p.locally_created)
                   .map((project, index) => <ProjectCard key={index} project={project} />)}
             </div>
          )}

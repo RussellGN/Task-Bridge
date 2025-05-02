@@ -12,7 +12,7 @@ export default function useNewProjectTab() {
       const data = Object.fromEntries(new FormData(e.currentTarget).entries());
       const projectPayload: NewProjectPayload = {
          name: data["name"] as string,
-         repoName: data["repoName"] as string,
+         repo_name: data["repoName"] as string,
          team: data["team"] as string,
       };
       dbg("[handleSubmit]", projectPayload);

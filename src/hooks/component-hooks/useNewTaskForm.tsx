@@ -11,7 +11,7 @@ export default function useNewTaskForm(tasks: Task[], drafts: DraftTask[]) {
    const taskToEditId = searchParams.get("edit_task");
    const draftToEditId = searchParams.get("edit_draft");
 
-   const taskToEdit = tasks.find((task) => task.innerIssue.id.toString() === taskToEditId);
+   const taskToEdit = tasks.find((task) => task.inner_issue.id.toString() === taskToEditId);
    const draftToEdit = drafts.find((draft) => draft.id.toString() === draftToEditId);
 
    const isDraftFinal = !!draftToEditId || isDraft;
@@ -46,11 +46,11 @@ export default function useNewTaskForm(tasks: Task[], drafts: DraftTask[]) {
    }
 
    const itemToEdit = {
-      id: taskToEdit?.innerIssue.id || draftToEdit?.id,
-      title: taskToEdit?.innerIssue.title || draftToEdit?.title,
-      body: taskToEdit?.innerIssue.body || draftToEdit?.body || undefined,
+      id: taskToEdit?.inner_issue.id || draftToEdit?.id,
+      title: taskToEdit?.inner_issue.title || draftToEdit?.title,
+      body: taskToEdit?.inner_issue.body || draftToEdit?.body || undefined,
       priority: taskToEdit?.priority || draftToEdit?.priority,
-      assignee: taskToEdit?.innerIssue.assignee || draftToEdit?.assignee,
+      assignee: taskToEdit?.inner_issue.assignee || draftToEdit?.assignee,
    };
 
    const isEditing = !!taskToEdit || !!draftToEdit;

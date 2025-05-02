@@ -31,19 +31,19 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
                      )}
                   </div>
                   <span className={open ? "" : "line-clamp-1"}>
-                     <span className="text-PRIMARY">{task.innerIssue.number}.</span> {task.innerIssue.title}
+                     <span className="text-PRIMARY">{task.inner_issue.number}.</span> {task.inner_issue.title}
                   </span>
                </CollapsibleTrigger>
 
                <div className="flex items-center gap-2">
-                  {task.innerIssue.assignees?.length > 1 ? (
-                     <AssigneesAvatars assignees={task.innerIssue.assignees} />
-                  ) : task.innerIssue.assignee ? (
+                  {task.inner_issue.assignees?.length > 1 ? (
+                     <AssigneesAvatars assignees={task.inner_issue.assignees} />
+                  ) : task.inner_issue.assignee ? (
                      <InfoTooltip
-                        trigger={<UserAvatar user={task.innerIssue.assignee} className="size-5" />}
+                        trigger={<UserAvatar user={task.inner_issue.assignee} className="size-5" />}
                         content={
                            <>
-                              Assigned to <b>{task.innerIssue.assignee.login} </b>
+                              Assigned to <b>{task.inner_issue.assignee.login} </b>
                            </>
                         }
                      />
@@ -76,7 +76,7 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
             </div>
 
             <CollapsibleContent className="bg-foreground/10 border-foreground/40 mt-2 rounded-sm border p-2 text-sm">
-               <p>{task.innerIssue.body || "no description"}</p>
+               <p>{task.inner_issue.body || "no description"}</p>
             </CollapsibleContent>
          </Collapsible>
       </div>

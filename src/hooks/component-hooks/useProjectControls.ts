@@ -4,7 +4,7 @@ import useSyncProjectWithGitHub from "../backend-api-hooks/useSyncProjectWithGit
 export default function useProjectControls(project: Project) {
    const team: (Author & { pending?: boolean })[] = [
       ...(project?.team || []),
-      ...(project?.pendingInvites.map((t) => ({ ...t, pending: true })) || []),
+      ...(project?.pending_invites.map((t) => ({ ...t, pending: true })) || []),
    ];
 
    const { isSyncing, syncProjectWithGitHub } = useSyncProjectWithGitHub(project);

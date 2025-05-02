@@ -16,7 +16,6 @@ use crate::{
 };
 
 #[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
 pub struct ProjectPayload {
    name: String,
    repo_name: String,
@@ -24,7 +23,6 @@ pub struct ProjectPayload {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
 pub struct Project {
    id: String,
    name: String,

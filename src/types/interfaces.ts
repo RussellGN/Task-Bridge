@@ -33,58 +33,58 @@ export interface Author {
 
 export interface NewProjectPayload {
    name: string;
-   repoName: string;
+   repo_name: string;
    team: string;
 }
 
 export interface Project {
    id: string;
    name: string;
-   locallyCreated: boolean;
-   creationTimestamp: number;
+   locally_created: boolean;
+   creation_timestamp: number;
    team: Author[];
-   pendingInvites: Author[];
+   pending_invites: Author[];
    repo: Repository;
-   repoId: string;
+   repo_id: string;
    tasks: Task[] | null;
-   draftTasks: DraftTask[] | null;
+   draft_tasks: DraftTask[] | null;
 }
 
 export interface Issue {
    id: number;
-   nodeId: string;
+   node_id: string;
    url: string;
-   repositoryUrl: string;
-   labelsUrl: string;
-   commentsUrl: string;
-   eventsUrl: string;
-   htmlUrl: string;
+   repository_url: string;
+   labels_url: string;
+   comments_url: string;
+   events_url: string;
+   html_url: string;
    number: number;
    state: string;
-   stateReason: string | undefined;
+   state_reason: string | undefined;
    title: string;
    body: string | undefined;
-   bodyText: string | undefined;
-   bodyHtml: string | undefined;
+   body_text: string | undefined;
+   body_html: string | undefined;
    user: Author;
    labels: string[];
    assignee: Author | undefined;
    assignees: Author[];
-   authorAssociation: string;
+   author_association: string;
    milestone: string | undefined;
    locked: boolean;
-   activeLockReason: string | undefined;
+   active_lock_reason: string | undefined;
    comments: number;
-   pullRequest: string | undefined;
-   closedAt: string;
-   closedBy: Author | undefined;
-   createdAt: string;
-   updatedAt: string;
+   pull_request: string | undefined;
+   closed_at: string;
+   closed_by: Author | undefined;
+   created_at: string;
+   updated_at: string;
 }
 
 export interface Task {
    priority: TaskPriority;
-   innerIssue: Issue;
+   inner_issue: Issue;
 }
 
 export interface DraftTask {

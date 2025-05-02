@@ -2,11 +2,12 @@ import { Project, Task } from "@/types/interfaces";
 import { CheckCircleIcon, Loader, Search, Timer } from "lucide-react";
 
 export default function useKanbanBoard(project: Project) {
+   console.log(project.tasks);
    const tasks = project.tasks?.reduce(
       (acc, task) => {
-         if (task.innerIssue.closedBy) acc.done.push(task);
-         else if (task.innerIssue.pullRequest) acc.underReview.push(task);
-         else if (task.innerIssue.assignee || task.innerIssue.assignees.length !== 0) acc.inProgress.push(task);
+         if (task.inner_issue.closed_by) acc.done.push(task);
+         else if (task.inner_issue.pull_request) acc.underReview.push(task);
+         else if (task.inner_issue.assignee || task.inner_issue.assignees.length !== 0) acc.inProgress.push(task);
          else acc.backlog.push(task);
          return acc;
       },
@@ -28,7 +29,7 @@ export default function useKanbanBoard(project: Project) {
          title: "Backlog",
          Icon: Timer,
          tasks: tasks.backlog,
-         draftTasks: project.draftTasks || [],
+         draftTasks: project.draft_tasks || [],
          newTaskForm: true,
       },
       {

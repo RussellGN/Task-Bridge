@@ -8,15 +8,15 @@ export default function useKanbanTaskCard(task: Task) {
    const [, setSearchParams] = useSearchParams();
 
    function editTask() {
-      console.log("Editing task", task.innerIssue.id);
+      console.log("Editing task", task.inner_issue.id);
       setSearchParams((prev) => {
-         prev.set("edit_task", task.innerIssue.id.toString());
+         prev.set("edit_task", task.inner_issue.id.toString());
          return prev;
       });
    }
 
    function deleteTask() {
-      console.log("Deleting task", task.innerIssue.id);
+      console.log("Deleting task", task.inner_issue.id);
    }
 
    return {
