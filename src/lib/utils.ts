@@ -12,25 +12,25 @@ export function random_global_auth_keyword() {
    return "key_t_b_auth";
 }
 
-export function alertError<T>(e: T) {
+export function alertError<T>(e: T, description?: string) {
    logError(e);
    let errorMsg = e instanceof Error && e.message ? e.message : String(e);
    errorMsg = errorMsg.replace(/\[.*?\]/g, "").trim(); // remove [<func_name>]
-   toast.error(errorMsg);
+   toast.error(errorMsg, { description });
 }
 
-export function alertInfo<T>(info: T) {
+export function alertInfo<T>(info: T, description?: string) {
    logInfo(info);
    let infoMsg = String(info);
    infoMsg = infoMsg.replace(/\[.*?\]/g, "").trim(); // remove [<func_name>]
-   toast(infoMsg);
+   toast(infoMsg, { description });
 }
 
-export function alertSuccess<T>(info: T) {
+export function alertSuccess<T>(info: T, description?: string) {
    logInfo(info);
    let infoMsg = String(info);
    infoMsg = infoMsg.replace(/\[.*?\]/g, "").trim(); // remove [<func_name>]
-   toast.success(infoMsg);
+   toast.success(infoMsg, { description });
 }
 
 export function dbg(...args: unknown[]) {
