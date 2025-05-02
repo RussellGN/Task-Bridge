@@ -19,10 +19,10 @@ export default function AllProjectsTab() {
             </Button>
          </div>
 
-         <ErrorDisplay containerClassName="mb-3" error={errorMessage} />
+         {!isLoading && errorMessage && <ErrorDisplay containerClassName="mb-3" error={errorMessage} />}
 
          {isLoading ? (
-            <div className="mb-3 text-center">
+            <div className="mb-3 pt-30 text-center">
                <Spinner size="lg" />
             </div>
          ) : projects?.length === 0 ? (
