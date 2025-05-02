@@ -457,6 +457,12 @@ impl GithubAPI {
             )
          })?;
 
+      log!(
+         "{F} created issue titled '{}' with id '{}'. Now returning",
+         issue.title,
+         issue.id
+      );
+
       Ok(issue)
    }
 
