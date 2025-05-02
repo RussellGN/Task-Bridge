@@ -2,7 +2,6 @@ import { Project, Task } from "@/types/interfaces";
 import { CheckCircleIcon, Loader, Search, Timer } from "lucide-react";
 
 export default function useKanbanBoard(project: Project) {
-   console.log(project.tasks);
    const tasks = project.tasks?.reduce(
       (acc, task) => {
          if (task.inner_issue.state === "closed") acc.done.push(task);
