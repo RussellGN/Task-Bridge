@@ -1,7 +1,7 @@
 use std::fmt::{Debug, Display};
 
 use futures_util::StreamExt;
-use octocrab::models;
+use octocrab::{models, params::State};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::Value;
 use tauri::http::{header, HeaderValue, Method};
@@ -395,6 +395,7 @@ impl GithubAPI {
       let issues_stream = octo
          .issues(&owner.login, &repo.name)
          .list()
+         .state(State::All)
          .send()
          .await
          .map_err(|e| {
