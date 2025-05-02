@@ -5,7 +5,7 @@ export default function useKanbanBoard(project: Project) {
    console.log(project.tasks);
    const tasks = project.tasks?.reduce(
       (acc, task) => {
-         if (task.inner_issue.closed_by) acc.done.push(task);
+         if (task.inner_issue.state === "closed") acc.done.push(task);
          else if (task.inner_issue.pull_request) acc.underReview.push(task);
          else if (task.inner_issue.assignee || task.inner_issue.assignees.length !== 0) acc.inProgress.push(task);
          else acc.backlog.push(task);
