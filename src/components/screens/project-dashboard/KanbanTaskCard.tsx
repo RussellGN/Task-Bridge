@@ -62,10 +62,12 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
                      </DropdownMenuTrigger>
 
                      <DropdownMenuContent side="right" align="start" className="border-foreground/50 border">
-                        <DropdownMenuItem onClick={editTask}>
-                           <Pencil />
-                           Edit
-                        </DropdownMenuItem>
+                        {task.inner_issue.state === "open" && (
+                           <DropdownMenuItem onClick={editTask}>
+                              <Pencil />
+                              Edit
+                           </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem onClick={deleteTask}>
                            <Trash2 />
                            Delete
