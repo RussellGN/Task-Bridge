@@ -17,9 +17,9 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
    const { open, toggleOpen, editTask, deleteTask } = useKanbanTaskCard(task);
 
    return (
-      <div className="bg-background border-foreground/40 relative rounded-md border px-2 py-3 shadow">
+      <div className="bg-background border-foreground/40 hover:border-foreground/70 relative rounded-md border p-1 shadow transition-all">
          <Collapsible open={open} onOpenChange={toggleOpen}>
-            <div className={`flex ${open ? "items-start" : "items-center"} justify-between gap-3`}>
+            <div className={`flex ${open ? "items-start" : "items-center"} justify-between gap-3 p-2`}>
                <CollapsibleTrigger
                   className={`hover:text-foreground/100 text-foreground/90 flex grow cursor-pointer items-start gap-1 text-left text-sm transition-all`}
                >
@@ -77,7 +77,7 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
                </div>
             </div>
 
-            <CollapsibleContent className="bg-foreground/10 border-foreground/40 mt-2 rounded-sm border p-2 text-sm">
+            <CollapsibleContent className="bg-foreground/20 rounded-sm px-2 py-1 text-sm">
                <p>{task.inner_issue.body || "no description"}</p>
             </CollapsibleContent>
          </Collapsible>
