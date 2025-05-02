@@ -52,7 +52,6 @@ export default function useNewTaskForm(project: Project) {
             setOpen(false);
          });
       } else if (isDraftFinal) {
-         alertInfo("Saving draft...");
          const payload: NewDraftTaskPayload = {
             project_id: project.id,
             title: data.title as string,
@@ -71,7 +70,6 @@ export default function useNewTaskForm(project: Project) {
             assignee_login: data.assignee as string,
          };
          console.log(data, payload);
-         alertInfo("Creating task...");
          createTask(payload);
       }
    }
