@@ -1,5 +1,5 @@
 import { DraftTask, NewDraftTaskPayload } from "@/types/interfaces";
-import { alertError, alertInfo, dbg } from "@/lib/utils";
+import { alertError, alertInfo, dbg, wait } from "@/lib/utils";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
@@ -22,6 +22,7 @@ export default function useCreateDraftTask(project_id: string) {
    });
 
    async function createDraft(payload: NewDraftTaskPayload) {
+      await wait(1);
       mutate(payload);
    }
 
