@@ -29,6 +29,8 @@ pub fn run() {
          commands::find_users_matching_query,
          commands::create_project,
          commands::sync_projects_with_github,
+         commands::create_task,
+         commands::create_draft_task,
          commands::sync_project_with_github,
          experimental::clear_store
       ])

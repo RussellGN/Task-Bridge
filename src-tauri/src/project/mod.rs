@@ -4,11 +4,12 @@ use std::sync::Arc;
 
 use octocrab::models;
 use serde::{Deserialize, Serialize};
-use task::{DraftTask, Task};
+use task::{DraftTask, NewDraftTaskPayload, NewTaskPayload, Task};
 use tauri::Runtime;
 use tauri_plugin_store::Store;
 
 use crate::{
+   auth::AccessToken,
    log,
    new_github_api::{GithubAPI, RepoPayload},
    utils::get_token,
@@ -117,13 +118,13 @@ impl Project {
 
       // final step : save project to store and return
       let project = Self::new(payload.name, true, vec![], pending_invites, repo, None, None);
-      project.save_to_store(store)?;
+      project.place_in_store(store)?;
       log!("{F} final step complete! project saved to store. Now returning project: project");
 
       Ok(project)
    }
 
-   pub fn save_to_store(&self, store: Arc<Store<impl Runtime>>) -> crate::Result {
+   pub fn place_in_store(&self, store: Arc<Store<impl Runtime>>) -> crate::Result {
       const F: &str = "[save_to_store]";
       let value = serde_json::to_value(self).map_err(|e| format!("{F} {}", e.to_string()))?;
       let project_id = self.id.clone();
@@ -176,5 +177,34 @@ impl Project {
 
    pub fn get_repo(&self) -> &models::Repository {
       &self.repo
+   }
+
+   pub async fn create_and_save_task(&self, token: &AccessToken, payload: NewTaskPayload) -> crate::Result<Task> {
+      let issue = GithubAPI::create_issue(&self.repo, token, payload).await?;
+      let task = Task::from_issue(issue);
+      Ok(task)
+   }
+
+   pub async fn create_and_save_draft_task(
+      &mut self,
+      payload: NewDraftTaskPayload,
+      store: Arc<Store<impl Runtime>>,
+   ) -> crate::Result<DraftTask> {
+      let assignee = if let Some(login) = payload.assignee_login {
+         self.team.iter().find(|m| m.login == login).map(|m| m.to_owned())
+      } else {
+         None
+      };
+      let draft_task = DraftTask::new(payload.title, payload.body, assignee, payload.priority);
+
+      if let Some(drafts) = &mut self.draft_tasks {
+         drafts.push(draft_task.clone());
+      } else {
+         self.draft_tasks = Some(vec![draft_task.clone()])
+      }
+
+      self.save_updates_to_store(store)?;
+
+      Ok(draft_task)
    }
 }

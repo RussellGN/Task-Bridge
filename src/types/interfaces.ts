@@ -94,3 +94,19 @@ export interface DraftTask {
    assignee: Author | null;
    priority: TaskPriority | null;
 }
+
+export interface NewTaskPayload {
+   title: string;
+   body: string | null;
+   assignee_login: string;
+   priority: TaskPriority;
+   project_id: string;
+}
+
+export interface NewDraftTaskPayload {
+   title: string;
+   body: string | null;
+   assignee_login: string | null;
+   priority: TaskPriority | null;
+   project_id: string;
+}

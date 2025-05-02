@@ -6,7 +6,10 @@ use tauri::{AppHandle, Runtime};
 use crate::{
    log,
    new_github_api::GithubAPI,
-   project::{task::Task, Project, ProjectPayload},
+   project::{
+      task::{DraftTask, NewDraftTaskPayload, NewTaskPayload, Task},
+      Project, ProjectPayload,
+   },
    utils::{dbg_store, get_store, get_token},
 };
 
@@ -94,7 +97,7 @@ pub async fn sync_projects_with_github<R: Runtime>(app: tauri::AppHandle<R>) -> 
 
       let project = Project::new(repo.name.clone(), false, team, pending_invites, repo, tasks, None);
 
-      project.save_to_store(Arc::clone(&store))?;
+      project.place_in_store(Arc::clone(&store))?;
    }
 
    Ok(())
@@ -140,4 +143,45 @@ pub async fn sync_project_with_github<R: Runtime>(app: tauri::AppHandle<R>, proj
    project.save_updates_to_store(Arc::clone(&store))?;
 
    Ok(())
+}
+
+#[tauri::command]
+pub async fn create_task<R: Runtime>(app: tauri::AppHandle<R>, payload: NewTaskPayload) -> crate::Result<Task> {
+   const F: &str = "[create_task]";
+
+   log!("{F} {payload:#?}");
+   let project_id = &payload.project_id;
+   let store = get_store(app)?;
+   let token = get_token(&store)?;
+
+   let project = store
+      .get(project_id)
+      .ok_or(format!("{F} project with id {project_id} not found"))?;
+   let project = serde_json::from_value::<Project>(project)
+      .map_err(|e| format!("{F} failed to read project with id {}: {e}", payload.project_id))?;
+
+   let task = project.create_and_save_task(&token, payload).await?;
+
+   Ok(task)
+}
+
+#[tauri::command]
+pub async fn create_draft_task<R: Runtime>(
+   app: tauri::AppHandle<R>,
+   payload: NewDraftTaskPayload,
+) -> crate::Result<DraftTask> {
+   const F: &str = "[create_draft_task]";
+
+   log!("{F} {payload:#?}");
+   let project_id = &payload.project_id;
+   let store = get_store(app)?;
+   let project = store
+      .get(project_id)
+      .ok_or(format!("{F} project with id {project_id} not found"))?;
+   let mut project = serde_json::from_value::<Project>(project)
+      .map_err(|e| format!("{F} failed to read project with id {}: {e}", payload.project_id))?;
+
+   let task = project.create_and_save_draft_task(payload, Arc::clone(&store)).await?;
+
+   Ok(task)
 }

@@ -3,7 +3,9 @@ use std::fmt::Display;
 use octocrab::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+use crate::utils::new_id;
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum TaskPriority {
    Low,
@@ -35,13 +37,30 @@ impl TaskPriority {
    }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DraftTask {
    id: String,
    title: String,
    body: Option<String>,
    assignee: Option<models::Author>,
    priority: Option<TaskPriority>,
+}
+
+impl DraftTask {
+   pub fn new(
+      title: String,
+      body: Option<String>,
+      assignee: Option<models::Author>,
+      priority: Option<TaskPriority>,
+   ) -> Self {
+      Self {
+         id: new_id(),
+         title,
+         body,
+         assignee,
+         priority,
+      }
+   }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -64,4 +83,22 @@ impl Task {
          inner_issue: issue,
       }
    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct NewTaskPayload {
+   pub title: String,
+   pub body: Option<String>,
+   pub assignee_login: String,
+   pub priority: TaskPriority,
+   pub project_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct NewDraftTaskPayload {
+   pub title: String,
+   pub body: Option<String>,
+   pub assignee_login: Option<String>,
+   pub priority: Option<TaskPriority>,
+   pub project_id: String,
 }

@@ -12,20 +12,30 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Author, DraftTask, Task } from "@/types/interfaces";
+import { Project } from "@/types/interfaces";
 import { Textarea } from "@/components/ui/textarea";
 import { UserAvatar } from "@/components/general/UserAvatar";
 import { TASK_PRIORITIES } from "@/lib/constants";
+import ErrorDisplay from "@/components/general/ErrorDisplay";
+import SpinnerIcon from "@/components/general/SpinnerIcon";
 
 type NewTaskFormProps = {
-   team: Author[];
-   pendingTeam?: Author[];
-   tasks: Task[];
-   drafts: DraftTask[];
+   project: Project;
 };
 
-export default function NewTaskForm({ team, drafts, tasks, pendingTeam }: NewTaskFormProps) {
-   const { open, isEditing, itemToEdit, setIsDraft, handleSubmit, onOpenChange } = useNewTaskForm(tasks, drafts);
+export default function NewTaskForm({ project }: NewTaskFormProps) {
+   const {
+      isEditing,
+      open,
+      itemToEdit,
+      team,
+      pendingTeam,
+      isPending,
+      errorMessage,
+      setIsDraft,
+      onOpenChange,
+      handleSubmit,
+   } = useNewTaskForm(project);
 
    return (
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -45,6 +55,7 @@ export default function NewTaskForm({ team, drafts, tasks, pendingTeam }: NewTas
                      Title<span className="text-PRIMARY">*</span>
                   </Label>
                   <Input
+                     disabled={isPending}
                      type="text"
                      name="title"
                      maxLength={40}
@@ -58,7 +69,14 @@ export default function NewTaskForm({ team, drafts, tasks, pendingTeam }: NewTas
                   <Label htmlFor="body" className="mb-2 min-w-1/5 text-nowrap">
                      Description
                   </Label>
-                  <Textarea name="body" maxLength={300} minLength={2} rows={2} defaultValue={itemToEdit?.body} />
+                  <Textarea
+                     disabled={isPending}
+                     name="body"
+                     maxLength={300}
+                     minLength={2}
+                     rows={2}
+                     defaultValue={itemToEdit?.body}
+                  />
                </div>
 
                <div className="mb-5 items-center gap-10 lg:flex">
@@ -66,7 +84,7 @@ export default function NewTaskForm({ team, drafts, tasks, pendingTeam }: NewTas
                      Priority
                   </Label>
 
-                  <Select name="priority" defaultValue={itemToEdit?.priority || "normal"}>
+                  <Select disabled={isPending} name="priority" defaultValue={itemToEdit?.priority || "normal"}>
                      <SelectTrigger>
                         <SelectValue placeholder={itemToEdit?.priority || "normal"} />
                      </SelectTrigger>
@@ -80,12 +98,12 @@ export default function NewTaskForm({ team, drafts, tasks, pendingTeam }: NewTas
                   </Select>
                </div>
 
-               <div className="mb-5 items-center gap-10 lg:flex">
+               <div className="mb-10 items-center gap-10 lg:flex">
                   <Label htmlFor="assignee" className="mb-2 min-w-1/5 text-nowrap">
                      Assign to
                   </Label>
 
-                  <Select name="assignee" defaultValue={itemToEdit?.assignee?.login}>
+                  <Select disabled={isPending} name="assignee" defaultValue={itemToEdit?.assignee?.login}>
                      <SelectTrigger>
                         <SelectValue
                            placeholder={
@@ -118,19 +136,47 @@ export default function NewTaskForm({ team, drafts, tasks, pendingTeam }: NewTas
                   </Select>
                </div>
 
-               <div className="mt-10 flex justify-end gap-3">
+               {errorMessage && !isPending && (
+                  <ErrorDisplay containerClassName="w-fit mb-3 ml-auto" error={errorMessage} />
+               )}
+
+               <div className="flex justify-end gap-3">
                   {isEditing ? (
-                     <Button type="submit">
-                        Save updates <Check />
+                     <Button disabled={isPending} type="submit">
+                        {isPending ? (
+                           <>
+                              Saving updates... <SpinnerIcon />
+                           </>
+                        ) : (
+                           <>
+                              Save updates <Check />
+                           </>
+                        )}
                      </Button>
                   ) : (
                      <>
-                        <Button type="submit" onClick={() => setIsDraft(true)}>
-                           Save as draft <NotebookPen />
+                        <Button disabled={isPending} type="submit" onClick={() => setIsDraft(true)}>
+                           {isPending ? (
+                              <>
+                                 Saving draft... <SpinnerIcon />
+                              </>
+                           ) : (
+                              <>
+                                 Save as draft <NotebookPen />
+                              </>
+                           )}
                         </Button>
 
-                        <Button variant="PRIMARY" type="submit" onClick={() => setIsDraft(false)}>
-                           Create <ArrowRight />
+                        <Button disabled={isPending} variant="PRIMARY" type="submit" onClick={() => setIsDraft(false)}>
+                           {isPending ? (
+                              <>
+                                 Creating task... <SpinnerIcon />
+                              </>
+                           ) : (
+                              <>
+                                 Create <ArrowRight />
+                              </>
+                           )}
                         </Button>
                      </>
                   )}

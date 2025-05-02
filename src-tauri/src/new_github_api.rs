@@ -7,7 +7,7 @@ use serde_json::Value;
 use tauri::http::{header, HeaderValue, Method};
 use tauri_plugin_http::reqwest;
 
-use crate::{auth::AccessToken, log, utils::create_authenticated_octo};
+use crate::{auth::AccessToken, log, project::task::NewTaskPayload, utils::create_authenticated_octo};
 
 #[derive(Deserialize)]
 struct GithubAPIError {
@@ -422,6 +422,42 @@ impl GithubAPI {
       );
 
       Ok(all_issues)
+   }
+
+   pub async fn create_issue(
+      repo: &models::Repository,
+      token: &AccessToken,
+      payload: NewTaskPayload,
+   ) -> crate::Result<models::issues::Issue> {
+      const F: &str = "[GithubAPI::create_issue]";
+
+      log!("{F} creating issue titled '{}' in repo '{}'", payload.title, repo.name);
+
+      let octo = create_authenticated_octo(&token.get_token())?;
+      let owner = repo
+         .owner
+         .clone()
+         .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name));
+
+      let assignees = Some(vec![payload.assignee_login]);
+      let labels = Some(vec![format!("{}-priority", payload.priority)]);
+
+      let issue = octo
+         .issues(&owner.login, &repo.name)
+         .create(&payload.title)
+         .body::<String>(payload.body)
+         .assignees(assignees)
+         .labels(labels)
+         .send()
+         .await
+         .map_err(|e| {
+            format!(
+               "{F} failed to create issue titled '{}' in repo '{}': {e}",
+               payload.title, repo.name
+            )
+         })?;
+
+      Ok(issue)
    }
 
    pub async fn get_updated_repo(

@@ -35,14 +35,7 @@ export default function KanbanColumn({ project, title, Icon, tasks, newTaskForm,
             ))}
          </div>
 
-         {newTaskForm && (
-            <NewTaskForm
-               tasks={project.tasks || []}
-               drafts={project.draft_tasks || []}
-               team={project.team}
-               pendingTeam={project.pending_invites}
-            />
-         )}
+         {newTaskForm && <NewTaskForm project={project} />}
       </div>
    );
 }

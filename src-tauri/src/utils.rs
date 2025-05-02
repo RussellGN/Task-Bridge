@@ -3,6 +3,7 @@ use octocrab::{Octocrab, OctocrabBuilder};
 use std::{collections::HashMap, sync::Arc};
 use tauri::{AppHandle, Runtime};
 use tauri_plugin_store::{Store, StoreExt};
+use uuid::Uuid;
 
 use crate::{auth::AccessToken, ENV_STR, STORE_PATH};
 
@@ -101,4 +102,8 @@ pub fn create_authenticated_octo(token: &str) -> crate::Result<Octocrab> {
       .map_err(|e| format!("{F} {}", e.to_string()))?;
 
    Ok(octo)
+}
+
+pub fn new_id() -> String {
+   Uuid::new_v4().to_string()
 }
