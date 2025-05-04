@@ -23,3 +23,5 @@ export const TEAM_LOGINS_SEPERATOR = "-;;-";
 export const TASK_PRIORITIES: TaskPriority[] = ["low", "normal", "high", "urgent"];
 
 export const MINIMUM_ALLOWABLE_FETCH_INTERVAL_IN_MS = 7500; // 7.5 seconds (8 times per minute)
+
+export const MAX_ERR_LENGTH = 200;

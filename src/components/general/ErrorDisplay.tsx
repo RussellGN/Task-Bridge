@@ -1,3 +1,4 @@
+import { MAX_ERR_LENGTH } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
 
@@ -15,7 +16,7 @@ export default function ErrorDisplay({ error, containerClassName, textClassName 
             <span className="inline-block w-fit pt-1">
                <AlertTriangle />
             </span>
-            <span>{error}</span>
+            <span>{error.length > MAX_ERR_LENGTH ? error.substring(0, MAX_ERR_LENGTH - 1) : error}</span>
          </p>
       </div>
    );
