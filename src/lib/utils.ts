@@ -12,11 +12,23 @@ export function random_global_auth_keyword() {
    return "key_t_b_auth";
 }
 
+export function truncateStr(str: string, length: number) {
+   return str.length > length ? str.substring(0, length - 1) : str;
+}
+
+export function trimFunctionNameFromLog(log: string) {
+   log = log
+      .trim()
+      .replace(/\[.*?\]/g, "")
+      .trim(); // remove [<func_name>]
+   return log;
+}
+
 export function alertError<T>(e: T, description?: string) {
    logError(e);
    let errorMsg = e instanceof Error && e.message ? e.message : String(e);
-   errorMsg = errorMsg.replace(/\[.*?\]/g, "").trim(); // remove [<func_name>]
-   toast.error(errorMsg, { description });
+   errorMsg = trimFunctionNameFromLog(errorMsg);
+   toast.error(truncateStr(errorMsg, 200), { description: truncateStr(description || "", 400) });
 }
 
 export function alertInfo<T>(info: T, description?: string) {

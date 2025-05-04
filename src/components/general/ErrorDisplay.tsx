@@ -1,5 +1,5 @@
 import { MAX_ERR_LENGTH } from "@/lib/constants";
-import { cn } from "@/lib/utils";
+import { cn, trimFunctionNameFromLog, truncateStr } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
 
 type ErrorDisplayProps = {
@@ -10,13 +10,14 @@ type ErrorDisplayProps = {
 
 export default function ErrorDisplay({ error, containerClassName, textClassName }: ErrorDisplayProps) {
    if (!error) return;
+   error = trimFunctionNameFromLog(error);
    return (
       <div className={containerClassName}>
          <p className={cn("text-DANGER flex items-start gap-2", textClassName)}>
             <span className="inline-block w-fit pt-1">
                <AlertTriangle />
             </span>
-            <span>{error.length > MAX_ERR_LENGTH ? error.substring(0, MAX_ERR_LENGTH - 1) : error}</span>
+            <span>{truncateStr(error, MAX_ERR_LENGTH)}</span>
          </p>
       </div>
    );
