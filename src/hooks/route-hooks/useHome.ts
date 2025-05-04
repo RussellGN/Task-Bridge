@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { alertError, checkAuth } from "@/lib/utils";
 import { useNavigate, useSearchParams } from "react-router";
-import useGetUser from "../backend-api-hooks/useGetUser";
+import useGetUser from "../backend-api-hooks/internet-independant/useGetUser";
 
 export default function useHome() {
    const { user, error, loading, getUser } = useGetUser();

@@ -2,7 +2,7 @@ import { STORE_PATH } from "@/lib/constants";
 import { Project } from "@/types/interfaces";
 import { useQuery } from "@tanstack/react-query";
 import { load } from "@tauri-apps/plugin-store";
-import useSyncProjectsList from "./useSyncProjectsList";
+import useSyncProjectsList from "../internet-dependant/useSyncProjectsList";
 import { alertError, dbg } from "@/lib/utils";
 
 export default function useLocalProjectsList() {

@@ -3,7 +3,7 @@ import ErrorDisplay from "@/components/general/ErrorDisplay";
 import Spinner from "@/components/general/Spinner";
 import KanbanBoard from "@/components/screens/project-dashboard/KanbanBoard";
 import ProjectControls from "@/components/screens/project-dashboard/ProjectControls";
-import useGetProject from "@/hooks/backend-api-hooks/useGetProject";
+import useGetProject from "@/hooks/backend-api-hooks/internet-independant/useGetProject";
 import { useParams } from "react-router";
 
 export default function ProjectDashboard() {

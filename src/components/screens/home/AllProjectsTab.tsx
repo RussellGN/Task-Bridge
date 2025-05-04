@@ -1,7 +1,7 @@
 import ProjectCard from "./ProjectCard";
 import ErrorDisplay from "@/components/general/ErrorDisplay";
 import Spinner from "@/components/general/Spinner";
-import useLocalProjectsList from "@/hooks/backend-api-hooks/useLocalProjectsList";
+import useLocalProjectsList from "@/hooks/backend-api-hooks/internet-independant/useLocalProjectsList";
 import { Button } from "@/components/ui/button";
 import { DownloadCloud } from "lucide-react";
 

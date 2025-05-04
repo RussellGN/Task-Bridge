@@ -1,5 +1,5 @@
 import { Author, Project } from "@/types/interfaces";
-import useSyncProjectWithGitHub from "../backend-api-hooks/useSyncProjectWithGitHub";
+import useSyncProjectWithGitHub from "../backend-api-hooks/internet-dependant/useSyncProjectWithGitHub";
 
 export default function useProjectControls(project: Project) {
    const team: (Author & { pending?: boolean })[] = [

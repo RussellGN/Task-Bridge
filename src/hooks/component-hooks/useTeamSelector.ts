@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { alertError, logInfo } from "@/lib/utils";
 import { Author } from "@/types/interfaces";
-import useSearchUsers from "../backend-api-hooks/useSearchUsers";
+import useSearchUsers from "../backend-api-hooks/internet-dependant/useSearchUsers";
 import { TEAM_LOGINS_SEPERATOR } from "@/lib/constants";
 
 export default function useTeamSelector() {

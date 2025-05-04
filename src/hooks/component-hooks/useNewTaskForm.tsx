@@ -1,10 +1,10 @@
 import React from "react";
-import useCreateTask from "../backend-api-hooks/useCreateTask";
+import useCreateTask from "../backend-api-hooks/internet-dependant/useCreateTask";
 import { TaskPriority } from "@/types/types";
 import { useSearchParams } from "react-router";
 import { NewDraftTaskPayload, NewTaskPayload, Project } from "@/types/interfaces";
 import { alertInfo, alertSuccess, wait } from "@/lib/utils";
-import useCreateDraftTask from "../backend-api-hooks/useCreateDraftTask";
+import useCreateDraftTask from "../backend-api-hooks/internet-independant/useCreateDraftTask";
 
 export default function useNewTaskForm(project: Project) {
    const [open, setOpen] = React.useState(false);

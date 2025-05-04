@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import useCreateProject from "../backend-api-hooks/useCreateProject";
+import useCreateProject from "../backend-api-hooks/internet-dependant/useCreateProject";
 import { NewProjectPayload } from "@/types/interfaces";
 import { dbg } from "@/lib/utils";
 
