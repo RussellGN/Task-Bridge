@@ -4,10 +4,12 @@ import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { useNavigate } from "react-router";
+import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 
 export default function useCreateProject() {
    const client = useClient();
    const navigate = useNavigate();
+   const { doIfOnline } = useConnectionStatus();
 
    const { mutate, isPending, error } = useMutation({
       mutationFn: (payload: NewProjectPayload) => invoke<Project>("create_project", { payload }),
@@ -26,5 +28,9 @@ export default function useCreateProject() {
    });
 
    const errorMessage = error instanceof Error ? error.message : error;
-   return { createProject: mutate, isPending, errorMessage };
+   return {
+      createProject: (p: NewProjectPayload) => doIfOnline(() => mutate(p), "Cannot create project whilst offline"),
+      isPending,
+      errorMessage,
+   };
 }

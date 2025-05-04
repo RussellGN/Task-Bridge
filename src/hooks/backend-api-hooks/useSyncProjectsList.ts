@@ -1,10 +1,12 @@
 import { alertError, alertInfo, dbg } from "@/lib/utils";
+import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 
 export default function useSyncProjectsList() {
    const client = useClient();
+   const { doIfOnline } = useConnectionStatus();
 
    const { mutate, isPending, error } = useMutation({
       mutationFn: () => invoke("sync_projects_with_github"),
@@ -21,5 +23,9 @@ export default function useSyncProjectsList() {
 
    const errorMessage = error instanceof Error ? error.message : error;
 
-   return { isPending, errorMessage, syncProjects: mutate };
+   return {
+      isPending,
+      errorMessage,
+      syncProjects: () => doIfOnline(mutate, "Cannot sync projects with GitHub whilst offline!"),
+   };
 }

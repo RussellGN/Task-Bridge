@@ -3,9 +3,11 @@ import { alertError, alertInfo, dbg } from "@/lib/utils";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
+import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 
 export default function useCreateTask(project_id: string) {
    const client = useClient();
+   const { doIfOnline } = useConnectionStatus();
 
    const { mutate, isPending, error } = useMutation({
       mutationFn: (payload: NewTaskPayload) => invoke<Task>("create_task", { payload }),
@@ -21,8 +23,8 @@ export default function useCreateTask(project_id: string) {
       },
    });
 
-   async function createTask(payload: NewTaskPayload) {
-      mutate(payload);
+   function createTask(payload: NewTaskPayload) {
+      doIfOnline(() => mutate(payload), "Cannot create tasks whilst offline!");
    }
 
    const errorMessage = error instanceof Error ? error.message : error;

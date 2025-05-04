@@ -4,10 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { MINIMUM_ALLOWABLE_FETCH_INTERVAL_IN_MS } from "@/lib/constants";
+import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 
 /** get query matching users from cache, or github if not found. */
 export default function useSearchUsers(query: string) {
    const [lastFetchHappenedAt, setLastFetchHappenedAt] = useState(0);
+   const { doIfOnline } = useConnectionStatus();
 
    const { data, error, isLoading, refetch } = useQuery<Author[], string>({
       queryKey: ["users", query],
@@ -29,5 +31,10 @@ export default function useSearchUsers(query: string) {
       }
    }
 
-   return { loading: isLoading, queriedUsers: data, error, startSearch: rateLimitedRefetch };
+   return {
+      loading: isLoading,
+      queriedUsers: data,
+      error,
+      startSearch: () => doIfOnline(rateLimitedRefetch, "Cannot perform search whilst offline"),
+   };
 }
