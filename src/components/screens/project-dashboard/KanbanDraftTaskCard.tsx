@@ -15,9 +15,9 @@ export default function KanbanDraftTaskCard({ draft }: { draft: DraftTask }) {
    const { open, toggleOpen, setDraftToReady, editDraft, deleteDraft } = useKanbanDraftTaskCard(draft);
 
    return (
-      <div className="bg-background border-foreground/40 relative rounded-md border px-2 py-3 shadow">
+      <div className="bg-background border-foreground/40 hover:border-foreground/70 relative rounded-md border p-1 shadow transition-all">
          <Collapsible open={open} onOpenChange={toggleOpen}>
-            <div className={`flex ${open ? "items-start" : "items-center"} justify-between gap-3`}>
+            <div className={`flex ${open ? "items-start" : "items-center"} justify-between gap-3 p-2`}>
                <CollapsibleTrigger
                   className={`hover:text-foreground/100 text-foreground/90 flex grow cursor-pointer items-start gap-1 text-left text-sm transition-all`}
                >
@@ -30,17 +30,17 @@ export default function KanbanDraftTaskCard({ draft }: { draft: DraftTask }) {
                   </div>
 
                   <span className={open ? "" : "line-clamp-1"}>
-                     <span className="text-foreground/50 border-foreground/50 rounded-xs border px-0.5 italic">
+                     <span className="text-foreground/50 border-foreground/30 rounded-sm border px-1 text-xs italic">
                         Draft
                      </span>{" "}
                      {draft.title}
                   </span>
                </CollapsibleTrigger>
 
-               <div className="flex items-center gap-1">
+               <div className="flex items-center gap-2">
                   {draft.assignee && <UserAvatar user={draft.assignee} className="size-5" />}
 
-                  <PriorityIndicator priority={draft.priority || undefined} />
+                  <PriorityIndicator priority={draft.priority || undefined} className="ml-1" />
 
                   <DropdownMenu>
                      <DropdownMenuTrigger
@@ -50,7 +50,7 @@ export default function KanbanDraftTaskCard({ draft }: { draft: DraftTask }) {
                         <EllipsisVertical />
                      </DropdownMenuTrigger>
 
-                     <DropdownMenuContent side="right" align="start" className="border-foreground border">
+                     <DropdownMenuContent side="right" align="start" className="border-foreground/50 border">
                         <DropdownMenuItem onClick={setDraftToReady}>
                            <CheckSquare />
                            Set To {"'Ready'"}
@@ -68,7 +68,7 @@ export default function KanbanDraftTaskCard({ draft }: { draft: DraftTask }) {
                </div>
             </div>
 
-            <CollapsibleContent className="bg-foreground/10 border-foreground/40 mt-2 rounded-sm border p-2 text-sm">
+            <CollapsibleContent className="bg-foreground/20 rounded-sm px-2 py-1 text-sm">
                <p>{draft.body || "no description"}</p>
             </CollapsibleContent>
          </Collapsible>
