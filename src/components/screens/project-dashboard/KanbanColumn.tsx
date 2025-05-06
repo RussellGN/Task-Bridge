@@ -19,7 +19,7 @@ export default function KanbanColumn({ project, title, Icon, tasks, newTaskForm,
          <h2 className="flex items-center gap-2 border-b-2 pb-2 font-semibold">
             <span>{title}</span>
             <Icon className="mt-0.5" />
-            <span className="ml-auto">{tasks.length}</span>
+            <span className="ml-auto">{tasks.length + draftTasks.length}</span>
          </h2>
 
          <div className="flex grow flex-col gap-3 overflow-y-auto pr-1">
