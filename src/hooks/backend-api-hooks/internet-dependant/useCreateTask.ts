@@ -1,5 +1,5 @@
 import { NewTaskPayload, Task } from "@/types/interfaces";
-import { alertError, alertInfo, dbg } from "@/lib/utils";
+import { alertError, alertSuccess, dbg } from "@/lib/utils";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
@@ -18,7 +18,7 @@ export default function useCreateTask(project_id: string) {
       },
       onSuccess(task) {
          dbg("[useCreateTask]", task);
-         alertInfo(`[useCreateTask] Task created!`, task.inner_issue.title);
+         alertSuccess(`[useCreateTask] Task created!`, task.inner_issue.title);
          client.invalidateQueries({ queryKey: ["project", project_id] });
       },
    });
