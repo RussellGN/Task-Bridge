@@ -1,4 +1,4 @@
-import { NewTaskPayload, Task } from "@/types/interfaces";
+import { NewTaskPayload, Project, Task } from "@/types/interfaces";
 import { alertError, alertSuccess, dbg } from "@/lib/utils";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
@@ -19,7 +19,10 @@ export default function useCreateTask(project_id: string) {
       onSuccess(task) {
          dbg("[useCreateTask]", task);
          alertSuccess(`[useCreateTask] Task created!`, task.inner_issue.title);
-         client.invalidateQueries({ queryKey: ["project", project_id] });
+         client.setQueryData(["project", project_id], (oldData: Project) => ({
+            ...oldData,
+            tasks: [...(oldData.tasks || []), task],
+         }));
       },
    });
 
