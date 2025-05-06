@@ -1,5 +1,5 @@
 import { DraftTask, NewDraftTaskPayload } from "@/types/interfaces";
-import { alertError, alertInfo, dbg } from "@/lib/utils";
+import { alertError, alertSuccess, dbg } from "@/lib/utils";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
@@ -16,7 +16,7 @@ export default function useCreateDraftTask(project_id: string) {
       },
       onSuccess(draft) {
          dbg("[useCreateDraftTask]", draft);
-         alertInfo(`[useCreateDraftTask] Draft task created!`, draft.title);
+         alertSuccess(`[useCreateDraftTask] Draft task created!`, draft.title);
          client.invalidateQueries({ queryKey: ["project", project_id] });
       },
    });
