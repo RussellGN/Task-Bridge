@@ -10,7 +10,25 @@ export default function ProjectDashboard() {
    const { projectId } = useParams();
    const { project, isLoading, errorMessage } = useGetProject(projectId as string);
 
-   if (!project) return;
+   if (isLoading)
+      return (
+         <div className="mt-30 text-center">
+            <Spinner size="lg" />
+            <p className="mt-5">
+               Loading project... <br />
+               <small className="text-foreground/60">
+                  If this takes too long, please check your internet connection.
+               </small>
+            </p>
+         </div>
+      );
+
+   if (!project || (errorMessage && !project))
+      return (
+         <div className="mt-30 flex justify-center text-center">
+            <ErrorDisplay error={errorMessage || "Something went wrong. Project could not be found"} />
+         </div>
+      );
 
    return (
       <div className="flex h-full flex-col">
@@ -25,12 +43,6 @@ export default function ProjectDashboard() {
             </div>
 
             <ErrorDisplay containerClassName="mb-3" error={errorMessage} />
-
-            {isLoading && (
-               <div className="mb-3 text-center">
-                  <Spinner size="lg" />
-               </div>
-            )}
          </div>
 
          {project && <KanbanBoard project={project} />}
