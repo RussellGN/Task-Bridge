@@ -12,9 +12,8 @@ export default function useKanbanDraftTaskCard(draft: DraftTask) {
    }
 
    function editDraft() {
-      console.log("Editing draft", draft.id);
       setSearchParams((prev) => {
-         prev.set("edit_task", draft.id.toString());
+         prev.set("edit_draft", draft.id.toString());
          return prev;
       });
    }
