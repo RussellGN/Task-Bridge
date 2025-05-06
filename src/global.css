@@ -128,10 +128,10 @@
    height: 8px;
 }
 ::-webkit-scrollbar-thumb {
-   @apply border-foreground/20 bg-background hover:bg-foreground/20 rounded-lg border-2;
+   @apply border-foreground/50 bg-background hover:bg-foreground/20 rounded-lg border-2;
 }
 ::-webkit-scrollbar-track {
-   @apply bg-foreground/20;
+   @apply bg-foreground/50;
 }
 
 ._avatar-item-sizeable {
