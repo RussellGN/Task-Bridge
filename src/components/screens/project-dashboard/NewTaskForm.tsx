@@ -15,9 +15,10 @@ import { Button } from "@/components/ui/button";
 import { Project } from "@/types/interfaces";
 import { Textarea } from "@/components/ui/textarea";
 import { UserAvatar } from "@/components/general/UserAvatar";
-import { TASK_PRIORITIES } from "@/lib/constants";
+import { DEFAULT_NONE_SELECT_VALUE, TASK_PRIORITIES } from "@/lib/constants";
 import ErrorDisplay from "@/components/general/ErrorDisplay";
 import SpinnerIcon from "@/components/general/SpinnerIcon";
+import InfoTooltip from "@/components/general/InfoTooltip";
 
 type NewTaskFormProps = {
    project: Project;
@@ -25,14 +26,16 @@ type NewTaskFormProps = {
 
 export default function NewTaskForm({ project }: NewTaskFormProps) {
    const {
-      isEditing,
       open,
-      itemToEdit,
       team,
-      pendingTeam,
+      assignee,
       isPending,
+      isEditing,
+      itemToEdit,
+      pendingTeam,
       errorMessage,
       setIsDraft,
+      setAssignee,
       onOpenChange,
       handleSubmit,
    } = useNewTaskForm(project);
@@ -103,7 +106,12 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
                      Assign to
                   </Label>
 
-                  <Select disabled={isPending} name="assignee" defaultValue={itemToEdit?.assignee?.login}>
+                  <Select
+                     disabled={isPending}
+                     name="assignee"
+                     value={itemToEdit?.assignee?.login || assignee}
+                     onValueChange={setAssignee}
+                  >
                      <SelectTrigger>
                         <SelectValue
                            placeholder={
@@ -120,6 +128,7 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
                      </SelectTrigger>
 
                      <SelectContent>
+                        <SelectItem value={DEFAULT_NONE_SELECT_VALUE}>{DEFAULT_NONE_SELECT_VALUE}</SelectItem>
                         {team.map((user) => (
                            <SelectItem key={user.login} value={user.login}>
                               <UserAvatar user={user} className="size-4.5" />
@@ -167,17 +176,41 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
                            )}
                         </Button>
 
-                        <Button disabled={isPending} variant="PRIMARY" type="submit" onClick={() => setIsDraft(false)}>
-                           {isPending ? (
-                              <>
-                                 Creating task... <SpinnerIcon />
-                              </>
-                           ) : (
-                              <>
-                                 Create <ArrowRight />
-                              </>
-                           )}
-                        </Button>
+                        {assignee && assignee !== DEFAULT_NONE_SELECT_VALUE ? (
+                           <Button
+                              disabled={isPending || (!assignee && assignee === DEFAULT_NONE_SELECT_VALUE)}
+                              variant="PRIMARY"
+                              type="submit"
+                              onClick={() => setIsDraft(false)}
+                           >
+                              {isPending ? (
+                                 <>
+                                    Creating task... <SpinnerIcon />
+                                 </>
+                              ) : (
+                                 <>
+                                    Create <ArrowRight />
+                                 </>
+                              )}
+                           </Button>
+                        ) : (
+                           <InfoTooltip
+                              content="Cannot create task without assignee"
+                              trigger={
+                                 <div className="btn btn-PRIMARY cursor-not-allowed opacity-25 active:scale-100">
+                                    {isPending ? (
+                                       <>
+                                          Creating task... <SpinnerIcon />
+                                       </>
+                                    ) : (
+                                       <>
+                                          Create <ArrowRight />
+                                       </>
+                                    )}
+                                 </div>
+                              }
+                           />
+                        )}
                      </>
                   )}
                </div>

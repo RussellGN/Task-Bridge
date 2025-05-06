@@ -5,11 +5,13 @@ import { useSearchParams } from "react-router";
 import { NewDraftTaskPayload, NewTaskPayload, Project } from "@/types/interfaces";
 import { alertInfo, alertSuccess, wait } from "@/lib/utils";
 import useCreateDraftTask from "../backend-api-hooks/internet-independant/useCreateDraftTask";
+import { DEFAULT_NONE_SELECT_VALUE } from "@/lib/constants";
 
 export default function useNewTaskForm(project: Project) {
    const [open, setOpen] = React.useState(false);
    const [isDraft, setIsDraft] = React.useState(false);
    const [searchParams, setSearchParams] = useSearchParams();
+   const [assignee, setAssignee] = React.useState<string | undefined>(undefined);
    const { createTask, isPending: creationPending, errorMessage: taskCreationError } = useCreateTask(project.id);
    const { createDraft, isPending: draftPending, errorMessage: draftCreationError } = useCreateDraftTask(project.id);
 
@@ -43,6 +45,18 @@ export default function useNewTaskForm(project: Project) {
       e.preventDefault();
 
       const data = Object.fromEntries(new FormData(e.currentTarget));
+      const payload = {
+         project_id: project.id,
+         title: data.title as string,
+         body: data.body as string,
+         priority: data.priority as TaskPriority,
+         assignee_login: data.assignee as string | undefined,
+      };
+      payload.assignee_login =
+         payload.assignee_login === DEFAULT_NONE_SELECT_VALUE ? undefined : payload.assignee_login;
+      console.log(data, payload);
+
+      const drafting = isDraftFinal || payload?.assignee_login === DEFAULT_NONE_SELECT_VALUE;
 
       if (taskToEdit) {
          alertInfo("Saving updated task...");
@@ -51,27 +65,8 @@ export default function useNewTaskForm(project: Project) {
             removeItemToEdit();
             setOpen(false);
          });
-      } else if (isDraftFinal) {
-         const payload: NewDraftTaskPayload = {
-            project_id: project.id,
-            title: data.title as string,
-            body: data.body as string,
-            priority: data.priority as TaskPriority,
-            assignee_login: data.assignee as string,
-         };
-         console.log(data, payload);
-         createDraft(payload);
-      } else {
-         const payload: NewTaskPayload = {
-            project_id: project.id,
-            title: data.title as string,
-            body: data.body as string,
-            priority: data.priority as TaskPriority,
-            assignee_login: data.assignee as string,
-         };
-         console.log(data, payload);
-         createTask(payload);
-      }
+      } else if (drafting) createDraft(payload as NewDraftTaskPayload);
+      else createTask(payload as NewTaskPayload);
    }
 
    function onOpenChange(open: boolean) {
@@ -80,14 +75,16 @@ export default function useNewTaskForm(project: Project) {
    }
 
    return {
+      assignee,
       isEditing,
-      open: open || !!taskToEdit || !!draftToEdit,
       itemToEdit,
       team: project.team,
       pendingTeam: project.pending_invites,
       isPending: creationPending || draftPending,
+      open: open || !!taskToEdit || !!draftToEdit,
       errorMessage: taskCreationError || draftCreationError,
       setIsDraft,
+      setAssignee,
       onOpenChange,
       handleSubmit,
    };
