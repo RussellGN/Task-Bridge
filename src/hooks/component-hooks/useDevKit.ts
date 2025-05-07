@@ -9,6 +9,7 @@ export default function useDevKit() {
    const [isExpanded, setIsExpanded] = useState(false);
    const [loading, setLoading] = useState(false);
    const [store, setStore] = useState<string | null>(null);
+   const [showStore, setShowStore] = useState(false);
    const navigate = useNavigate();
 
    function clearStore() {
@@ -38,7 +39,7 @@ export default function useDevKit() {
       setLoading(false);
    }
 
-   function showStore() {
+   function fetchStoreData() {
       setLoading(true);
       load(STORE_PATH)
          .then((store) => {
@@ -57,15 +58,21 @@ export default function useDevKit() {
    }
 
    function closeStore() {
-      setStore(null);
+      setShowStore(false);
+   }
+
+   function openStore() {
+      if (!store) fetchStoreData();
+      setShowStore(true);
    }
 
    return {
       store,
+      showStore,
       jsonViewStyle,
       isExpanded,
       loading,
-      experimental: { showStore, closeStore, clearStore, handleInputNavigation },
+      experimental: { fetchStoreData, closeStore, openStore, clearStore, handleInputNavigation },
       setIsExpanded,
    };
 }

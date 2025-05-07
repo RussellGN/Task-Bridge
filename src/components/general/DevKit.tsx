@@ -4,28 +4,32 @@ import { Link } from "react-router";
 import { ChevronsLeft, ChevronsRight, RotateCcw, X } from "lucide-react";
 import useDevKit from "@/hooks/component-hooks/useDevKit";
 import { Input } from "../ui/input";
+import { cn } from "@/lib/utils";
 
 export default function DevKit() {
-   const { store, jsonViewStyle, isExpanded, loading, experimental, setIsExpanded } = useDevKit();
+   const { store, showStore, jsonViewStyle, isExpanded, loading, experimental, setIsExpanded } = useDevKit();
 
    if (import.meta.env.PROD) return null; // Hide in production
 
    return (
       <div className={`fixed bottom-4 left-4 transition-opacity ${loading ? "pointer-events-none opacity-70" : ""}`}>
-         {store && (
-            <div className="bg-background fixed top-0 left-0 flex h-full w-full flex-1 flex-col gap-3 p-3">
-               <h2 className="flex items-center justify-between gap-3">
-                  Store Debug
-                  <Button size="icon" className="ml-auto" onClick={experimental.showStore}>
-                     <RotateCcw />
-                  </Button>
-                  <Button size="icon" variant="destructive" onClick={experimental.closeStore}>
-                     <X />
-                  </Button>
-               </h2>
-               <JsonView collapsed value={JSON.parse(store)} keyName="root" style={jsonViewStyle} />
-            </div>
-         )}
+         <div
+            className={cn(
+               "bg-background fixed top-0 left-0 h-full w-full flex-1 flex-col gap-3 p-3",
+               showStore ? "flex" : "hidden",
+            )}
+         >
+            <h2 className="flex items-center justify-between gap-3">
+               Store Debug
+               <Button size="icon" className="ml-auto" onClick={experimental.fetchStoreData}>
+                  <RotateCcw />
+               </Button>
+               <Button size="icon" variant="destructive" onClick={experimental.closeStore}>
+                  <X />
+               </Button>
+            </h2>
+            <JsonView collapsed value={store ? JSON.parse(store) : {}} keyName="root" style={jsonViewStyle} />
+         </div>
 
          <div className={` ${isExpanded ? "block" : "hidden"} rounded-lg border-2 border-white bg-black p-4 shadow-lg`}>
             <h3 className="mb-4 font-bold">Dev Kit</h3>
@@ -36,7 +40,7 @@ export default function DevKit() {
                   <Button disabled={loading} onClick={experimental.clearStore}>
                      Clear Store
                   </Button>
-                  <Button disabled={loading} onClick={experimental.showStore}>
+                  <Button disabled={loading} onClick={experimental.openStore}>
                      Show Store
                   </Button>
                </div>
