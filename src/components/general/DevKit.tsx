@@ -23,7 +23,7 @@ export default function DevKit() {
                      <X />
                   </Button>
                </h2>
-               <JsonView value={JSON.parse(store)} keyName="root" style={jsonViewStyle} />
+               <JsonView collapsed value={JSON.parse(store)} keyName="root" style={jsonViewStyle} />
             </div>
          )}
 
