@@ -1,25 +1,40 @@
+# TODO
+
 # workflow
 
-1. user starts up app for first time
-2. app asks user to authenticate the app on their behalf
-3. auth takes place, redirects to home screen
-4. user selects 'create new project'
-5. app prompts for name, and confirms repo name to be created
-6. app prompts for developer github emails to add to project
-7. app creates repo on github, gives added developers read, write access, but no admin access
-8. new project dashboard opens up;
-9. dashbaord has sections: backlog, ready/assigned, in-progress, awaiting-review, complete,
-10.   user can create tasks in the backlog section, specifying title, description, priority, and assignees.
-11.   tasks can be dragged and dropped between sections as their status changes
-12.   each task is linked to a corresponding github issue, automatically created when the task is moved to ready.
-13.   moving a task to "in-progress" automatically creates a new branch on github following a `{project-name}/{task-title}` naming convention.
-14.   when a developer creates a pull request (pr) against the main branch, corresponding task moves to "awaiting review".
-15.   the app fetches pr statuses and updates task statuses accordingly (e.g., merged prs move to "complete").
-16.   users can comment on tasks, and comments sync with the corresponding github issue discussion.
-17.   the app shows github activity logs, including commits, prs, and issue updates, inside the project dashboard.
-18.   users can link existing github repositories instead of creating a new one.
-19.   project settings allow managing team members, updating repo settings, and configuring task automation rules.
-20.   the app provides analytics, such as task completion rates, pr merge times, and contributor activity.
-21.   notifications alert users of pr reviews, merges, new tasks, or assignments.
-22.   users can archive completed projects or delete them along with their github repositories.
-23.   the app ensures offline functionality, allowing task updates that sync with github when online.
+As seen from the eyes of 'a non-technical software-development-project manager', the target user of this product.
+Not necessarilly a high level overview of what the manager sees.
+
+_pre-requisites_ - a working personal/organization github account
+
+1. Manager installs and starts up app.
+2. App asks manager to authorize the app with their GitHub account.
+3. Auth takes place, redirects to app's home-screen.
+4. Manager selects 'create new project'.
+5. App prompts for project-name, repo-name, and repo-visibility.
+6. App also prompts for project team's usernames to invite as repo collaborators (must be on GitHub).
+7. App creates repo on github, invites collaborators, with default access permissions.
+8. Project dashboard opens up.
+9. Dashboard has sections: backlog, in-progress, under-review, and done.
+10.   Manager can create tasks and draft-tasks in the backlog section, specifying title, description, priority, and assignees.
+11.   All drafts remain in backlog section and do not sync to GitHub.
+12.   Tasks (with assignees) can also be put in backlog section through the 'add to backlog' feature, but sync to GitHub.
+13.   Only tasks/drafts with assignees can move to 'in-progress', becoming assigned tasks, through the 'assign now' feature.
+14.   Upon creation of a task (not draft), a corresponding github issue, is automatically created.
+15.   Tasks will only be auto-tracked if a branch published to github follows the naming convention `task/<task-number>`.
+16.   When a developer creates a pull request for branch `task/<task-number>`, to any branch, corresponding task moves to "under review".
+17.   Task does not move to done if PR in corresponding branch `task/<task-number>` is merged.
+18.   Task will only move to done if PR, for even branches that are not `task/<task-number>`, but with GitHub buzzword (fixes, resolves, etc) are merged, since GitHub itself auto-closes the issue.
+19.   Task also moves to done upon manual closing on GitHub.
+20.   Everything that happens in/to the corresponding branch `task/<task-number>`, is recorded in the task's timeline.
+21.   Tasks will move between columns based only on the automation rules specified above.
+22.   Tasks cannot move between columns otherwise, but can be edited or deleted in place.
+23.   App syncs the active project dashboard with GitHub on navigation-to-it, and on a configurable interval (and eventually on webhook events).
+24.   Manager can comment on tasks, and comments sync with the corresponding github issue discussion.
+25.   App produces notifications of github activity (powered by webhook events).
+26.   Manager can sync existing github repositories as 'existing projects'.
+27.   Each project has settings for dismissing/inviting team members, changing their permissions, changing repo visibility,changing repo/project name, and deleting project.
+28.   App produces analytics on: task completion rates, average times spent in each column, and individual team member stats.
+29.   As a positive consequence of how GitHub works, email notifications alert team members and manager of all repo activity originating from within/outside Task Bridge.
+30.   App limtis most functionality to online-use only.
+31.   App will allow adding/removing/switching of accounts
