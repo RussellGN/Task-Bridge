@@ -179,20 +179,42 @@ impl Project {
       &self.repo
    }
 
-   pub async fn create_and_save_task(&self, token: &AccessToken, payload: NewTaskPayload) -> crate::Result<Task> {
+   pub async fn create_and_save_task(
+      &mut self,
+      token: &AccessToken,
+      payload: NewTaskPayload,
+      store: Arc<Store<impl Runtime>>,
+   ) -> crate::Result<Task> {
       let issue = GithubAPI::create_issue(&self.repo, token, payload, None).await?;
       let task = Task::from_issue(issue);
+
+      if let Some(tasks) = &mut self.tasks {
+         tasks.push(task.clone());
+      } else {
+         self.tasks = Some(vec![task.clone()])
+      }
+      self.save_updates_to_store(store)?;
+
       Ok(task)
    }
 
    pub async fn create_and_save_backlog_task(
-      &self,
+      &mut self,
       token: &AccessToken,
       payload: NewTaskPayload,
+      store: Arc<Store<impl Runtime>>,
    ) -> crate::Result<Task> {
       let labels = vec![String::from("backlog")];
       let issue = GithubAPI::create_issue(&self.repo, token, payload, Some(labels)).await?;
       let task = Task::from_issue(issue);
+
+      if let Some(tasks) = &mut self.tasks {
+         tasks.push(task.clone());
+      } else {
+         self.tasks = Some(vec![task.clone()])
+      }
+      self.save_updates_to_store(store)?;
+
       Ok(task)
    }
 

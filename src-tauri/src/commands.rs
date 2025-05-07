@@ -157,10 +157,12 @@ pub async fn create_task<R: Runtime>(app: tauri::AppHandle<R>, payload: NewTaskP
    let project = store
       .get(project_id)
       .ok_or(format!("{F} project with id {project_id} not found"))?;
-   let project = serde_json::from_value::<Project>(project)
+   let mut project = serde_json::from_value::<Project>(project)
       .map_err(|e| format!("{F} failed to read project with id {}: {e}", payload.project_id))?;
 
-   let task = project.create_and_save_task(&token, payload).await?;
+   let task = project
+      .create_and_save_task(&token, payload, Arc::clone(&store))
+      .await?;
 
    Ok(task)
 }
@@ -177,10 +179,12 @@ pub async fn create_backlog_task<R: Runtime>(app: tauri::AppHandle<R>, payload: 
    let project = store
       .get(project_id)
       .ok_or(format!("{F} project with id {project_id} not found"))?;
-   let project = serde_json::from_value::<Project>(project)
+   let mut project = serde_json::from_value::<Project>(project)
       .map_err(|e| format!("{F} failed to read project with id {}: {e}", payload.project_id))?;
 
-   let task = project.create_and_save_backlog_task(&token, payload).await?;
+   let task = project
+      .create_and_save_backlog_task(&token, payload, Arc::clone(&store))
+      .await?;
 
    Ok(task)
 }
