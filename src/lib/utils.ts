@@ -1,4 +1,4 @@
-import { STORE_PATH } from "@/lib/constants";
+import { DEFAULT_TOAST_OPTIONS, STORE_PATH } from "@/lib/constants";
 import { load } from "@tauri-apps/plugin-store";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -28,21 +28,24 @@ export function alertError<T>(e: T, description?: string) {
    logError(e);
    let errorMsg = e instanceof Error && e.message ? e.message : String(e);
    errorMsg = trimFunctionNameFromLog(errorMsg);
-   toast.error(truncateStr(errorMsg, 200), { description: truncateStr(description || "", 400) });
+   toast.error(truncateStr(errorMsg, 200), {
+      ...DEFAULT_TOAST_OPTIONS,
+      description: truncateStr(description || "", 400),
+   });
 }
 
 export function alertInfo<T>(info: T, description?: string) {
    logInfo(info);
    let infoMsg = String(info);
    infoMsg = infoMsg.replace(/\[.*?\]/g, "").trim(); // remove [<func_name>]
-   toast(infoMsg, { description });
+   toast(infoMsg, { ...DEFAULT_TOAST_OPTIONS, description });
 }
 
 export function alertSuccess<T>(info: T, description?: string) {
    logInfo(info);
    let infoMsg = String(info);
    infoMsg = infoMsg.replace(/\[.*?\]/g, "").trim(); // remove [<func_name>]
-   toast.success(infoMsg, { description });
+   toast.success(infoMsg, { ...DEFAULT_TOAST_OPTIONS, description });
 }
 
 export function dbg(...args: unknown[]) {

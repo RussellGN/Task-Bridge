@@ -4,6 +4,7 @@ import Home from "@/routes/Home";
 import NotFound from "@/routes/NotFound";
 import ProjectDashboard from "@/routes/ProjectDashboard";
 import { TaskPriority } from "@/types/types";
+import { ExternalToast } from "sonner";
 
 export const GITHUB_INSTALL_URL = `https://github.com/apps/Task-Bridge/installations/new?prompt=select_account&state=${random_global_auth_keyword()}`;
 
@@ -27,3 +28,8 @@ export const MINIMUM_ALLOWABLE_FETCH_INTERVAL_IN_MS = 7500; // 7.5 seconds (8 ti
 export const MAX_ERR_LENGTH = 200;
 
 export const DEFAULT_NONE_SELECT_VALUE = "none";
+
+export const DEFAULT_TOAST_OPTIONS: ExternalToast = {
+   duration: 10000,
+   dismissible: true,
+};
