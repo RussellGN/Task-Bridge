@@ -18,7 +18,10 @@ export default function useCreateTask(project_id: string) {
       },
       onSuccess(task) {
          dbg("[useCreateTask]", task);
-         alertSuccess(`[useCreateTask] Task created!`, task.inner_issue.title);
+         alertSuccess(
+            `[useCreateTask] Task assigned!`,
+            `${task.inner_issue.assignee?.login}: ${task.inner_issue.title}`,
+         );
          client.setQueryData(["project", project_id], (oldData: Project) => ({
             ...oldData,
             tasks: [...(oldData.tasks || []), task],
