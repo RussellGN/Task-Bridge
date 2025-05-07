@@ -1,9 +1,11 @@
-import { alertError, alertSuccess, dbg } from "@/lib/utils";
+import { PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS } from "@/lib/constants";
+import { alertError, alertInfo, alertSuccess, dbg } from "@/lib/utils";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { Project } from "@/types/interfaces";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
+import { useEffect } from "react";
 
 export default function useSyncProjectWithGitHub(project: Project) {
    const client = useClient();
@@ -22,6 +24,32 @@ export default function useSyncProjectWithGitHub(project: Project) {
          client.invalidateQueries({ queryKey: ["projects"] });
       },
    });
+
+   useEffect(() => {
+      dbg("[useSyncProjectWithGitHub]", "registering interval to sync project data for", project.name);
+
+      const interval = window.setInterval(() => {
+         doIfOnline(
+            () => {
+               alertInfo(`[useSyncProjectWithGitHub] Syncing ${project.name} with GitHub...`);
+               mutate();
+            },
+            "GitHub sync attempt failed!",
+            "This sync happens periodically in the background, but will not be attempted if you are offline.",
+         );
+      }, PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS);
+
+      dbg("[useSyncProjectWithGitHub]", "interval configured is", interval);
+
+      return () => {
+         dbg(
+            "[useSyncProjectWithGitHub]",
+            `clearing interval (${interval}) that was syncing project data for`,
+            project.name,
+         );
+         window.clearInterval(interval);
+      };
+   }, []);
 
    return {
       isSyncing: isPending,

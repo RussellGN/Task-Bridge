@@ -33,3 +33,5 @@ export const DEFAULT_TOAST_OPTIONS: ExternalToast = {
    duration: 10000,
    dismissible: true,
 };
+
+export const PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS = 1000 * 60 * 10; // 10 minutes
