@@ -58,12 +58,13 @@ export default function useNewTaskForm(project: Project) {
 
       const drafting = isDraftFinal || payload?.assignee_login === DEFAULT_NONE_SELECT_VALUE;
 
-      if (taskToEdit) {
-         alertInfo("Saving updated task...");
+      if (isEditing) {
+         alertInfo("Saving updates...");
          wait(2).then(() => {
-            alertSuccess("Task updated!");
+            alertSuccess("Updates saved!");
             removeItemToEdit();
             setOpen(false);
+            return;
          });
       } else if (drafting) createDraft(payload as NewDraftTaskPayload);
       else createTask(payload as NewTaskPayload);
