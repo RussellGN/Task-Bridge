@@ -10,6 +10,8 @@ A software-project management solution with deep GitHub integration
 
 | Version   | Installer Type | Link                                                                                              |
 | --------- | -------------- | ------------------------------------------------------------------------------------------------- |
+| **0.2.0** | exe - win x64  | [Download](https://drive.google.com/file/d/1FNBvpDKaqSXnAgo1h4ri_UdSpwgHJpbu/view?usp=sharing)    |
+|           | msi - win x64  | [Download](https://drive.google.com/file/d/1koKslaq4qAgqOFpORTB1O_70doT8ue56/view?usp=sharing)    |
 | 0.1.3     | exe - win x64  | [Download](https://drive.google.com/file/d/1MLNidOC_NK7fdzWmBLe-UQ6H3ffY8JN_/view?usp=sharing)    |
 | 0.1.2     | exe - win x64  | [Download](https://drive.google.com/file/d/1flfbZxCKgx1WUdIZOL_AqrSLGQT4s1W4/view?usp=sharing)    |
 | 0.1.1     | exe - win x64  | [Download](https://drive.google.com/file/d/1w77MKRZRLQA_9iyh8JFPZuuvPpzTDQwD/view?usp=sharing)    |
