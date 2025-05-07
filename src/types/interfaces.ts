@@ -85,6 +85,7 @@ export interface Issue {
 export interface Task {
    priority: TaskPriority;
    inner_issue: Issue;
+   is_backlog?: boolean | null;
 }
 
 export interface DraftTask {

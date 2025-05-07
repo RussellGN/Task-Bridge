@@ -180,7 +180,18 @@ impl Project {
    }
 
    pub async fn create_and_save_task(&self, token: &AccessToken, payload: NewTaskPayload) -> crate::Result<Task> {
-      let issue = GithubAPI::create_issue(&self.repo, token, payload).await?;
+      let issue = GithubAPI::create_issue(&self.repo, token, payload, None).await?;
+      let task = Task::from_issue(issue);
+      Ok(task)
+   }
+
+   pub async fn create_and_save_backlog_task(
+      &self,
+      token: &AccessToken,
+      payload: NewTaskPayload,
+   ) -> crate::Result<Task> {
+      let labels = vec![String::from("backlog")];
+      let issue = GithubAPI::create_issue(&self.repo, token, payload, Some(labels)).await?;
       let task = Task::from_issue(issue);
       Ok(task)
    }

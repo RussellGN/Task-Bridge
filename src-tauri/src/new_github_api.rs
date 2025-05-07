@@ -428,6 +428,7 @@ impl GithubAPI {
       repo: &models::Repository,
       token: &AccessToken,
       payload: NewTaskPayload,
+      labels: Option<Vec<String>>,
    ) -> crate::Result<models::issues::Issue> {
       const F: &str = "[GithubAPI::create_issue]";
 
@@ -440,7 +441,12 @@ impl GithubAPI {
          .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name));
 
       let assignees = Some(vec![payload.assignee_login]);
-      let labels = Some(vec![format!("{}-priority", payload.priority)]);
+      let labels = if let Some(mut labels) = labels {
+         labels.push(format!("{}-priority", payload.priority));
+         Some(labels)
+      } else {
+         Some(vec![format!("{}-priority", payload.priority)])
+      };
 
       let issue = octo
          .issues(&owner.login, &repo.name)

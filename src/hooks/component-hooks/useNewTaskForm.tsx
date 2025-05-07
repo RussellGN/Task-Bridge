@@ -3,9 +3,10 @@ import useCreateTask from "../backend-api-hooks/internet-dependant/useCreateTask
 import { TaskPriority } from "@/types/types";
 import { useSearchParams } from "react-router";
 import { NewDraftTaskPayload, NewTaskPayload, Project } from "@/types/interfaces";
-import { alertError, alertInfo, alertSuccess, wait } from "@/lib/utils";
+import { alertInfo, alertSuccess, wait } from "@/lib/utils";
 import useCreateDraftTask from "../backend-api-hooks/internet-independant/useCreateDraftTask";
 import { DEFAULT_NONE_SELECT_VALUE } from "@/lib/constants";
+import useCreateBacklogTask from "../backend-api-hooks/internet-dependant/useCreateBacklogTask";
 
 export default function useNewTaskForm(project: Project) {
    const [open, setOpen] = React.useState(false);
@@ -15,6 +16,11 @@ export default function useNewTaskForm(project: Project) {
    const [addToBacklog, setAddToBacklog] = React.useState(false);
    const { createTask, isPending: creationPending, errorMessage: taskCreationError } = useCreateTask(project.id);
    const { createDraft, isPending: draftPending, errorMessage: draftCreationError } = useCreateDraftTask(project.id);
+   const {
+      createBacklogTask,
+      isPending: backlogAdditionPending,
+      errorMessage: backlogAdditionError,
+   } = useCreateBacklogTask(project.id);
 
    const taskToEditId = searchParams.get("edit_task");
    const draftToEditId = searchParams.get("edit_draft");
@@ -68,7 +74,7 @@ export default function useNewTaskForm(project: Project) {
             return;
          });
       } else if (drafting) createDraft(payload as NewDraftTaskPayload);
-      else if (addToBacklog) alertError("implement add to backlo");
+      else if (addToBacklog) createBacklogTask(payload as NewTaskPayload);
       else createTask(payload as NewTaskPayload);
    }
 
@@ -83,9 +89,9 @@ export default function useNewTaskForm(project: Project) {
       itemToEdit,
       team: project.team,
       pendingTeam: project.pending_invites,
-      isPending: creationPending || draftPending,
+      isPending: creationPending || draftPending || backlogAdditionPending,
       open: open || !!taskToEdit || !!draftToEdit,
-      errorMessage: taskCreationError || draftCreationError,
+      errorMessage: taskCreationError || draftCreationError || backlogAdditionError,
       setIsDraft,
       setAssignee,
       onOpenChange,

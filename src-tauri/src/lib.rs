@@ -31,6 +31,7 @@ pub fn run() {
          commands::sync_projects_with_github,
          commands::create_task,
          commands::create_draft_task,
+         commands::create_backlog_task,
          commands::sync_project_with_github,
          experimental::clear_store
       ])

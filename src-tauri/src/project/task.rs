@@ -66,6 +66,7 @@ impl DraftTask {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Task {
    priority: TaskPriority,
+   is_backlog: Option<bool>,
    inner_issue: models::issues::Issue,
 }
 
@@ -78,9 +79,16 @@ impl Task {
          .map(|label| TaskPriority::from_label(label.clone()))
          .unwrap_or(TaskPriority::Normal);
 
+      let is_backlog = issue
+         .labels
+         .iter()
+         .find(|label| label.name.to_lowercase().trim() == "backlog")
+         .is_some();
+
       Self {
          priority,
          inner_issue: issue,
+         is_backlog: Some(is_backlog),
       }
    }
 }

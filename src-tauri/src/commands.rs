@@ -166,6 +166,26 @@ pub async fn create_task<R: Runtime>(app: tauri::AppHandle<R>, payload: NewTaskP
 }
 
 #[tauri::command]
+pub async fn create_backlog_task<R: Runtime>(app: tauri::AppHandle<R>, payload: NewTaskPayload) -> crate::Result<Task> {
+   const F: &str = "[create_backlog_task]";
+
+   log!("{F} {payload:#?}");
+   let project_id = &payload.project_id;
+   let store = get_store(app)?;
+   let token = get_token(&store)?;
+
+   let project = store
+      .get(project_id)
+      .ok_or(format!("{F} project with id {project_id} not found"))?;
+   let project = serde_json::from_value::<Project>(project)
+      .map_err(|e| format!("{F} failed to read project with id {}: {e}", payload.project_id))?;
+
+   let task = project.create_and_save_backlog_task(&token, payload).await?;
+
+   Ok(task)
+}
+
+#[tauri::command]
 pub async fn create_draft_task<R: Runtime>(
    app: tauri::AppHandle<R>,
    payload: NewDraftTaskPayload,
