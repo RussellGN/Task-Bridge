@@ -19,5 +19,14 @@ export function useConnectionStatus() {
       } else cb();
    }
 
-   return { isOnline, doIfOnline };
+   function doIfOnlineAsync(cb: () => Promise<void>, offlineErrMsg: string, description?: string) {
+      return new Promise<void>((resolve) => {
+         if (!isOnline) {
+            alertError(offlineErrMsg, description || "Please check your internet connection and try again.");
+            resolve();
+         } else cb().then(resolve);
+      });
+   }
+
+   return { isOnline, doIfOnline, doIfOnlineAsync };
 }
