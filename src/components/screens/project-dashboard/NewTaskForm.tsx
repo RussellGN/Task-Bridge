@@ -1,5 +1,5 @@
 import useNewTaskForm from "@/hooks/component-hooks/useNewTaskForm";
-import { ArrowRight, Check, NotebookPen, Plus } from "lucide-react";
+import { ArrowRight, Check, NotebookPen, Plus, Timer } from "lucide-react";
 import {
    Dialog,
    DialogContent,
@@ -38,6 +38,7 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
       setAssignee,
       onOpenChange,
       handleSubmit,
+      setAddToBacklog,
    } = useNewTaskForm(project);
 
    return (
@@ -164,52 +165,85 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
                      </Button>
                   ) : (
                      <>
-                        <Button disabled={isPending} type="submit" onClick={() => setIsDraft(true)}>
-                           {isPending ? (
-                              <>
-                                 Saving draft... <SpinnerIcon />
-                              </>
-                           ) : (
-                              <>
-                                 Save as draft <NotebookPen />
-                              </>
-                           )}
-                        </Button>
-
                         {assignee && assignee !== DEFAULT_NONE_SELECT_VALUE ? (
-                           <Button
-                              disabled={isPending || (!assignee && assignee === DEFAULT_NONE_SELECT_VALUE)}
-                              variant="PRIMARY"
-                              type="submit"
-                              onClick={() => setIsDraft(false)}
-                           >
-                              {isPending ? (
-                                 <>
-                                    Creating task... <SpinnerIcon />
-                                 </>
-                              ) : (
-                                 <>
-                                    Create <ArrowRight />
-                                 </>
-                              )}
-                           </Button>
+                           <>
+                              <Button
+                                 disabled={isPending}
+                                 type="submit"
+                                 onClick={() => {
+                                    setIsDraft(false);
+                                    setAddToBacklog(true);
+                                 }}
+                              >
+                                 {isPending ? (
+                                    <>
+                                       Adding to backlog... <SpinnerIcon />
+                                    </>
+                                 ) : (
+                                    <>
+                                       Add to backlog <Timer />
+                                    </>
+                                 )}
+                              </Button>
+
+                              <Button
+                                 disabled={isPending || (!assignee && assignee === DEFAULT_NONE_SELECT_VALUE)}
+                                 variant="PRIMARY"
+                                 type="submit"
+                                 onClick={() => {
+                                    setIsDraft(false);
+                                    setAddToBacklog(false);
+                                 }}
+                              >
+                                 {isPending ? (
+                                    <>
+                                       Creating task... <SpinnerIcon />
+                                    </>
+                                 ) : (
+                                    <>
+                                       Create <ArrowRight />
+                                    </>
+                                 )}
+                              </Button>
+                           </>
                         ) : (
-                           <InfoTooltip
-                              content="Cannot create task without assignee"
-                              trigger={
-                                 <div className="btn btn-PRIMARY cursor-not-allowed opacity-25 active:scale-100">
-                                    {isPending ? (
-                                       <>
-                                          Creating task... <SpinnerIcon />
-                                       </>
-                                    ) : (
-                                       <>
-                                          Create <ArrowRight />
-                                       </>
-                                    )}
-                                 </div>
-                              }
-                           />
+                           <>
+                              <Button
+                                 disabled={isPending}
+                                 type="submit"
+                                 onClick={() => {
+                                    setIsDraft(true);
+                                    setAddToBacklog(false);
+                                 }}
+                              >
+                                 {isPending ? (
+                                    <>
+                                       Saving draft... <SpinnerIcon />
+                                    </>
+                                 ) : (
+                                    <>
+                                       Save as draft <NotebookPen />
+                                    </>
+                                 )}
+                              </Button>
+
+                              <InfoTooltip
+                                 content="Cannot create task without assignee"
+                                 trigger={
+                                    <div className="btn btn-PRIMARY cursor-not-allowed opacity-25 active:scale-100">
+                                       {isPending ? (
+                                          <>
+                                             Creating task... <SpinnerIcon />
+                                          </>
+                                       ) : (
+                                          <>
+                                             Create <ArrowRight />
+                                          </>
+                                       )}
+                                    </div>
+                                 }
+                              />
+                           </>
                         )}
                      </>
                   )}

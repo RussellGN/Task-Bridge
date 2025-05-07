@@ -3,7 +3,7 @@ import useCreateTask from "../backend-api-hooks/internet-dependant/useCreateTask
 import { TaskPriority } from "@/types/types";
 import { useSearchParams } from "react-router";
 import { NewDraftTaskPayload, NewTaskPayload, Project } from "@/types/interfaces";
-import { alertInfo, alertSuccess, wait } from "@/lib/utils";
+import { alertError, alertInfo, alertSuccess, wait } from "@/lib/utils";
 import useCreateDraftTask from "../backend-api-hooks/internet-independant/useCreateDraftTask";
 import { DEFAULT_NONE_SELECT_VALUE } from "@/lib/constants";
 
@@ -12,6 +12,7 @@ export default function useNewTaskForm(project: Project) {
    const [isDraft, setIsDraft] = React.useState(false);
    const [searchParams, setSearchParams] = useSearchParams();
    const [assignee, setAssignee] = React.useState<string | undefined>(undefined);
+   const [addToBacklog, setAddToBacklog] = React.useState(false);
    const { createTask, isPending: creationPending, errorMessage: taskCreationError } = useCreateTask(project.id);
    const { createDraft, isPending: draftPending, errorMessage: draftCreationError } = useCreateDraftTask(project.id);
 
@@ -67,6 +68,7 @@ export default function useNewTaskForm(project: Project) {
             return;
          });
       } else if (drafting) createDraft(payload as NewDraftTaskPayload);
+      else if (addToBacklog) alertError("implement add to backlo");
       else createTask(payload as NewTaskPayload);
    }
 
@@ -88,5 +90,6 @@ export default function useNewTaskForm(project: Project) {
       setAssignee,
       onOpenChange,
       handleSubmit,
+      setAddToBacklog,
    };
 }
