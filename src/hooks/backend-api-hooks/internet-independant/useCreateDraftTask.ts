@@ -24,8 +24,8 @@ export default function useCreateDraftTask(project_id: string) {
       },
    });
 
-   async function createDraft(payload: NewDraftTaskPayload) {
-      mutate(payload);
+   function createDraft(payload: NewDraftTaskPayload) {
+      return new Promise((resolve) => mutate(payload, { onSettled: resolve }));
    }
 
    const errorMessage = error instanceof Error ? error.message : error;

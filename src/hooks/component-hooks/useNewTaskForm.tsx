@@ -40,15 +40,7 @@ export default function useNewTaskForm(project: Project) {
 
    const isEditing = !!taskToEdit || !!draftToEdit;
 
-   function removeItemToEdit() {
-      setSearchParams((prev) => {
-         prev.delete("edit_task");
-         prev.delete("edit_draft");
-         return prev;
-      });
-   }
-
-   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
       e.preventDefault();
 
       const data = Object.fromEntries(new FormData(e.currentTarget));
@@ -67,20 +59,32 @@ export default function useNewTaskForm(project: Project) {
 
       if (isEditing) {
          alertInfo("Saving updates...");
-         wait(2).then(() => {
-            alertSuccess("Updates saved!");
-            removeItemToEdit();
-            setOpen(false);
-            return;
-         });
-      } else if (drafting) createDraft(payload as NewDraftTaskPayload);
-      else if (addToBacklog) createBacklogTask(payload as NewTaskPayload);
-      else createTask(payload as NewTaskPayload);
+         await wait(2);
+         alertSuccess("Updates saved!");
+         cleanupAndcloseModal();
+         return;
+      } else if (drafting) await createDraft(payload as NewDraftTaskPayload);
+      else if (addToBacklog) await createBacklogTask(payload as NewTaskPayload);
+      else await createTask(payload as NewTaskPayload);
+
+      cleanupAndcloseModal();
    }
 
    function onOpenChange(open: boolean) {
-      if (!open) removeItemToEdit();
+      if (!open) cleanupAndcloseModal();
       setOpen(open);
+   }
+
+   function cleanupAndcloseModal() {
+      setSearchParams((prev) => {
+         prev.delete("edit_task");
+         prev.delete("edit_draft");
+         return prev;
+      });
+      setOpen(false);
+      setAssignee(undefined);
+      setAddToBacklog(false);
+      setIsDraft(false);
    }
 
    return {

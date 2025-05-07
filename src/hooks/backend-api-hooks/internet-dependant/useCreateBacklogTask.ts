@@ -7,7 +7,7 @@ import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 
 export default function useCreateBacklogTask(project_id: string) {
    const client = useClient();
-   const { doIfOnline } = useConnectionStatus();
+   const { doIfOnlineAsync } = useConnectionStatus();
 
    const { mutate, isPending, error } = useMutation({
       mutationFn: (payload: NewTaskPayload) => invoke<Task>("create_backlog_task", { payload }),
@@ -27,7 +27,9 @@ export default function useCreateBacklogTask(project_id: string) {
    });
 
    function createBacklogTask(payload: NewTaskPayload) {
-      doIfOnline(() => mutate(payload), "Cannot add tasks to backlog whilst offline!");
+      return doIfOnlineAsync(() => {
+         return new Promise((resolve) => mutate(payload, { onSettled: () => resolve() }));
+      }, "Cannot add tasks to backlog whilst offline!");
    }
 
    const errorMessage = error instanceof Error ? error.message : error;

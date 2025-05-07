@@ -7,7 +7,7 @@ import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 
 export default function useCreateTask(project_id: string) {
    const client = useClient();
-   const { doIfOnline } = useConnectionStatus();
+   const { doIfOnlineAsync } = useConnectionStatus();
 
    const { mutate, isPending, error } = useMutation({
       mutationFn: (payload: NewTaskPayload) => invoke<Task>("create_task", { payload }),
@@ -30,7 +30,9 @@ export default function useCreateTask(project_id: string) {
    });
 
    function createTask(payload: NewTaskPayload) {
-      doIfOnline(() => mutate(payload), "Cannot create tasks whilst offline!");
+      return doIfOnlineAsync(() => {
+         return new Promise((resolve) => mutate(payload, { onSettled: () => resolve() }));
+      }, "Cannot create tasks whilst offline!");
    }
 
    const errorMessage = error instanceof Error ? error.message : error;
