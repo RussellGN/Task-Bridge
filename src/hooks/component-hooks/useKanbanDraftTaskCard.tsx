@@ -7,8 +7,8 @@ export default function useKanbanDraftTaskCard(draft: DraftTask) {
    const toggleOpen = () => setOpen((prev) => !prev);
    const [, setSearchParams] = useSearchParams();
 
-   function setDraftToReady() {
-      console.log("Draft is now ready", draft.id);
+   function assignNow() {
+      console.log("assigning drafted task to", draft.assignee?.login);
    }
 
    function editDraft() {
@@ -24,9 +24,9 @@ export default function useKanbanDraftTaskCard(draft: DraftTask) {
 
    return {
       open,
+      assignNow,
       editDraft,
       toggleOpen,
       deleteDraft,
-      setDraftToReady,
    };
 }

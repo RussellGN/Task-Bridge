@@ -15,6 +15,10 @@ export default function useKanbanTaskCard(task: Task) {
       });
    }
 
+   function assignNow() {
+      console.log("assigning backlog task to", task.inner_issue.assignee?.login);
+   }
+
    function deleteTask() {
       console.log("Deleting task", task.inner_issue.id);
    }
@@ -22,6 +26,7 @@ export default function useKanbanTaskCard(task: Task) {
    return {
       open,
       editTask,
+      assignNow,
       deleteTask,
       toggleOpen,
    };

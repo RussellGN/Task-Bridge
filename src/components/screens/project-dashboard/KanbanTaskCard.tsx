@@ -1,7 +1,7 @@
 import { UserAvatar } from "@/components/general/UserAvatar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Task } from "@/types/interfaces";
-import { ChevronsDown, ChevronsUp, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
+import { ArrowRight, ChevronsDown, ChevronsUp, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 import PriorityIndicator from "./PriorityIndicator";
 import {
    DropdownMenu,
@@ -14,7 +14,7 @@ import { AssigneesAvatars } from "@/components/general/AssigneesAvatars";
 import InfoTooltip from "@/components/general/InfoTooltip";
 
 export default function KanbanTaskCard({ task }: { task: Task }) {
-   const { open, toggleOpen, editTask, deleteTask } = useKanbanTaskCard(task);
+   const { open, assignNow, toggleOpen, editTask, deleteTask } = useKanbanTaskCard(task);
 
    return (
       <div className="bg-background border-foreground/40 hover:border-foreground/70 relative rounded-md border p-1 shadow transition-all">
@@ -62,6 +62,13 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
                      </DropdownMenuTrigger>
 
                      <DropdownMenuContent side="right" align="start" className="border-foreground/50 border">
+                        {task.is_backlog && task.inner_issue.assignee && (
+                           <DropdownMenuItem onClick={assignNow}>
+                              <ArrowRight />
+                              Assign now
+                           </DropdownMenuItem>
+                        )}
+
                         {task.inner_issue.state === "open" && (
                            <DropdownMenuItem onClick={editTask}>
                               <Pencil />

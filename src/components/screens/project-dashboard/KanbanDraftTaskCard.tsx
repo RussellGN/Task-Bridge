@@ -1,7 +1,7 @@
 import { UserAvatar } from "@/components/general/UserAvatar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DraftTask } from "@/types/interfaces";
-import { CheckSquare, ChevronsDown, ChevronsUp, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
+import { ArrowRight, ChevronsDown, ChevronsUp, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 import PriorityIndicator from "./PriorityIndicator";
 import {
    DropdownMenu,
@@ -12,7 +12,7 @@ import {
 import useKanbanDraftTaskCard from "@/hooks/component-hooks/useKanbanDraftTaskCard";
 
 export default function KanbanDraftTaskCard({ draft }: { draft: DraftTask }) {
-   const { open, toggleOpen, setDraftToReady, editDraft, deleteDraft } = useKanbanDraftTaskCard(draft);
+   const { open, assignNow, toggleOpen, editDraft, deleteDraft } = useKanbanDraftTaskCard(draft);
 
    return (
       <div className="bg-background border-foreground/40 hover:border-foreground/70 relative rounded-md border p-1 shadow transition-all">
@@ -51,10 +51,12 @@ export default function KanbanDraftTaskCard({ draft }: { draft: DraftTask }) {
                      </DropdownMenuTrigger>
 
                      <DropdownMenuContent side="right" align="start" className="border-foreground/50 border">
-                        <DropdownMenuItem onClick={setDraftToReady}>
-                           <CheckSquare />
-                           Set To {"'Ready'"}
-                        </DropdownMenuItem>
+                        {draft.assignee && (
+                           <DropdownMenuItem onClick={assignNow}>
+                              <ArrowRight />
+                              Assign now
+                           </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem onClick={editDraft}>
                            <Pencil />
                            Edit
