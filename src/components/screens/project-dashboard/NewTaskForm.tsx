@@ -197,11 +197,11 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
                               >
                                  {isPending ? (
                                     <>
-                                       Creating task... <SpinnerIcon />
+                                       Assigning task... <SpinnerIcon />
                                     </>
                                  ) : (
                                     <>
-                                       Create <ArrowRight />
+                                       Assign now <ArrowRight />
                                     </>
                                  )}
                               </Button>
@@ -228,16 +228,16 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
                               </Button>
 
                               <InfoTooltip
-                                 content="Cannot create task without assignee"
+                                 content="No assignee selected!"
                                  trigger={
                                     <div className="btn btn-PRIMARY cursor-not-allowed opacity-25 active:scale-100">
                                        {isPending ? (
                                           <>
-                                             Creating task... <SpinnerIcon />
+                                             Assigning task... <SpinnerIcon />
                                           </>
                                        ) : (
                                           <>
-                                             Create <ArrowRight />
+                                             Assign now <ArrowRight />
                                           </>
                                        )}
                                     </div>
