@@ -23,7 +23,6 @@ export default function DevKit() {
                      <X />
                   </Button>
                </h2>
-               {/* @ts-expect-error styles are vars */}
                <JsonView value={JSON.parse(store)} keyName="root" style={jsonViewStyle} />
             </div>
          )}
