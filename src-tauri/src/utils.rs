@@ -1,5 +1,5 @@
 use colored::Colorize;
-use octocrab::{Octocrab, OctocrabBuilder};
+use octocrab::{models, Octocrab, OctocrabBuilder};
 use std::{collections::HashMap, sync::Arc};
 use tauri::{AppHandle, Runtime};
 use tauri_plugin_store::{Store, StoreExt};
@@ -106,4 +106,14 @@ pub fn create_authenticated_octo(token: &str) -> crate::Result<Octocrab> {
 
 pub fn new_id() -> String {
    Uuid::new_v4().to_string()
+}
+
+pub trait IssueExt {
+   fn was_deleted(&self) -> bool;
+}
+
+impl IssueExt for models::issues::Issue {
+   fn was_deleted(&self) -> bool {
+      self.state == models::IssueState::Closed && self.labels.iter().any(|l| l.name.as_str() == "deleted")
+   }
 }

@@ -7,7 +7,12 @@ use serde_json::Value;
 use tauri::http::{header, HeaderValue, Method};
 use tauri_plugin_http::reqwest;
 
-use crate::{auth::AccessToken, log, project::task::NewTaskPayload, utils::create_authenticated_octo};
+use crate::{
+   auth::AccessToken,
+   log,
+   project::task::NewTaskPayload,
+   utils::{create_authenticated_octo, IssueExt},
+};
 
 #[derive(Deserialize)]
 struct GithubAPIError {
@@ -412,8 +417,9 @@ impl GithubAPI {
       let mut all_issues = vec![];
       while let Some(response) = issues_stream.next().await {
          match response {
-            Ok(issue) => all_issues.push(issue),
+            Ok(issue) if !issue.was_deleted() => all_issues.push(issue),
             Err(e) => return Err(format!("{F} failed to fetch next issue in loop: {e}")),
+            _ => {}
          };
       }
       log!(
