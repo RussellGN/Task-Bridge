@@ -218,6 +218,57 @@ impl Project {
       Ok(task)
    }
 
+   pub async fn assign_task_now(
+      &mut self,
+      task_id: String,
+      token: &AccessToken,
+      repo: &models::Repository,
+      store: Arc<Store<impl Runtime>>,
+   ) -> crate::Result<Task> {
+      const F: &str = "[Project::assign_task_now]";
+
+      let tasks = match &mut self.tasks {
+         Some(tasks) => tasks,
+         None => return Err(format!("{F} project {} has no tasks", self.name)),
+      };
+
+      let task = match tasks.iter_mut().find(|t| t.get_inner_issue().id.to_string() == task_id) {
+         Some(task) => task,
+         None => return Err(format!("{F} project {} has no task with id {task_id}", self.name)),
+      };
+
+      let updated_issue = GithubAPI::update_issue(
+         task.get_inner_issue(),
+         repo,
+         token,
+         None,
+         None,
+         None,
+         Some(
+            &task
+               .get_inner_issue()
+               .labels
+               .iter()
+               .filter_map(|label| {
+                  let label = label.name.trim().to_lowercase();
+                  if label != "backlog" {
+                     Some(label)
+                  } else {
+                     None
+                  }
+               })
+               .collect::<Vec<_>>(),
+         ),
+      )
+      .await?;
+
+      task.update(None, None, Some(updated_issue));
+      let updated_task = task.to_owned();
+      self.save_updates_to_store(store)?;
+
+      Ok(updated_task)
+   }
+
    pub async fn create_and_save_draft_task(
       &mut self,
       payload: NewDraftTaskPayload,

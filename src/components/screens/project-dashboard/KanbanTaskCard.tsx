@@ -1,6 +1,6 @@
 import { UserAvatar } from "@/components/general/UserAvatar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Task } from "@/types/interfaces";
+import { Project, Task } from "@/types/interfaces";
 import { ArrowRight, ChevronsDown, ChevronsUp, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 import PriorityIndicator from "./PriorityIndicator";
 import {
@@ -12,12 +12,19 @@ import {
 import useKanbanTaskCard from "@/hooks/component-hooks/useKanbanTaskCard";
 import { AssigneesAvatars } from "@/components/general/AssigneesAvatars";
 import InfoTooltip from "@/components/general/InfoTooltip";
+import { cn } from "@/lib/utils";
+import SpinnerIcon from "@/components/general/SpinnerIcon";
 
-export default function KanbanTaskCard({ task }: { task: Task }) {
-   const { open, assignNow, toggleOpen, editTask, deleteTask } = useKanbanTaskCard(task);
+export default function KanbanTaskCard({ task, project }: { task: Task; project: Project }) {
+   const { open, isPending, assignNow, toggleOpen, editTask, deleteTask } = useKanbanTaskCard(task, project);
 
    return (
-      <div className="bg-background border-foreground/40 hover:border-foreground/70 relative rounded-md border p-1 shadow transition-all">
+      <div
+         className={cn(
+            "bg-background border-foreground/40 hover:border-foreground/70 relative rounded-md border p-1 shadow transition-all",
+            isPending && "pointer-events-none opacity-50",
+         )}
+      >
          <Collapsible open={open} onOpenChange={toggleOpen}>
             <div className={`flex ${open ? "items-start" : "items-center"} justify-between gap-3 p-2`}>
                <CollapsibleTrigger
@@ -53,34 +60,39 @@ export default function KanbanTaskCard({ task }: { task: Task }) {
 
                   <PriorityIndicator priority={task.priority} className="ml-1" />
 
-                  <DropdownMenu>
-                     <DropdownMenuTrigger
-                        asChild
-                        className="hover:text-foreground/100 text-foreground/80 cursor-pointer"
-                     >
-                        <EllipsisVertical />
-                     </DropdownMenuTrigger>
+                  {isPending ? (
+                     <SpinnerIcon />
+                  ) : (
+                     <DropdownMenu>
+                        <DropdownMenuTrigger
+                           disabled={isPending}
+                           asChild
+                           className="hover:text-foreground/100 text-foreground/80 cursor-pointer"
+                        >
+                           <EllipsisVertical />
+                        </DropdownMenuTrigger>
 
-                     <DropdownMenuContent side="right" align="start" className="border-foreground/50 border">
-                        {task.is_backlog && task.inner_issue.assignee && (
-                           <DropdownMenuItem onClick={assignNow}>
-                              <ArrowRight />
-                              Assign now
-                           </DropdownMenuItem>
-                        )}
+                        <DropdownMenuContent side="right" align="start" className="border-foreground/50 border">
+                           {task.is_backlog && task.inner_issue.assignee && (
+                              <DropdownMenuItem onClick={assignNow}>
+                                 <ArrowRight />
+                                 Assign now
+                              </DropdownMenuItem>
+                           )}
 
-                        {task.inner_issue.state === "open" && (
-                           <DropdownMenuItem onClick={editTask}>
-                              <Pencil />
-                              Edit
+                           {task.inner_issue.state === "open" && (
+                              <DropdownMenuItem onClick={editTask}>
+                                 <Pencil />
+                                 Edit
+                              </DropdownMenuItem>
+                           )}
+                           <DropdownMenuItem onClick={deleteTask}>
+                              <Trash2 />
+                              Delete
                            </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem onClick={deleteTask}>
-                           <Trash2 />
-                           Delete
-                        </DropdownMenuItem>
-                     </DropdownMenuContent>
-                  </DropdownMenu>
+                        </DropdownMenuContent>
+                     </DropdownMenu>
+                  )}
                </div>
             </div>
 

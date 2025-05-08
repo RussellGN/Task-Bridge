@@ -30,7 +30,7 @@ export default function KanbanColumn({ project, title, Icon, tasks, newTaskForm,
             ))}
             {tasks.map((task, index) => (
                <div key={index} className="w-full">
-                  <KanbanTaskCard task={task} />
+                  <KanbanTaskCard task={task} project={project} />
                </div>
             ))}
          </div>

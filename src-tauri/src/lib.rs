@@ -33,6 +33,7 @@ pub fn run() {
          commands::create_draft_task,
          commands::create_backlog_task,
          commands::sync_project_with_github,
+         commands::assign_task_now,
          experimental::clear_store
       ])
       .run(tauri::generate_context!())

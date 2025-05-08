@@ -1,11 +1,14 @@
-import { Task } from "@/types/interfaces";
+import { Project, Task } from "@/types/interfaces";
 import { useState } from "react";
 import { useSearchParams } from "react-router";
+import useAssignTaskNow from "../backend-api-hooks/internet-dependant/useAssignTaskNow";
+import { alertInfo } from "@/lib/utils";
 
-export default function useKanbanTaskCard(task: Task) {
+export default function useKanbanTaskCard(task: Task, project: Project) {
    const [open, setOpen] = useState(false);
    const toggleOpen = () => setOpen((prev) => !prev);
    const [, setSearchParams] = useSearchParams();
+   const { assignTaskNow, isPending: assignNowPending } = useAssignTaskNow(project);
 
    function editTask() {
       console.log("Editing task", task.inner_issue.id);
@@ -16,7 +19,8 @@ export default function useKanbanTaskCard(task: Task) {
    }
 
    function assignNow() {
-      console.log("assigning backlog task to", task.inner_issue.assignee?.login);
+      alertInfo("Assigning task to " + task.inner_issue.assignee!.login + "...");
+      assignTaskNow(task.inner_issue.id);
    }
 
    function deleteTask() {
@@ -25,6 +29,7 @@ export default function useKanbanTaskCard(task: Task) {
 
    return {
       open,
+      isPending: assignNowPending,
       editTask,
       assignNow,
       deleteTask,
