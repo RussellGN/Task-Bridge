@@ -262,7 +262,7 @@ impl Project {
       )
       .await?;
 
-      task.update(None, None, Some(updated_issue));
+      task.update(None, Some(false), Some(updated_issue));
       let updated_task = task.to_owned();
       self.save_updates_to_store(store)?;
 
