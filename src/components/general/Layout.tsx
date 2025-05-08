@@ -9,7 +9,7 @@ export default function Layout() {
    return (
       <div className="h-screen p-3 md:p-5 lg:p-8">
          <Outlet />
-         <Toaster />
+         <Toaster expand />
          <DevKit />
       </div>
    );
