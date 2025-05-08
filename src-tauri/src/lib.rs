@@ -34,6 +34,7 @@ pub fn run() {
          commands::create_backlog_task,
          commands::sync_project_with_github,
          commands::assign_task_now,
+         commands::delete_task,
          experimental::clear_store
       ])
       .run(tauri::generate_context!())

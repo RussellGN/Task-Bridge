@@ -3,12 +3,14 @@ import { useState } from "react";
 import { useSearchParams } from "react-router";
 import useAssignTaskNow from "../backend-api-hooks/internet-dependant/useAssignTaskNow";
 import { alertInfo } from "@/lib/utils";
+import useDeleteTask from "../backend-api-hooks/internet-dependant/useDeleteTask";
 
 export default function useKanbanTaskCard(task: Task, project: Project) {
    const [open, setOpen] = useState(false);
    const toggleOpen = () => setOpen((prev) => !prev);
    const [, setSearchParams] = useSearchParams();
    const { assignTaskNow, isPending: assignNowPending } = useAssignTaskNow(project);
+   const { deleteTaskWithId, isPending: deletePending } = useDeleteTask(project);
 
    function editTask() {
       console.log("Editing task", task.inner_issue.id);
@@ -24,12 +26,13 @@ export default function useKanbanTaskCard(task: Task, project: Project) {
    }
 
    function deleteTask() {
-      console.log("Deleting task", task.inner_issue.id);
+      alertInfo("Deleting task...", task.inner_issue.title);
+      deleteTaskWithId(task.inner_issue.id);
    }
 
    return {
       open,
-      isPending: assignNowPending,
+      isPending: assignNowPending || deletePending,
       editTask,
       assignNow,
       deleteTask,

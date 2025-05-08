@@ -259,6 +259,7 @@ impl Project {
                })
                .collect::<Vec<_>>(),
          ),
+         None,
       )
       .await?;
 
@@ -267,6 +268,49 @@ impl Project {
       self.save_updates_to_store(store)?;
 
       Ok(updated_task)
+   }
+
+   pub async fn delete_task(
+      &mut self,
+      task_id: &str,
+      token: &AccessToken,
+      repo: &models::Repository,
+      store: Arc<Store<impl Runtime>>,
+   ) -> crate::Result {
+      const F: &str = "[Project::delete_task]";
+
+      let tasks = match &mut self.tasks {
+         Some(tasks) => tasks,
+         None => return Err(format!("{F} project {} has no tasks", self.name)),
+      };
+
+      let task = match tasks.iter_mut().find(|t| t.get_inner_issue().id.to_string() == task_id) {
+         Some(task) => task,
+         None => return Err(format!("{F} project {} has no task with id {task_id}", self.name)),
+      };
+
+      // close issue and append 'deleted' label for now (TODO: delete using grapgql in future)
+      GithubAPI::update_issue(
+         task.get_inner_issue(),
+         repo,
+         token,
+         None,
+         None,
+         None,
+         Some(&[String::from("deleted")]),
+         Some(models::IssueState::Closed),
+      )
+      .await?;
+
+      *tasks = tasks
+         .into_iter()
+         .filter(|t| t.get_inner_issue().id.to_string() != task_id)
+         .map(|t| t.to_owned())
+         .collect();
+
+      self.save_updates_to_store(store)?;
+
+      Ok(())
    }
 
    pub async fn create_and_save_draft_task(

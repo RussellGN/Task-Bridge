@@ -480,6 +480,7 @@ impl GithubAPI {
       replacement_body: Option<&str>,
       replacement_assignee_login: Option<&[String]>,
       replacement_labels: Option<&[String]>,
+      replacement_state: Option<models::IssueState>,
    ) -> crate::Result<models::issues::Issue> {
       const F: &str = "[GithubAPI::update_issue]";
 
@@ -512,6 +513,10 @@ impl GithubAPI {
 
       if let Some(replacement_labels) = replacement_labels {
          updated_issue = updated_issue.labels(replacement_labels)
+      }
+
+      if let Some(replacement_state) = replacement_state {
+         updated_issue = updated_issue.state(replacement_state)
       }
 
       let updated_issue = updated_issue.send().await.map_err(|e| {
