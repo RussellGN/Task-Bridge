@@ -62,6 +62,19 @@ impl DraftTask {
       }
    }
 
+   pub fn update(&mut self, payload: NewDraftTaskPayload, team: &Vec<models::Author>) {
+      self.title = payload.title;
+      self.body = payload.body;
+      self.priority = payload.priority;
+
+      let assignee = match payload.assignee_login {
+         Some(login) => team.iter().find(|member| member.login == login),
+         None => None,
+      };
+
+      self.assignee = assignee.cloned();
+   }
+
    pub fn get_id(&self) -> &str {
       &self.id
    }
