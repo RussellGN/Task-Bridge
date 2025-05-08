@@ -110,7 +110,8 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
                   <Select
                      disabled={isPending}
                      name="assignee"
-                     value={itemToEdit?.assignee?.login || assignee}
+                     defaultValue={itemToEdit?.assignee?.login}
+                     value={assignee}
                      onValueChange={setAssignee}
                   >
                      <SelectTrigger>
