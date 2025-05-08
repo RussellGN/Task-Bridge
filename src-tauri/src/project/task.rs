@@ -91,6 +91,27 @@ impl Task {
          is_backlog: Some(is_backlog),
       }
    }
+
+   pub fn update(
+      &mut self,
+      updated_priority: Option<TaskPriority>,
+      updated_is_backlog: Option<bool>,
+      updated_inner_issue: Option<models::issues::Issue>,
+   ) {
+      if let Some(priority) = updated_priority {
+         self.priority = priority
+      }
+      if let Some(is_backlog) = updated_is_backlog {
+         self.is_backlog = Some(is_backlog)
+      }
+      if let Some(inner_issue) = updated_inner_issue {
+         self.inner_issue = inner_issue
+      }
+   }
+
+   pub fn get_inner_issue(&self) -> &models::issues::Issue {
+      &self.inner_issue
+   }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
