@@ -272,6 +272,31 @@ pub async fn edit_task<R: Runtime>(
 }
 
 #[tauri::command]
+pub async fn edit_draft_task<R: Runtime>(
+   app: tauri::AppHandle<R>,
+   payload: NewDraftTaskPayload,
+   draft_id: String,
+) -> crate::Result<DraftTask> {
+   const F: &str = "[edit_draft_task]";
+
+   let project_id = &payload.project_id;
+   log!("{F} editing draft task with id {draft_id} in project {project_id}");
+   let store = get_store(app)?;
+
+   let project = store
+      .get(project_id)
+      .ok_or(format!("{F} project with id {project_id} not found"))?;
+
+   let mut project = serde_json::from_value::<Project>(project)
+      .map_err(|e| format!("{F} failed to read project with id {project_id}: {e}"))?;
+
+   let updated_draft_task = project.edit_draft_task(&draft_id, payload, store).await?;
+   log!("{F} done editing draft task!");
+
+   Ok(updated_draft_task)
+}
+
+#[tauri::command]
 pub async fn delete_draft_task<R: Runtime>(
    app: tauri::AppHandle<R>,
    draft_id: String,

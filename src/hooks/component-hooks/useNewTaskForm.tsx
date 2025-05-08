@@ -3,11 +3,11 @@ import useCreateTask from "../backend-api-hooks/internet-dependant/useCreateTask
 import { TaskPriority } from "@/types/types";
 import { useSearchParams } from "react-router";
 import { NewDraftTaskPayload, NewTaskPayload, Project } from "@/types/interfaces";
-import { alertInfo, alertSuccess, wait } from "@/lib/utils";
 import useCreateDraftTask from "../backend-api-hooks/internet-independant/useCreateDraftTask";
 import { DEFAULT_NONE_SELECT_VALUE } from "@/lib/constants";
 import useCreateBacklogTask from "../backend-api-hooks/internet-dependant/useCreateBacklogTask";
 import useEditTask from "../backend-api-hooks/internet-dependant/useEditTask";
+import useEditDraftTask from "../backend-api-hooks/internet-dependant/useEditDraftTask";
 
 export default function useNewTaskForm(project: Project) {
    const [open, setOpen] = React.useState(false);
@@ -23,6 +23,7 @@ export default function useNewTaskForm(project: Project) {
       errorMessage: backlogAdditionError,
    } = useCreateBacklogTask(project.id);
    const { editTask, isPending: editPending } = useEditTask(project.id);
+   const { editDraftTask, isPending: editDraftPending } = useEditDraftTask(project.id);
 
    const taskToEditId = searchParams.get("edit_task");
    const draftToEditId = searchParams.get("edit_draft");
@@ -61,12 +62,8 @@ export default function useNewTaskForm(project: Project) {
 
       if (isEditing && taskToEdit) {
          await editTask(payload as NewTaskPayload, taskToEdit.inner_issue.id.toString());
-      } else if (isEditing) {
-         alertInfo("Saving updates...");
-         await wait(2);
-         alertSuccess("Updates saved!");
-         cleanupAndcloseModal();
-         return;
+      } else if (isEditing && draftToEdit) {
+         editDraftTask(payload as NewDraftTaskPayload, draftToEdit.id.toString());
       } else if (drafting) await createDraft(payload as NewDraftTaskPayload);
       else if (addToBacklog) await createBacklogTask(payload as NewTaskPayload);
       else await createTask(payload as NewTaskPayload);
@@ -97,7 +94,7 @@ export default function useNewTaskForm(project: Project) {
       itemToEdit,
       team: project.team,
       pendingTeam: project.pending_invites,
-      isPending: creationPending || draftPending || backlogAdditionPending || editPending,
+      isPending: creationPending || draftPending || backlogAdditionPending || editPending || editDraftPending,
       open: open || !!taskToEdit || !!draftToEdit,
       errorMessage: taskCreationError || draftCreationError || backlogAdditionError,
       setIsDraft,
