@@ -472,6 +472,64 @@ impl GithubAPI {
       Ok(issue)
    }
 
+   pub async fn update_issue(
+      old_issue: &models::issues::Issue,
+      repo: &models::Repository,
+      token: &AccessToken,
+      replacement_title: Option<&str>,
+      replacement_body: Option<&str>,
+      replacement_assignee_login: Option<&[String]>,
+      replacement_labels: Option<&[String]>,
+   ) -> crate::Result<models::issues::Issue> {
+      const F: &str = "[GithubAPI::update_issue]";
+
+      log!(
+         "{F} updating issue number '{}' in repo '{}'",
+         old_issue.number,
+         repo.name
+      );
+
+      let octo = create_authenticated_octo(&token.get_token())?;
+      let owner = repo
+         .owner
+         .clone()
+         .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name));
+
+      let issues = octo.issues(&owner.login, &repo.name);
+      let mut updated_issue = issues.update(old_issue.number);
+
+      if let Some(replacement_title) = replacement_title {
+         updated_issue = updated_issue.title(replacement_title);
+      }
+
+      if let Some(replacement_body) = replacement_body {
+         updated_issue = updated_issue.body(replacement_body);
+      }
+
+      if let Some(replacement_assignee_login) = replacement_assignee_login {
+         updated_issue = updated_issue.assignees(replacement_assignee_login)
+      }
+
+      if let Some(replacement_labels) = replacement_labels {
+         updated_issue = updated_issue.labels(replacement_labels)
+      }
+
+      let updated_issue = updated_issue.send().await.map_err(|e| {
+         format!(
+            "failed to send update request for issue number {}. {e}",
+            old_issue.number
+         )
+      })?;
+
+      log!(
+         "{F} successfully updated issue number '{}' in repo '{}'",
+         old_issue.number,
+         repo.name
+      );
+
+      Ok(updated_issue)
+   }
+
    pub async fn get_updated_repo(
       old_repo: &models::Repository,
       token: &AccessToken,
