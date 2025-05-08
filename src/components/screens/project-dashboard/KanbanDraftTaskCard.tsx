@@ -1,6 +1,6 @@
 import { UserAvatar } from "@/components/general/UserAvatar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { DraftTask } from "@/types/interfaces";
+import { DraftTask, Project } from "@/types/interfaces";
 import { ArrowRight, ChevronsDown, ChevronsUp, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 import PriorityIndicator from "./PriorityIndicator";
 import {
@@ -10,12 +10,19 @@ import {
    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import useKanbanDraftTaskCard from "@/hooks/component-hooks/useKanbanDraftTaskCard";
+import { cn } from "@/lib/utils";
+import SpinnerIcon from "@/components/general/SpinnerIcon";
 
-export default function KanbanDraftTaskCard({ draft }: { draft: DraftTask }) {
-   const { open, assignNow, toggleOpen, editDraft, deleteDraft } = useKanbanDraftTaskCard(draft);
+export default function KanbanDraftTaskCard({ draft, project }: { draft: DraftTask; project: Project }) {
+   const { open, isPending, assignNow, toggleOpen, editDraft, deleteDraft } = useKanbanDraftTaskCard(draft, project);
 
    return (
-      <div className="bg-background border-foreground/40 hover:border-foreground/70 relative rounded-md border p-1 shadow transition-all">
+      <div
+         className={cn(
+            "bg-background border-foreground/40 hover:border-foreground/70 relative rounded-md border p-1 shadow transition-all",
+            isPending && "pointer-events-none opacity-50",
+         )}
+      >
          <Collapsible open={open} onOpenChange={toggleOpen}>
             <div className={`flex ${open ? "items-start" : "items-center"} justify-between gap-3 p-2`}>
                <CollapsibleTrigger
@@ -42,31 +49,36 @@ export default function KanbanDraftTaskCard({ draft }: { draft: DraftTask }) {
 
                   <PriorityIndicator priority={draft.priority || undefined} className="ml-1" />
 
-                  <DropdownMenu>
-                     <DropdownMenuTrigger
-                        asChild
-                        className="hover:text-foreground/100 text-foreground/80 cursor-pointer"
-                     >
-                        <EllipsisVertical />
-                     </DropdownMenuTrigger>
+                  {isPending ? (
+                     <SpinnerIcon />
+                  ) : (
+                     <DropdownMenu>
+                        <DropdownMenuTrigger
+                           disabled={isPending}
+                           asChild
+                           className="hover:text-foreground/100 text-foreground/80 cursor-pointer"
+                        >
+                           <EllipsisVertical />
+                        </DropdownMenuTrigger>
 
-                     <DropdownMenuContent side="right" align="start" className="border-foreground/50 border">
-                        {draft.assignee && (
-                           <DropdownMenuItem onClick={assignNow}>
-                              <ArrowRight />
-                              Assign now
+                        <DropdownMenuContent side="right" align="start" className="border-foreground/50 border">
+                           {draft.assignee && (
+                              <DropdownMenuItem onClick={assignNow}>
+                                 <ArrowRight />
+                                 Assign now
+                              </DropdownMenuItem>
+                           )}
+                           <DropdownMenuItem onClick={editDraft}>
+                              <Pencil />
+                              Edit
                            </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem onClick={editDraft}>
-                           <Pencil />
-                           Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={deleteDraft}>
-                           <Trash2 />
-                           Delete
-                        </DropdownMenuItem>
-                     </DropdownMenuContent>
-                  </DropdownMenu>
+                           <DropdownMenuItem onClick={deleteDraft}>
+                              <Trash2 />
+                              Delete
+                           </DropdownMenuItem>
+                        </DropdownMenuContent>
+                     </DropdownMenu>
+                  )}
                </div>
             </div>
 

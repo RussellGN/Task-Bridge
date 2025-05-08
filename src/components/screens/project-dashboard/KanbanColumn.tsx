@@ -25,7 +25,7 @@ export default function KanbanColumn({ project, title, Icon, tasks, newTaskForm,
          <div className="flex grow flex-col gap-3 overflow-y-auto pr-1">
             {draftTasks.map((draft, index) => (
                <div key={index} className="w-full">
-                  <KanbanDraftTaskCard draft={draft} />
+                  <KanbanDraftTaskCard draft={draft} project={project} />
                </div>
             ))}
             {tasks.map((task, index) => (

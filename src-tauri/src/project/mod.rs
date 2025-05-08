@@ -313,6 +313,25 @@ impl Project {
       Ok(())
    }
 
+   pub async fn delete_draft_task(&mut self, draft_id: &str, store: Arc<Store<impl Runtime>>) -> crate::Result {
+      const F: &str = "[Project::delete_draft_task]";
+
+      let draft_tasks = match &mut self.draft_tasks {
+         Some(draft_tasks) => draft_tasks,
+         None => return Err(format!("{F} project {} has no draft tasks", self.name)),
+      };
+
+      *draft_tasks = draft_tasks
+         .into_iter()
+         .filter(|d| d.get_id() != draft_id)
+         .map(|t| t.to_owned())
+         .collect();
+
+      self.save_updates_to_store(store)?;
+
+      Ok(())
+   }
+
    pub async fn create_and_save_draft_task(
       &mut self,
       payload: NewDraftTaskPayload,

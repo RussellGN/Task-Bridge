@@ -61,6 +61,10 @@ impl DraftTask {
          priority,
       }
    }
+
+   pub fn get_id(&self) -> &str {
+      &self.id
+   }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
