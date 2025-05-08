@@ -270,6 +270,59 @@ impl Project {
       Ok(updated_task)
    }
 
+   pub async fn edit_task(
+      &mut self,
+      task_id: &str,
+      payload: NewTaskPayload,
+      token: &AccessToken,
+      repo: &models::Repository,
+      store: Arc<Store<impl Runtime>>,
+   ) -> crate::Result<Task> {
+      const F: &str = "[Project::edit_task]";
+
+      let tasks = match &mut self.tasks {
+         Some(tasks) => tasks,
+         None => return Err(format!("{F} project {} has no tasks", self.name)),
+      };
+
+      let task = match tasks.iter_mut().find(|t| t.get_inner_issue().id.to_string() == task_id) {
+         Some(task) => task,
+         None => return Err(format!("{F} project {} has no task with id {task_id}", self.name)),
+      };
+
+      let updated_issue = GithubAPI::update_issue(
+         task.get_inner_issue(),
+         repo,
+         token,
+         Some(&payload.title),
+         payload.body.as_deref(),
+         Some(&[payload.assignee_login]),
+         Some(
+            &task
+               .get_inner_issue()
+               .labels
+               .iter()
+               .map(|label| {
+                  let label = label.name.trim().to_lowercase();
+                  if label.ends_with("-priority") {
+                     payload.priority.to_string() // overide TaskPriority
+                  } else {
+                     label
+                  }
+               })
+               .collect::<Vec<_>>(),
+         ),
+         None,
+      )
+      .await?;
+
+      task.update(Some(payload.priority), None, Some(updated_issue));
+      let updated_task = task.to_owned();
+      self.save_updates_to_store(store)?;
+
+      Ok(updated_task)
+   }
+
    pub async fn delete_task(
       &mut self,
       task_id: &str,
