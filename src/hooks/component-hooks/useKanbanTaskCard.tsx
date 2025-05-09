@@ -45,5 +45,6 @@ export default function useKanbanTaskCard(task: Task, project: Project) {
       assignNow,
       deleteTask,
       toggleOpen,
+      syncActivity: () => syncTaskActivity(task.inner_issue.id.toString()),
    };
 }

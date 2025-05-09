@@ -1,8 +1,15 @@
+import { Button } from "@/components/ui/button";
 import { cn, getTimeElapsedSince } from "@/lib/utils";
 import { Task } from "@/types/interfaces";
-import { Clock } from "lucide-react";
+import { Clock, RotateCw } from "lucide-react";
 
-export default function TaskTimeline({ task, className }: { task: Task; className?: string }) {
+type TaskTimelineProps = {
+   task: Task;
+   className?: string;
+   syncActivity: () => void;
+};
+
+export default function TaskTimeline({ task, className, syncActivity }: TaskTimelineProps) {
    return (
       <div
          className={cn(
@@ -10,7 +17,13 @@ export default function TaskTimeline({ task, className }: { task: Task; classNam
             className,
          )}
       >
-         <div className="text-PRIMARY flex items-center gap-1 text-xs font-semibold">Activity</div>
+         <div className="text-PRIMARY flex items-center justify-between gap-1 text-xs font-semibold">
+            Activity
+            <Button variant="link" className="text-foreground cursor-pointer text-xs" size="sm" onClick={syncActivity}>
+               Refresh
+               <RotateCw className="lucide-exempt" />
+            </Button>
+         </div>
 
          <ul className="flex max-h-32 flex-col gap-1 overflow-y-auto pr-2">
             {task.commits?.map((commit) => {

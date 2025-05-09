@@ -17,10 +17,8 @@ import SpinnerIcon from "@/components/general/SpinnerIcon";
 import TaskTimeline from "./TaskTimeline";
 
 export default function KanbanTaskCard({ task, project }: { task: Task; project: Project }) {
-   const { open, isPending, isActivitySyncing, assignNow, toggleOpen, editTask, deleteTask } = useKanbanTaskCard(
-      task,
-      project,
-   );
+   const { open, isPending, isActivitySyncing, assignNow, toggleOpen, editTask, deleteTask, syncActivity } =
+      useKanbanTaskCard(task, project);
 
    return (
       <div
@@ -105,7 +103,9 @@ export default function KanbanTaskCard({ task, project }: { task: Task; project:
                   <p className="bg-foreground/15 border-foreground/25 text-sml rounded-sm border px-2 py-1">
                      {task.inner_issue.body || "No description"}
                   </p>
-                  {task.commits?.length && <TaskTimeline task={task} className="bg-foreground/15" />}
+                  {task.commits?.length && (
+                     <TaskTimeline task={task} className="bg-foreground/15" syncActivity={syncActivity} />
+                  )}
                </div>
             </CollapsibleContent>
          </Collapsible>
