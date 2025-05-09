@@ -1,8 +1,8 @@
 # Task-Bridge
 
-**Task-Bridge** is a project management solution centered around deep integration with GitHub. It stands out by simplifying development-team management and software-project oversight for non-technical or GitHub-averse project managers, through an abstracted and simplified desktop interface.
+**Task-Bridge** is a project management solution with deep integration to GitHub. It stands out by simplifying development-team management and software-project oversight for non-technical or GitHub-averse project managers. It does this through an abstracted, simple and intuitive desktop interface.
 
-## 🖼️ Screenshots
+## 🖼️ Screenshots (version 0.2.1)
 
 <table>
   <tr>
@@ -12,13 +12,13 @@
     </td>
     <td align="center" width="50%">
       <img src="./doc/screenshots/2-new-project-wizard.png" width="90%"/><br/>
-      <em>New Project Wizard – easy setup</em>
+      <em>New Project Wizard – project creation</em>
     </td>
   </tr>
   <tr>
     <td align="center">
       <img src="./doc/screenshots/3-team-selector-in-new-project-wizard.png" width="90%"/><br/>
-      <em>Team Selector – pick GitHub members</em>
+      <em>Team Selector – GitHub collaborator invitations</em>
     </td>
     <td align="center">
       <img src="./doc/screenshots/4-all-projects-view-screen.png" width="90%"/><br/>
@@ -28,7 +28,7 @@
   <tr>
     <td align="center">
       <img src="./doc/screenshots/5-project-dashboard-with-expanded-team-and-alert.png" width="90%"/><br/>
-      <em>Dashboard – team view with alerts</em>
+      <em>Dashboard – task items, team view, and alerts</em>
     </td>
     <td align="center">
       <img src="./doc/screenshots/6-project-dashboard-with-expanded-task.png" width="90%"/><br/>
@@ -38,25 +38,25 @@
   <tr>
     <td align="center">
       <img src="./doc/screenshots/7-project-dashboard-with-expanded-task-context-menu.png" width="90%"/><br/>
-      <em>Task Context – right-click actions</em>
+      <em>Task Actions – task context menu </em>
     </td>
     <td align="center">
       <img src="./doc/screenshots/8-draft-task-creation-modal.png" width="90%"/><br/>
-      <em>Draft Modal – initial task input</em>
+      <em>Draft Modal – draft task input</em>
     </td>
   </tr>
   <tr>
     <td align="center" colspan="2">
       <img src="./doc/screenshots/9-task-creation-modal.png" width="45%"/><br/>
-      <em>Final Task Modal – confirm and create</em>
+      <em>Task Modal – task creation and assignment</em>
     </td>
   </tr>
 </table>
 
 ## 📦 Downloads
 
-> ✅ You can install a new version without uninstalling the previous one.  
-> ⏳ More installers for other platforms are coming soon.
+> ℹ️ Installer will auto-remove previous versions if already installed.  
+> ⏳ More installer types and platform support incoming.
 
 | Version   | Installer Type | Download                                                                                          |
 | --------- | -------------- | ------------------------------------------------------------------------------------------------- |
@@ -73,6 +73,10 @@
 | 0.0.3     | `.exe` Win x64 | _No longer available_                                                                             |
 | 0.0.2     | `.exe` Win x64 | [Download](https://drive.google.com/file/d/1naGo0lwyoj2rIlpEqDppkRcCsqmFB3af/view?usp=sharing)    |
 | 0.0.1     | `.exe` Win x64 | [Download](https://drive.google.com/file/d/1kTbaX2mgx_O6Qwrzv7qdjGPWxaocb02X/view?usp=drive_link) |
+
+## 🚀 Roadmap
+
+Task-Bridge is currently at version **0.2.1**. Current roadmap includes minor versions up to **0.7.0**, introducing features, fixes and improvements before a stable **1.0.0** release.
 
 ## 📣 Feedback
 
