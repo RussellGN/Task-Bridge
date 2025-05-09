@@ -11,7 +11,7 @@ use crate::{
       task::{DraftTask, NewDraftTaskPayload, NewTaskPayload, Task},
       Project, ProjectPayload,
    },
-   utils::{dbg_store, get_store, get_token},
+   utils::{dbg_store, get_store, get_token, IssueExt},
 };
 
 #[tauri::command]
@@ -129,10 +129,19 @@ pub async fn sync_project_with_github<R: Runtime>(app: tauri::AppHandle<R>, proj
 
    let updated_tasks = if updated_repo.has_issues.unwrap_or(false) {
       let updated_issues = GithubAPI::get_repo_issues(&updated_repo, &token).await?;
-      let updated_tasks = updated_issues
+      let mut updated_tasks = updated_issues
          .into_iter()
          .map(|issue| Task::from_issue(issue))
-         .collect();
+         .collect::<Vec<Task>>();
+
+      for task in updated_tasks.iter_mut() {
+         let branch_name = task.get_inner_issue().task_branch_name();
+         let updated_commits = GithubAPI::get_branch_commits(&updated_repo, &branch_name, &token)
+            .await
+            .ok();
+         task.update(None, None, None, updated_commits);
+      }
+
       Some(updated_tasks)
    } else {
       None
