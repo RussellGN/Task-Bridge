@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use octocrab::models;
+use octocrab::models::{self, repos::RepoCommit};
 use serde::Serialize;
 use tauri::{AppHandle, Runtime};
 
@@ -378,12 +378,18 @@ pub async fn create_draft_task<R: Runtime>(
    Ok(task)
 }
 
+#[derive(Serialize, Debug)]
+pub struct ActivitySyncResponse {
+   commits: Vec<RepoCommit>,
+   task_id: String,
+}
+
 #[tauri::command]
 pub async fn sync_task_activity<R: Runtime>(
    app: tauri::AppHandle<R>,
    task_id: String,
    project_id: String,
-) -> crate::Result<Vec<models::repos::RepoCommit>> {
+) -> crate::Result<ActivitySyncResponse> {
    const F: &str = "[sync_task_activity]";
 
    log!("{F} syncing task activity for task with id '{task_id}");
@@ -397,10 +403,13 @@ pub async fn sync_task_activity<R: Runtime>(
       .map_err(|e| format!("{F} failed to read project with id '{project_id}': {e}",))?;
 
    let synced_activity = project
-      .sync_activity_for_task(task_id, &token, Arc::clone(&store))
+      .sync_activity_for_task(task_id.clone(), &token, Arc::clone(&store))
       .await?;
 
    log!("{F} now returning synced task activity");
 
-   Ok(synced_activity)
+   Ok(ActivitySyncResponse {
+      commits: synced_activity,
+      task_id,
+   })
 }

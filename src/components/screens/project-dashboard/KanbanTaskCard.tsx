@@ -17,7 +17,10 @@ import SpinnerIcon from "@/components/general/SpinnerIcon";
 import TaskTimeline from "./TaskTimeline";
 
 export default function KanbanTaskCard({ task, project }: { task: Task; project: Project }) {
-   const { open, isPending, assignNow, toggleOpen, editTask, deleteTask } = useKanbanTaskCard(task, project);
+   const { open, isPending, isActivitySyncing, assignNow, toggleOpen, editTask, deleteTask } = useKanbanTaskCard(
+      task,
+      project,
+   );
 
    return (
       <div
@@ -61,7 +64,7 @@ export default function KanbanTaskCard({ task, project }: { task: Task; project:
 
                   <PriorityIndicator priority={task.priority} className="ml-1" />
 
-                  {isPending ? (
+                  {isPending || isActivitySyncing ? (
                      <SpinnerIcon />
                   ) : (
                      <DropdownMenu>
@@ -98,9 +101,11 @@ export default function KanbanTaskCard({ task, project }: { task: Task; project:
             </div>
 
             <CollapsibleContent>
-               <div className="text-sm">
-                  {task.inner_issue.body?.trim() && <p className="mb-4 px-2 font-semibold">{task.inner_issue.body}</p>}
-                  <TaskTimeline task={task} />
+               <div className="flex flex-1 flex-col gap-0.5 text-xs">
+                  <p className="bg-foreground/15 border-foreground/25 text-sml rounded-sm border px-2 py-1">
+                     {task.inner_issue.body || "No description"}
+                  </p>
+                  {task.commits?.length && <TaskTimeline task={task} className="bg-foreground/15" />}
                </div>
             </CollapsibleContent>
          </Collapsible>

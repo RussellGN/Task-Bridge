@@ -156,3 +156,8 @@ export interface DraftTaskAssignmentResponse {
    task: Task;
    old_draft_id: string;
 }
+
+export interface ActivitySyncResponse {
+   commits: Commit[];
+   task_id: string;
+}
