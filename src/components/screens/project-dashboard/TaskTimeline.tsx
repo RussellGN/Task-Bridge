@@ -30,7 +30,9 @@ export default function TaskTimeline({ task, className, syncActivity }: TaskTime
                const date = commit.commit.committer.date || commit.commit.author.date;
                return (
                   <li key={commit.sha} className="flex items-center gap-1 text-xs">
-                     <div className="line-clamp-1 pr-4">{commit.commit.message}</div>
+                     <div title={commit.commit.message} className="line-clamp-1 pr-4">
+                        {commit.commit.message}
+                     </div>
 
                      {date && (
                         <div className="text-foreground/50 ml-auto flex items-center gap-1 text-nowrap">
