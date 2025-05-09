@@ -110,10 +110,16 @@ pub fn new_id() -> String {
 
 pub trait IssueExt {
    fn was_deleted(&self) -> bool;
+
+   fn task_branch_name(&self) -> String;
 }
 
 impl IssueExt for models::issues::Issue {
    fn was_deleted(&self) -> bool {
       self.state == models::IssueState::Closed && self.labels.iter().any(|l| l.name.as_str() == "deleted")
+   }
+
+   fn task_branch_name(&self) -> String {
+      format!("task/{}", self.number)
    }
 }
