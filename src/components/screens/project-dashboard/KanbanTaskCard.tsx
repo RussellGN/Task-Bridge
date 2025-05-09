@@ -14,6 +14,7 @@ import { AssigneesAvatars } from "@/components/general/AssigneesAvatars";
 import InfoTooltip from "@/components/general/InfoTooltip";
 import { cn } from "@/lib/utils";
 import SpinnerIcon from "@/components/general/SpinnerIcon";
+import TaskTimeline from "./TaskTimeline";
 
 export default function KanbanTaskCard({ task, project }: { task: Task; project: Project }) {
    const { open, isPending, assignNow, toggleOpen, editTask, deleteTask } = useKanbanTaskCard(task, project);
@@ -96,8 +97,11 @@ export default function KanbanTaskCard({ task, project }: { task: Task; project:
                </div>
             </div>
 
-            <CollapsibleContent className="bg-foreground/20 rounded-sm px-2 py-1 text-sm">
-               <p>{task.inner_issue.body || "no description"}</p>
+            <CollapsibleContent>
+               <div className="text-sm">
+                  {task.inner_issue.body?.trim() && <p className="mb-4 px-2 font-semibold">{task.inner_issue.body}</p>}
+                  <TaskTimeline task={task} />
+               </div>
             </CollapsibleContent>
          </Collapsible>
       </div>

@@ -12,7 +12,7 @@ use crate::{
    auth::AccessToken,
    log,
    new_github_api::{GithubAPI, RepoPayload},
-   utils::get_token,
+   utils::{get_token, IssueExt},
    TEAM_LOGINS_SEPERATOR,
 };
 
@@ -263,11 +263,38 @@ impl Project {
       )
       .await?;
 
-      task.update(None, Some(false), Some(updated_issue));
+      task.update(None, Some(false), Some(updated_issue), None);
       let updated_task = task.to_owned();
       self.save_updates_to_store(store)?;
 
       Ok(updated_task)
+   }
+
+   pub async fn sync_activity_for_task(
+      &mut self,
+      task_id: String,
+      token: &AccessToken,
+      store: Arc<Store<impl Runtime>>,
+   ) -> crate::Result<Vec<models::repos::RepoCommit>> {
+      const F: &str = "[Project::sync_activity_for_task]";
+
+      let tasks = match &mut self.tasks {
+         Some(tasks) => tasks,
+         None => return Err(format!("{F} project {} has no tasks", self.name)),
+      };
+
+      let task = match tasks.iter_mut().find(|t| t.get_inner_issue().id.to_string() == task_id) {
+         Some(task) => task,
+         None => return Err(format!("{F} project {} has no task with id {task_id}", self.name)),
+      };
+
+      let branch_name = &task.get_inner_issue().task_branch_name();
+      let commits = GithubAPI::get_branch_commits(&self.repo, branch_name, token).await?;
+
+      task.update(None, None, None, Some(commits.clone()));
+      self.save_updates_to_store(store)?;
+
+      Ok(commits)
    }
 
    pub async fn assign_drafted_task_now(
@@ -358,7 +385,7 @@ impl Project {
       )
       .await?;
 
-      task.update(Some(payload.priority), None, Some(updated_issue));
+      task.update(Some(payload.priority), None, Some(updated_issue), None);
       let updated_task = task.to_owned();
       self.save_updates_to_store(store)?;
 

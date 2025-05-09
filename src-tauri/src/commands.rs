@@ -377,3 +377,30 @@ pub async fn create_draft_task<R: Runtime>(
 
    Ok(task)
 }
+
+#[tauri::command]
+pub async fn sync_task_activity<R: Runtime>(
+   app: tauri::AppHandle<R>,
+   task_id: String,
+   project_id: String,
+) -> crate::Result<Vec<models::repos::RepoCommit>> {
+   const F: &str = "[sync_task_activity]";
+
+   log!("{F} syncing task activity for task with id '{task_id}");
+   let store = get_store(app)?;
+   let token = get_token(&store)?;
+
+   let project = store
+      .get(&project_id)
+      .ok_or(format!("{F} project with id {project_id} not found"))?;
+   let mut project = serde_json::from_value::<Project>(project)
+      .map_err(|e| format!("{F} failed to read project with id '{project_id}': {e}",))?;
+
+   let synced_activity = project
+      .sync_activity_for_task(task_id, &token, Arc::clone(&store))
+      .await?;
+
+   log!("{F} now returning synced task activity");
+
+   Ok(synced_activity)
+}

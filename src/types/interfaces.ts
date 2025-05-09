@@ -82,10 +82,50 @@ export interface Issue {
    updated_at: string;
 }
 
+export interface Commit {
+   sha: string;
+   url: string;
+   node_id: string;
+   html_url: string;
+   comments_url: string;
+   author?: Author | null;
+   committer?: Author | null;
+   parents: unknown;
+   stats?: unknown;
+   files?: unknown;
+   commit: {
+      message: string;
+      comment_count: number;
+      url: string;
+      author: {
+         name: string;
+         email: string;
+         date?: string | null;
+      };
+      committer: {
+         name: string;
+         email: string;
+         date?: string | null;
+      };
+      tree: {
+         sha: string;
+         url: string;
+      };
+      verification?: {
+         verified: boolean;
+         reason: string;
+         signature: string | null;
+         payload: string | null;
+         verified_at?: string | null;
+      } | null;
+   };
+}
+
 export interface Task {
    priority: TaskPriority;
    inner_issue: Issue;
    is_backlog?: boolean | null;
+   commits?: Commit[] | null;
 }
 
 export interface DraftTask {

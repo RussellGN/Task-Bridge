@@ -91,6 +91,7 @@ pub struct Task {
    priority: TaskPriority,
    is_backlog: Option<bool>,
    inner_issue: models::issues::Issue,
+   commits: Option<Vec<models::repos::RepoCommit>>,
 }
 
 impl Task {
@@ -112,6 +113,7 @@ impl Task {
          priority,
          inner_issue: issue,
          is_backlog: Some(is_backlog),
+         commits: None,
       }
    }
 
@@ -120,6 +122,7 @@ impl Task {
       updated_priority: Option<TaskPriority>,
       updated_is_backlog: Option<bool>,
       updated_inner_issue: Option<models::issues::Issue>,
+      updated_commits: Option<Vec<models::repos::RepoCommit>>,
    ) {
       if let Some(priority) = updated_priority {
          self.priority = priority
@@ -129,6 +132,9 @@ impl Task {
       }
       if let Some(inner_issue) = updated_inner_issue {
          self.inner_issue = inner_issue
+      }
+      if updated_commits.is_some() {
+         self.commits = updated_commits
       }
    }
 

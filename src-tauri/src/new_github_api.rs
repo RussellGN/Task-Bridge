@@ -430,6 +430,54 @@ impl GithubAPI {
       Ok(all_issues)
    }
 
+   pub async fn get_branch_commits(
+      repo: &models::Repository,
+      branch_name: &str,
+      token: &AccessToken,
+   ) -> crate::Result<Vec<models::repos::RepoCommit>> {
+      const F: &str = "[GithubAPI::get_branch_commits]";
+
+      log!("{F} fetching commits for branch '{branch_name}'",);
+
+      let octo = create_authenticated_octo(&token.get_token())?;
+
+      let owner = repo
+         .owner
+         .clone()
+         .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name));
+
+      let commits_stream = octo
+         .repos(&owner.login, &repo.name)
+         .list_commits()
+         .branch(branch_name)
+         .send()
+         .await
+         .map_err(|e| {
+            format!(
+               "{F} failed to fetch commits in {}/{}/{branch_name}. {e}",
+               owner.login, repo.name,
+            )
+         })?
+         .into_stream(&octo);
+
+      let mut commits_stream = Box::pin(commits_stream);
+
+      log!("{F} streaming commits into local vec",);
+      let mut all_commits = vec![];
+      while let Some(response) = commits_stream.next().await {
+         match response {
+            Ok(commit) => all_commits.push(commit),
+            Err(e) => return Err(format!("{F} failed to fetch next commit in loop: {e}")),
+         };
+      }
+      log!(
+         "{F} done streaming commits into local vec, now returning {} commits",
+         all_commits.len()
+      );
+
+      Ok(all_commits)
+   }
+
    pub async fn create_issue(
       repo: &models::Repository,
       token: &AccessToken,
