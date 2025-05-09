@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use octocrab::models;
+use serde::Serialize;
 use tauri::{AppHandle, Runtime};
 
 use crate::{
@@ -214,6 +215,42 @@ pub async fn assign_task_now<R: Runtime>(
    log!("{F} done assigning task!");
 
    Ok(updated_task)
+}
+
+#[derive(Serialize, Debug)]
+pub struct DraftTaskAssignmentResponse {
+   task: Task,
+   old_draft_id: String,
+}
+
+#[tauri::command]
+pub async fn assign_draft_task_now<R: Runtime>(
+   app: tauri::AppHandle<R>,
+   draft_id: String,
+   project_id: String,
+) -> crate::Result<DraftTaskAssignmentResponse> {
+   const F: &str = "[assign_task_now]";
+
+   log!("{F} assigning drafted task with id {draft_id} in project {project_id}");
+   let store = get_store(app)?;
+   let token = get_token(&store)?;
+
+   let project = store
+      .get(&project_id)
+      .ok_or(format!("{F} project with id {project_id} not found"))?;
+
+   let mut project = serde_json::from_value::<Project>(project)
+      .map_err(|e| format!("{F} failed to read project with id {project_id}: {e}"))?;
+
+   let derived_task = project
+      .assign_drafted_task_now(draft_id.clone(), &token, &project.get_repo().clone(), store)
+      .await?;
+   log!("{F} done assigning drafted task!");
+
+   Ok(DraftTaskAssignmentResponse {
+      task: derived_task,
+      old_draft_id: draft_id,
+   })
 }
 
 #[tauri::command]

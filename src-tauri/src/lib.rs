@@ -38,6 +38,7 @@ pub fn run() {
          commands::delete_draft_task,
          commands::edit_task,
          commands::edit_draft_task,
+         commands::assign_draft_task_now,
          experimental::clear_store
       ])
       .run(tauri::generate_context!())

@@ -3,15 +3,18 @@ import { useState } from "react";
 import { useSearchParams } from "react-router";
 import useDeleteDraftTask from "../backend-api-hooks/internet-dependant/useDeleteDraftTask";
 import { alertInfo, wait } from "@/lib/utils";
+import useAssignDraftTaskNow from "../backend-api-hooks/internet-dependant/useAssignDraftTaskNow";
 
 export default function useKanbanDraftTaskCard(draft: DraftTask, project: Project) {
    const [open, setOpen] = useState(false);
    const toggleOpen = () => setOpen((prev) => !prev);
    const [, setSearchParams] = useSearchParams();
    const { isPending: deletePending, deleteDraftTaskWithId } = useDeleteDraftTask(project);
+   const { isPending: draftAssignPending, assignDraftTaskNow } = useAssignDraftTaskNow(project);
 
    function assignNow() {
-      console.log("assigning drafted task to", draft.assignee?.login);
+      alertInfo("Assigning drafted task to " + draft.assignee!.login + "...");
+      assignDraftTaskNow(draft.id);
    }
 
    function editDraft() {
@@ -28,7 +31,7 @@ export default function useKanbanDraftTaskCard(draft: DraftTask, project: Projec
 
    return {
       open,
-      isPending: deletePending,
+      isPending: deletePending || draftAssignPending,
       assignNow,
       editDraft,
       toggleOpen,

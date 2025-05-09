@@ -270,6 +270,48 @@ impl Project {
       Ok(updated_task)
    }
 
+   pub async fn assign_drafted_task_now(
+      &mut self,
+      draft_id: String,
+      token: &AccessToken,
+      repo: &models::Repository,
+      store: Arc<Store<impl Runtime>>,
+   ) -> crate::Result<Task> {
+      const F: &str = "[Project::assign_drafted_task_now]";
+
+      let draft_tasks = match &mut self.draft_tasks {
+         Some(draft_tasks) => draft_tasks,
+         None => return Err(format!("{F} project {} has no draft-tasks", self.name)),
+      };
+
+      let draft_task = match draft_tasks.iter_mut().find(|t| t.get_id() == draft_id) {
+         Some(draft_task) => draft_task,
+         None => {
+            return Err(format!(
+               "{F} project {} has no draft-task with id {draft_id}",
+               self.name
+            ))
+         }
+      };
+
+      let task_payload = NewTaskPayload::from_draft_task_and_project_id(draft_task.clone(), self.id.clone())?;
+      let labels = vec![format!("{}-priority", task_payload.priority)];
+      let derived_issue = GithubAPI::create_issue(repo, token, task_payload, Some(labels)).await?;
+
+      let derived_task = Task::from_issue(derived_issue);
+      self.delete_draft_task(&draft_id, Arc::clone(&store)).await?;
+
+      if let Some(tasks) = &mut self.tasks {
+         tasks.push(derived_task.clone());
+      } else {
+         self.tasks = Some(vec![derived_task.clone()]);
+      }
+
+      self.save_updates_to_store(store)?;
+
+      Ok(derived_task)
+   }
+
    pub async fn edit_task(
       &mut self,
       task_id: &str,

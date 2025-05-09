@@ -111,3 +111,8 @@ export interface NewDraftTaskPayload {
    priority: TaskPriority | null;
    project_id: string;
 }
+
+export interface DraftTaskAssignmentResponse {
+   task: Task;
+   old_draft_id: string;
+}

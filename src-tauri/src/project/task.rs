@@ -14,6 +14,12 @@ pub enum TaskPriority {
    Urgent,
 }
 
+impl Default for TaskPriority {
+   fn default() -> Self {
+      Self::Normal
+   }
+}
+
 impl Display for TaskPriority {
    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
       write!(
@@ -138,6 +144,22 @@ pub struct NewTaskPayload {
    pub assignee_login: String,
    pub priority: TaskPriority,
    pub project_id: String,
+}
+
+impl NewTaskPayload {
+   pub fn from_draft_task_and_project_id(draft: DraftTask, project_id: String) -> crate::Result<Self> {
+      const F: &str = "[NewTaskPayload::from_draft_task_and_project_id]";
+      Ok(Self {
+         title: draft.title,
+         body: draft.body,
+         assignee_login: draft
+            .assignee
+            .ok_or(format!("{F} Draft task does not have an assignee. This is required!"))?
+            .login,
+         priority: draft.priority.unwrap_or_default(),
+         project_id,
+      })
+   }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
