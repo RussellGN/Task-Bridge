@@ -89,8 +89,9 @@ impl DraftTask {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Task {
    priority: TaskPriority,
-   is_backlog: Option<bool>,
    inner_issue: models::issues::Issue,
+   is_backlog: Option<bool>,
+   is_under_review: Option<bool>,
    commits: Option<Vec<models::repos::RepoCommit>>,
 }
 
@@ -113,6 +114,7 @@ impl Task {
          priority,
          inner_issue: issue,
          is_backlog: Some(is_backlog),
+         is_under_review: None,
          commits: None,
       }
    }
@@ -121,6 +123,7 @@ impl Task {
       &mut self,
       updated_priority: Option<TaskPriority>,
       updated_is_backlog: Option<bool>,
+      updated_is_under_review: Option<bool>,
       updated_inner_issue: Option<models::issues::Issue>,
       updated_commits: Option<Vec<models::repos::RepoCommit>>,
    ) {
@@ -129,6 +132,9 @@ impl Task {
       }
       if let Some(is_backlog) = updated_is_backlog {
          self.is_backlog = Some(is_backlog)
+      }
+      if let Some(is_under_review) = updated_is_under_review {
+         self.is_under_review = Some(is_under_review)
       }
       if let Some(inner_issue) = updated_inner_issue {
          self.inner_issue = inner_issue

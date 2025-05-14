@@ -125,6 +125,7 @@ export interface Task {
    priority: TaskPriority;
    inner_issue: Issue;
    is_backlog?: boolean | null;
+   is_under_review?: boolean | null;
    commits?: Commit[] | null;
 }
 

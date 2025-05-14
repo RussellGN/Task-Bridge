@@ -139,7 +139,7 @@ pub async fn sync_project_with_github<R: Runtime>(app: tauri::AppHandle<R>, proj
          let updated_commits = GithubAPI::get_branch_commits(&updated_repo, &branch_name, &token)
             .await
             .ok();
-         task.update(None, None, None, updated_commits);
+         task.update(None, None, None, None, updated_commits);
       }
 
       Some(updated_tasks)

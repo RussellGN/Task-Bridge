@@ -263,7 +263,7 @@ impl Project {
       )
       .await?;
 
-      task.update(None, Some(false), Some(updated_issue), None);
+      task.update(None, Some(false), None, Some(updated_issue), None);
       let updated_task = task.to_owned();
       self.save_updates_to_store(store)?;
 
@@ -291,7 +291,7 @@ impl Project {
       let branch_name = &task.get_inner_issue().task_branch_name();
       let commits = GithubAPI::get_branch_commits(&self.repo, branch_name, token).await?;
 
-      task.update(None, None, None, Some(commits.clone()));
+      task.update(None, None, None, None, Some(commits.clone()));
       self.save_updates_to_store(store)?;
 
       Ok(commits)
@@ -385,7 +385,7 @@ impl Project {
       )
       .await?;
 
-      task.update(Some(payload.priority), None, Some(updated_issue), None);
+      task.update(Some(payload.priority), None, None, Some(updated_issue), None);
       let updated_task = task.to_owned();
       self.save_updates_to_store(store)?;
 
