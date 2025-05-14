@@ -55,11 +55,13 @@
 
 ## 📦 Downloads
 
+> ⚠️ **Important:** Install only the latest patched version. Previous versions are less stable, and available only for reference & testing purposes.  
 > ℹ️ Installer will auto-remove previous versions if already installed.  
 > ⏳ More installer types and platform support incoming.
 
 | Version   | Installer Type | Download                                                                                          |
 | --------- | -------------- | ------------------------------------------------------------------------------------------------- |
+| 0.2.2     | `.exe` Win x64 | [Download](https://drive.google.com/file/d/1BhDb3q6-bF7xUF26ehrLFgX0ItVsB5rS/view?usp=sharing)    |
 | 0.2.1     | `.exe` Win x64 | [Download](https://drive.google.com/file/d/1XI9tVnHW7JyUa4jfFLigqLLXeXrCBtOk/view?usp=sharing)    |
 | **0.2.0** | `.exe` Win x64 | [Download](https://drive.google.com/file/d/1FNBvpDKaqSXnAgo1h4ri_UdSpwgHJpbu/view?usp=sharing)    |
 |           | `.msi` Win x64 | [Download](https://drive.google.com/file/d/1koKslaq4qAgqOFpORTB1O_70doT8ue56/view?usp=sharing)    |
