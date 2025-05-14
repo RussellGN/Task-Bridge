@@ -3,11 +3,13 @@ import { alertError, logInfo } from "@/lib/utils";
 import { Author } from "@/types/interfaces";
 import useSearchUsers from "../backend-api-hooks/internet-dependant/useSearchUsers";
 import { TEAM_LOGINS_SEPERATOR } from "@/lib/constants";
+import useGetUser from "../backend-api-hooks/internet-independant/useGetUser";
 
 export default function useTeamSelector() {
    const [team, setTeam] = useState<Author[]>([]);
    const [query, setQuery] = useState("");
    const { error, loading, queriedUsers, startSearch } = useSearchUsers(query);
+   const { user: loggedInUser } = useGetUser();
    const teamInputValue = team.map((user) => `${user.login}`).join(TEAM_LOGINS_SEPERATOR);
 
    useEffect(() => {
@@ -22,6 +24,11 @@ export default function useTeamSelector() {
    }
 
    function selectUser(user: Author) {
+      if (user.login === loggedInUser?.login) {
+         alertError("[selectUser] You cannot invite yourself to the team. You are already a member.");
+         return;
+      }
+
       setTeam((prev) => {
          const newTeam = [...prev, user];
          return newTeam.filter((u, i) => newTeam.findIndex((user) => user.id === u.id) === i); // remove duplicates
