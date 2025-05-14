@@ -4,8 +4,9 @@ use std::sync::Arc;
 
 use octocrab::models;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use task::{DraftTask, NewDraftTaskPayload, NewTaskPayload, Task};
-use tauri::Runtime;
+use tauri::{http::Method, Runtime};
 use tauri_plugin_store::Store;
 
 use crate::{
@@ -505,5 +506,52 @@ impl Project {
       self.save_updates_to_store(store)?;
 
       Ok(draft_task)
+   }
+
+   pub async fn map_issues_to_tasks_with_review_status(
+      issues: Vec<models::issues::Issue>,
+      token: &AccessToken,
+   ) -> crate::Result<Vec<Task>> {
+      // if a 'pull_request' issue is found, it will not map to a new task, it will be saved into a special vec 'pull_requests'
+      let pull_requests = issues
+         .iter()
+         .filter_map(|issue| {
+            if issue.state == models::IssueState::Closed {
+               None
+            } else {
+               issue.pull_request.clone()
+            }
+         })
+         .collect::<Vec<_>>();
+
+      // all other issues have their task's 'is_under_review' root field set to false
+      let mut tasks = issues
+         .into_iter()
+         .filter(|issue| issue.pull_request.is_none())
+         .map(|issue| Task::from_issue(issue))
+         .collect::<Vec<Task>>();
+
+      // after all tasks are created from issues, 'pull_request' issues are iterated and their branch names identified
+      let mut pull_request_branch_names = vec![];
+      for pull_req in pull_requests {
+         let (branch_name, _) = GithubAPI::request::<models::pulls::PullRequest, Value>(
+            Method::GET,
+            format!("{}?{}", pull_req.url.path(), pull_req.url.query().unwrap_or("")),
+            &token,
+            None,
+         )
+         .await?;
+         pull_request_branch_names.push(branch_name.head.ref_field);
+      }
+
+      for task in tasks.iter_mut() {
+         // if one of the above branch names corresponds to a task, task will have 'is_under_review' set to 'true'
+         let is_under_review = pull_request_branch_names
+            .iter()
+            .any(|n| n.eq(&task.get_inner_issue().task_branch_name()));
+         task.update(None, None, Some(is_under_review), None, None);
+      }
+
+      Ok(tasks)
    }
 }

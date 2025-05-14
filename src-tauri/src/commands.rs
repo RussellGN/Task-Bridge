@@ -90,7 +90,7 @@ pub async fn sync_projects_with_github<R: Runtime>(app: tauri::AppHandle<R>) -> 
 
       let tasks = if repo.has_issues.unwrap_or(false) {
          let issues = GithubAPI::get_repo_issues(&repo, &token).await?;
-         let tasks = issues.into_iter().map(|issue| Task::from_issue(issue)).collect();
+         let tasks = Project::map_issues_to_tasks_with_review_status(issues, &token).await?;
          Some(tasks)
       } else {
          None
@@ -129,10 +129,7 @@ pub async fn sync_project_with_github<R: Runtime>(app: tauri::AppHandle<R>, proj
 
    let updated_tasks = if updated_repo.has_issues.unwrap_or(false) {
       let updated_issues = GithubAPI::get_repo_issues(&updated_repo, &token).await?;
-      let mut updated_tasks = updated_issues
-         .into_iter()
-         .map(|issue| Task::from_issue(issue))
-         .collect::<Vec<Task>>();
+      let mut updated_tasks = Project::map_issues_to_tasks_with_review_status(updated_issues, &token).await?;
 
       for task in updated_tasks.iter_mut() {
          let branch_name = task.get_inner_issue().task_branch_name();
