@@ -6,6 +6,7 @@ use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::Value;
 use tauri::http::{header, HeaderValue, Method};
 use tauri_plugin_http::reqwest;
+use urlencoding::encode;
 
 use crate::{
    auth::AccessToken,
@@ -437,45 +438,49 @@ impl GithubAPI {
    ) -> crate::Result<Vec<models::repos::RepoCommit>> {
       const F: &str = "[GithubAPI::get_branch_commits]";
 
-      log!("{F} fetching commits for branch '{branch_name}'",);
-
-      let octo = create_authenticated_octo(&token.get_token())?;
+      log!("{F} fetching commits exclusively in branch '{branch_name}' (as compared to branch main )",);
 
       let owner = repo
          .owner
          .clone()
          .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name));
 
-      let commits_stream = octo
-         .repos(&owner.login, &repo.name)
-         .list_commits()
-         .branch(branch_name)
-         .send()
-         .await
-         .map_err(|e| {
-            format!(
-               "{F} failed to fetch commits in {}/{}/{branch_name}. {e}",
-               owner.login, repo.name,
-            )
-         })?
-         .into_stream(&octo);
-
-      let mut commits_stream = Box::pin(commits_stream);
-
-      log!("{F} streaming commits into local vec",);
-      let mut all_commits = vec![];
-      while let Some(response) = commits_stream.next().await {
-         match response {
-            Ok(commit) => all_commits.push(commit),
-            Err(e) => return Err(format!("{F} failed to fetch next commit in loop: {e}")),
-         };
+      #[derive(Deserialize, Debug)]
+      struct BranchesComparison {
+         commits: Vec<models::repos::RepoCommit>,
       }
-      log!(
-         "{F} done streaming commits into local vec, now returning {} commits",
-         all_commits.len()
+
+      let path_query = format!(
+         "/repos/{}/{}/compare/{}...{}",
+         owner.login,
+         repo.name,
+         repo.default_branch.clone().unwrap_or("main".to_string()),
+         encode(branch_name).as_ref()
       );
 
-      Ok(all_commits)
+      log!("{F} fetching exclusive commits @ {path_query} ");
+
+      match Self::request::<BranchesComparison, Value>(Method::GET, &path_query, token, None).await {
+         Ok((BranchesComparison { commits }, _)) => Ok(commits),
+         Err(e) => {
+            log!("{F} failed to fetch exclusive commits @ {path_query}. {e} ");
+            if repo.default_branch.is_some() {
+               return Err(format!("{F} failed to fetch task activity: {e}"));
+            }
+            let path_query = format!(
+               "/repos/{}/{}/compare/master...{}",
+               owner.login,
+               repo.name,
+               encode(branch_name).as_ref()
+            );
+
+            log!("{F} retrying exclusive commits fetch @ {path_query}");
+            let (BranchesComparison { commits }, _) =
+               Self::request::<BranchesComparison, Value>(Method::GET, path_query, token, None).await?;
+
+            Ok(commits)
+         }
+      }
    }
 
    pub async fn create_issue(

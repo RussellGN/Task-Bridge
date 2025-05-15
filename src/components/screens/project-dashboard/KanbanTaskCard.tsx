@@ -103,8 +103,10 @@ export default function KanbanTaskCard({ task, project }: { task: Task; project:
                   <p className="bg-foreground/15 border-foreground/25 text-sml rounded-sm border px-2 py-1">
                      {task.inner_issue.body || "No description"}
                   </p>
-                  {task.commits?.length && (
+                  {task.commits?.length ? (
                      <TaskTimeline task={task} className="bg-foreground/15" syncActivity={syncActivity} />
+                  ) : (
+                     ""
                   )}
                </div>
             </CollapsibleContent>
