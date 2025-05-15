@@ -1,5 +1,3 @@
-# TODO
-
 # workflow
 
 As seen from the eyes of 'a non-technical software-development-project manager', the target user of this product.
