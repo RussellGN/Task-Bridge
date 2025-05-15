@@ -19,7 +19,9 @@ export default function AllProjectsTab() {
             </Button>
          </div>
 
-         {!isLoading && errorMessage && <ErrorDisplay containerClassName="mb-3" error={errorMessage} />}
+         {!isLoading && errorMessage && (
+            <ErrorDisplay lightError={!projects?.length} containerClassName="mb-3" error={errorMessage} />
+         )}
 
          {isLoading ? (
             <div className="mb-3 pt-30 text-center">
