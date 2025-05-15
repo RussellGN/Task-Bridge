@@ -1,6 +1,6 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { Info, LucideIcon } from "lucide-react";
+import { AlertTriangle, Info, LucideIcon } from "lucide-react";
 import { ReactNode } from "react";
 
 type InfoTooltipProps = {
@@ -11,6 +11,7 @@ type InfoTooltipProps = {
    iconSize?: number;
    align?: "start" | "center" | "end";
    side?: "top" | "bottom" | "left" | "right";
+   isError?: boolean;
 };
 
 export default function InfoTooltip({
@@ -21,6 +22,7 @@ export default function InfoTooltip({
    iconSize,
    align,
    side,
+   isError,
 }: InfoTooltipProps) {
    const Icon = TriggerIcon || Info;
    return (
@@ -37,7 +39,10 @@ export default function InfoTooltip({
                )}
             </TooltipTrigger>
             <TooltipContent align={align} side={side}>
-               <p>{content}</p>
+               <p>
+                  {isError && <AlertTriangle className="lucide-exempt text-DANGER mr-1 inline-block" size={13} />}
+                  {content}
+               </p>
             </TooltipContent>
          </Tooltip>
       </TooltipProvider>
