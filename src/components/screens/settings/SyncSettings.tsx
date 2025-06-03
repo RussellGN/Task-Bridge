@@ -17,8 +17,8 @@ export default function SyncSettings() {
                   className="w-fit"
                   defaultValue={PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS / (60 * 1000)}
                   type="number"
-                  name="interval"
-                  id="interval"
+                  name="project_sync_interval"
+                  id="project_sync_interval"
                   max={24 * 60}
                   min={1}
                   required
