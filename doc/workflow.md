@@ -28,11 +28,10 @@ _pre-requisites_ - a working personal/organization github account
 21.   Tasks will move between columns based only on the automation rules specified above.
 22.   Tasks cannot move between columns otherwise, but can be edited or deleted in place.
 23.   App syncs the active project dashboard with GitHub on navigation-to-it, and on a configurable interval (and eventually on webhook events).
-24.   Manager can comment on tasks, and comments sync with the corresponding github issue discussion.
-25.   App produces notifications of github activity (powered by webhook events).
-26.   Manager can sync existing github repositories as 'existing projects'.
-27.   Each project has settings for dismissing/inviting team members, changing their permissions, changing repo visibility,changing repo/project name, and deleting project.
-28.   App produces analytics on: task completion rates, average times spent in each column, and individual team member stats.
-29.   As a positive consequence of how GitHub works, email notifications alert team members and manager of all repo activity originating from within/outside Task Bridge.
-30.   App limtis most functionality to online-use only.
-31.   App will allow adding/removing/switching of accounts
+24.   App produces notifications of github activity (powered by webhook events).
+25.   Manager can sync existing github repositories as 'existing projects'.
+26.   Each project has settings for dismissing/inviting team members, changing their permissions, changing repo visibility,changing repo/project name, and deleting project.
+27.   App produces analytics on: task completion rates, average times spent in each column, and individual team member stats.
+28.   As a positive consequence of how GitHub works, email notifications alert team members and manager of all repo activity originating from within/outside Task Bridge.
+29.   App limtis most functionality to online-use only.
+30.   App will allow adding/removing/switching of accounts
