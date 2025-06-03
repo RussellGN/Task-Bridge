@@ -3,7 +3,7 @@ import { Info } from "lucide-react";
 
 export default function SettingSkeleton({ title, description, children }: Setting) {
    return (
-      <div>
+      <div className="mb-10">
          <div className="mb-2 font-semibold">{title}</div>
 
          <p className="text-foreground/70 mb-4 max-w-prose text-sm">
