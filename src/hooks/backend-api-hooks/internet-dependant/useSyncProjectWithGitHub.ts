@@ -1,3 +1,4 @@
+import useSettings from "@/hooks/route-hooks/useSettings";
 import { PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS } from "@/lib/constants";
 import { alertError, alertInfo, alertSuccess, dbg } from "@/lib/utils";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
@@ -12,6 +13,7 @@ export default function useSyncProjectWithGitHub(project: Project) {
    const client = useClient();
    const { doIfOnline } = useConnectionStatus();
    const { syncIfNotSynced } = useSyncedProjects();
+   const { settings } = useSettings();
 
    const { isPending, mutate } = useMutation({
       mutationFn: () => invoke("sync_project_with_github", { projectId: project.id }),
@@ -33,7 +35,15 @@ export default function useSyncProjectWithGitHub(project: Project) {
       // sync on mount
       syncIfNotSynced(project.id, syncProjectWithGitHub);
 
-      dbg("[useSyncProjectWithGitHub]", "registering interval to sync project data for", project.name);
+      const intervalLength = settings?.project_sync_interval
+         ? settings?.project_sync_interval * 1000
+         : PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS;
+
+      dbg(
+         "[useSyncProjectWithGitHub]",
+         `registering interval (${intervalLength / 1000} min) to sync project data for`,
+         project.name,
+      );
 
       const interval = window.setInterval(() => {
          doIfOnline(
@@ -44,7 +54,7 @@ export default function useSyncProjectWithGitHub(project: Project) {
             "GitHub sync attempt failed!",
             "This sync happens periodically in the background, but will not be attempted if you are offline.",
          );
-      }, PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS);
+      }, intervalLength);
 
       dbg("[useSyncProjectWithGitHub]", "interval configured is", interval);
 
