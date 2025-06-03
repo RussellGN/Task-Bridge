@@ -168,3 +168,7 @@ export interface Setting {
    description: string;
    children: React.ReactNode;
 }
+
+export interface Settings {
+   project_sync_interval: number;
+}
