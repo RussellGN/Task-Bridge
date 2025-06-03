@@ -18,10 +18,10 @@ export default function useSyncProjectWithGitHub(project: Project) {
          const errorMessage = err instanceof Error ? err.message : err;
          alertError("[useSyncProjectWithGitHub] Error syncing project with GitHub: " + errorMessage);
       },
-      onSuccess: () => {
-         alertSuccess(`[useSyncProjectWithGitHub] sync complete! ${project.name} project was updated!`);
+      onSuccess() {
          client.invalidateQueries({ queryKey: ["project", project.id] });
          client.invalidateQueries({ queryKey: ["projects"] });
+         alertSuccess(`[useSyncProjectWithGitHub] sync complete! ${project.name} project was updated!`);
       },
    });
 
