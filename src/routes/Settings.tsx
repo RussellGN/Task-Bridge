@@ -7,7 +7,7 @@ import useSettings from "@/hooks/route-hooks/useSettings";
 import SpinnerIcon from "@/components/general/SpinnerIcon";
 
 export default function Settings() {
-   const { loading, patchSettings } = useSettings();
+   const { settings, loading, patchSettings } = useSettings();
 
    return (
       <div>
@@ -42,7 +42,7 @@ export default function Settings() {
                   className="bg-foreground/5 col-span-10 max-h-[80vh] grow overflow-y-auto rounded-md p-4"
                >
                   <form onSubmit={patchSettings}>
-                     <tab.component />
+                     <tab.component settings={settings} />
                      <div className="mt-4 text-right">
                         <Button disabled={loading} type="submit" variant="PRIMARY">
                            {loading ? (

@@ -1,8 +1,8 @@
 import { Input } from "@/components/ui/input";
 import SettingSkeleton from "./SettingSkeleton";
-import { PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS } from "@/lib/constants";
+import { Settings } from "@/types/interfaces";
 
-export default function SyncSettings() {
+export default function SyncSettings({ settings }: { settings?: Settings }) {
    return (
       <div>
          <SettingSkeleton
@@ -15,7 +15,7 @@ export default function SyncSettings() {
                </label>
                <Input
                   className="w-fit"
-                  defaultValue={PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS / (60 * 1000)}
+                  defaultValue={settings?.project_sync_interval || 0}
                   type="number"
                   name="project_sync_interval"
                   id="project_sync_interval"
