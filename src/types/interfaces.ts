@@ -170,5 +170,5 @@ export interface Setting {
 }
 
 export interface Settings {
-   project_sync_interval: number;
+   project_sync_interval?: number;
 }
