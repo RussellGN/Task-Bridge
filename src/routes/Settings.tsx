@@ -2,8 +2,13 @@ import BackBtn from "@/components/general/BackBtn";
 import { SettingsIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SETTINGS_TABS } from "@/lib/constants";
+import { Button } from "@/components/ui/button";
+import useSettings from "@/hooks/route-hooks/useSettings";
+import SpinnerIcon from "@/components/general/SpinnerIcon";
 
 export default function Settings() {
+   const { loading, patchSettings } = useSettings();
+
    return (
       <div>
          <div className="mb-4 flex items-center justify-between gap-2">
@@ -34,9 +39,22 @@ export default function Settings() {
                <TabsContent
                   key={tab.value}
                   value={tab.value}
-                  className="bg-foreground/5 col-span-10 grow rounded-md p-4 md:h-full"
+                  className="bg-foreground/5 col-span-10 max-h-[80vh] grow overflow-y-auto rounded-md p-4"
                >
-                  <tab.component />
+                  <form onSubmit={patchSettings}>
+                     <tab.component />
+                     <div className="mt-4 text-right">
+                        <Button disabled={loading} type="submit" variant="PRIMARY">
+                           {loading ? (
+                              <>
+                                 Saving... <SpinnerIcon />
+                              </>
+                           ) : (
+                              "Save"
+                           )}
+                        </Button>
+                     </div>
+                  </form>
                </TabsContent>
             ))}
          </Tabs>
