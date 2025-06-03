@@ -2,6 +2,7 @@ import { PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS } from "@/lib/constants";
 import { alertError, alertInfo, alertSuccess, dbg } from "@/lib/utils";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { useClient } from "@/providers/ReactQueryProvider";
+import { useSyncedProjects } from "@/providers/SyncedProjectsProvider";
 import { Project } from "@/types/interfaces";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
@@ -10,6 +11,7 @@ import { useEffect } from "react";
 export default function useSyncProjectWithGitHub(project: Project) {
    const client = useClient();
    const { doIfOnline } = useConnectionStatus();
+   const { syncIfNotSynced } = useSyncedProjects();
 
    const { isPending, mutate } = useMutation({
       mutationFn: () => invoke("sync_project_with_github", { projectId: project.id }),
@@ -25,7 +27,12 @@ export default function useSyncProjectWithGitHub(project: Project) {
       },
    });
 
+   const syncProjectWithGitHub = () => doIfOnline(mutate, "Cannot sync project with GitHub whilst offline!");
+
    useEffect(() => {
+      // sync on mount
+      syncIfNotSynced(project.id, syncProjectWithGitHub);
+
       dbg("[useSyncProjectWithGitHub]", "registering interval to sync project data for", project.name);
 
       const interval = window.setInterval(() => {
@@ -53,6 +60,6 @@ export default function useSyncProjectWithGitHub(project: Project) {
 
    return {
       isSyncing: isPending,
-      syncProjectWithGitHub: () => doIfOnline(mutate, "Cannot sync project with GitHub whilst offline!"),
+      syncProjectWithGitHub,
    };
 }
