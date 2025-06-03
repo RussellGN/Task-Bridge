@@ -162,3 +162,9 @@ export interface ActivitySyncResponse {
    commits: Commit[];
    task_id: string;
 }
+
+export interface Setting {
+   title: string;
+   description: string;
+   children: React.ReactNode;
+}

@@ -5,6 +5,9 @@ import NotFound from "@/routes/NotFound";
 import ProjectDashboard from "@/routes/ProjectDashboard";
 import { TaskPriority } from "@/types/types";
 import { ExternalToast } from "sonner";
+import Settings from "@/routes/Settings";
+import { RotateCcw } from "lucide-react";
+import SyncSettings from "@/components/screens/settings/SyncSettings";
 
 export const GITHUB_INSTALL_URL = `https://github.com/apps/Task-Bridge/installations/new?prompt=select_account&state=${random_global_auth_keyword()}`;
 
@@ -15,6 +18,7 @@ export const STORE_PATH = "store.json";
 export const ROUTES = [
    { path: "/", component: Signin },
    { path: "/home", component: Home },
+   { path: "/settings", component: Settings },
    { path: "/project-dashboard/:projectId", component: ProjectDashboard },
    { path: "*", component: NotFound },
 ];
@@ -35,3 +39,12 @@ export const DEFAULT_TOAST_OPTIONS: ExternalToast = {
 };
 
 export const PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS = 1000 * 60 * 10; // 10 minutes
+
+export const SETTINGS_TABS = [
+   {
+      value: "github-syncing",
+      label: "GitHub Syncing",
+      Icon: RotateCcw,
+      component: SyncSettings,
+   },
+];
