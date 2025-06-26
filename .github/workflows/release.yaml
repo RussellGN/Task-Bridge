@@ -55,6 +55,11 @@ jobs:
            with:
               workspaces: "./src-tauri -> target"
 
+         - name: Create .env file for Tauri
+           run: |
+              echo CLIENT_ID=${{ secrets.CLIENT_ID }} >> ./src-tauri/.env
+              echo CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} >> ./src-tauri/.env
+
          - name: install frontend dependencies
            run: pnpm install
 
