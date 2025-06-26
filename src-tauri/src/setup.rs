@@ -27,7 +27,7 @@ pub fn setup_dev_plumbing(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Err
          width: 1120.0,
          height: 635.0,
       }));
-      main_webview.open_devtools();
+      // main_webview.open_devtools();
       let _ = main_webview.set_position(tauri::Position::Logical(tauri::LogicalPosition { x: 0.0, y: 0.0 }));
    }
 
