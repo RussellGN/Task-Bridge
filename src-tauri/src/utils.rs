@@ -5,7 +5,7 @@ use tauri::{AppHandle, Runtime};
 use tauri_plugin_store::{Store, StoreExt};
 use uuid::Uuid;
 
-use crate::{auth::AccessToken, STORE_PATH};
+use crate::{auth::AccessToken, ENV_STR, STORE_PATH};
 
 #[macro_export]
 macro_rules! log {
@@ -47,10 +47,29 @@ pub fn dbg_store(store: &Store<impl Runtime>) {
 
 pub fn get_env_vars() -> crate::Result<HashMap<String, String>> {
    const F: &str = "[get_env_vars]";
-   log!("{F} getting env vars");
-   let env_vars = dotenvy::vars().collect::<HashMap<_, _>>();
-   log!("{F} found {} env vars", env_vars.len());
-   Ok(env_vars)
+   let env_vars = ENV_STR
+      .split("\n")
+      .map(|pair| {
+         pair
+            .split("=")
+            .map(|s| s.trim())
+            .filter(|s| !s.is_empty())
+            .collect::<Vec<_>>()
+      })
+      .collect::<Vec<Vec<_>>>();
+
+   let mut env_vars_map = std::collections::HashMap::new();
+
+   for pair in env_vars.into_iter() {
+      if pair.is_empty() {
+         continue;
+      }
+      let name = pair.get(0).ok_or(format!("{F} could not access env vars"))?.to_string();
+      let value = pair.get(1).ok_or(format!("{F} could not access env vars"))?.to_string();
+      env_vars_map.insert(name, value);
+   }
+
+   Ok(env_vars_map)
 }
 
 pub fn get_store<R: Runtime>(app: AppHandle<R>) -> crate::Result<Arc<Store<R>>> {
