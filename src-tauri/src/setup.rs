@@ -28,14 +28,10 @@ pub fn setup_dev_plumbing(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Err
          height: 635.0,
       }));
 
-      // cfg!(debug_assertions) would not work
-      match get_env_vars() {
-         Ok(env_vars) if env_vars.get("SETUP_ENV") == Some(&"development".to_string()) => {
-            log!("{F} setup env is development");
-            main_webview.open_devtools();
-         }
-         _ => {}
+      if cfg!(debug_assertions) {
+         log!("{F} {:#?}", get_env_vars())
       }
+      // main_webview.open_devtools();
 
       let _ = main_webview.set_position(tauri::Position::Logical(tauri::LogicalPosition { x: 0.0, y: 0.0 }));
    }
