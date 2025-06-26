@@ -2,5 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
+   if cfg!(debug_assertions) {
+      dotenvy::dotenv().ok();
+   }
    task_bridge_lib::run()
 }
