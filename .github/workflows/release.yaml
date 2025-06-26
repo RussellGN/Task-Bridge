@@ -6,6 +6,8 @@ on:
 env:
    CLIENT_ID: ${{ secrets.CLIENT_ID}}
    CLIENT_SECRET: ${{ secrets.CLIENT_SECRET}}
+   PROCEED_TO_AUTH_URI: ${{secrets.PROCEED_TO_AUTH_URI }}
+   FINNISH_AUTH_URI: ${{secrets.FINNISH_AUTH_URI }}
 
 jobs:
    publish-tauri:
@@ -54,6 +56,13 @@ jobs:
            uses: swatinem/rust-cache@v2
            with:
               workspaces: "./src-tauri -> target"
+
+         - name: Create .env file for Vite
+           run: |
+              echo VITE_CLIENT_ID=${{secrets.CLIENT_ID }} >> .env
+              echo VITE_CLIENT_SECRET=${{secrets.CLIENT_SECRET }} >> .env
+              echo VITE_PROCEED_TO_AUTH_URI=${{secrets.PROCEED_TO_AUTH_URI }} >> .env
+              echo VITE_FINNISH_AUTH_URI=${{secrets.FINNISH_AUTH_URI }} >> .env
 
          - name: Create .env file for Tauri
            run: |
