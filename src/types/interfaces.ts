@@ -1,5 +1,7 @@
+import { LucideIcon } from "lucide-react";
 import Repository from "./Repository";
-import { TaskPriority } from "./types";
+import { SettingsTabElementProps, TaskPriority } from "./types";
+import { FC } from "react";
 
 export interface User {
    login: string;
@@ -171,4 +173,11 @@ export interface Setting {
 
 export interface Settings {
    project_sync_interval?: number;
+}
+
+export interface SettingsTab {
+   value: string;
+   label: string;
+   Icon: LucideIcon;
+   component: FC<SettingsTabElementProps>;
 }

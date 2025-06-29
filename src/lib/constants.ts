@@ -8,6 +8,7 @@ import { ExternalToast } from "sonner";
 import Settings from "@/routes/Settings";
 import { RotateCcw } from "lucide-react";
 import SyncSettings from "@/components/screens/settings/SyncSettings";
+import { SettingsTab } from "@/types/interfaces";
 
 export const GITHUB_INSTALL_URL = `https://github.com/apps/Task-Bridge/installations/new?prompt=select_account&state=${random_global_auth_keyword()}`;
 
@@ -41,7 +42,7 @@ export const DEFAULT_TOAST_OPTIONS: ExternalToast = {
 
 export const PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS = 1000 * 60 * 10; // 10 minutes
 
-export const SETTINGS_TABS = [
+export const SETTINGS_TABS: SettingsTab[] = [
    {
       value: "github-syncing",
       label: "GitHub Syncing",

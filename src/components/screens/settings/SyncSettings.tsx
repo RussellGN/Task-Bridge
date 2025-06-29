@@ -1,9 +1,9 @@
 import { Input } from "@/components/ui/input";
 import SettingSkeleton from "./SettingSkeleton";
-import { Settings } from "@/types/interfaces";
 import { PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS } from "@/lib/constants";
+import { SettingsTabElementProps } from "@/types/types";
 
-export default function SyncSettings({ settings }: { settings?: Settings }) {
+export default function SyncSettings({ settings }: SettingsTabElementProps) {
    const intervalLength = settings?.project_sync_interval || PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS / 1000;
 
    return (
