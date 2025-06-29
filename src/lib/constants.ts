@@ -57,19 +57,19 @@ const BASE_SETTINGS_TABS: SettingsTab[] = [
 export const SETTINGS_TABS: SettingsTab[] = [...BASE_SETTINGS_TABS];
 
 export const PROJECT_SETTINGS_TABS: SettingsTab[] = [
-   ...BASE_SETTINGS_TABS,
-   {
-      value: "team-management",
-      label: "Team Management",
-      Icon: Users,
-      component: TeamManagementSettings,
-   },
    {
       value: "name-visibility",
       label: "Name & Visibility",
       Icon: Eye,
       component: NameAndVisibilitySettings,
    },
+   {
+      value: "team-management",
+      label: "Team Management",
+      Icon: Users,
+      component: TeamManagementSettings,
+   },
+   ...BASE_SETTINGS_TABS,
    {
       value: "project-deletion",
       label: "Delete Project",
