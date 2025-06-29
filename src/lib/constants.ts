@@ -6,11 +6,12 @@ import ProjectDashboard from "@/routes/ProjectDashboard";
 import { TaskPriority } from "@/types/types";
 import { ExternalToast } from "sonner";
 import Settings from "@/routes/Settings";
-import { Eye, RotateCcw, Users } from "lucide-react";
+import { AlertTriangle, Eye, RotateCcw, Users } from "lucide-react";
 import SyncSettings from "@/components/screens/settings/SyncSettings";
 import { SettingsTab } from "@/types/interfaces";
 import TeamManagementSettings from "@/components/screens/settings/TeamManagementSettings";
 import NameAndVisibilitySettings from "@/components/screens/settings/NameAndVisibilitySettings";
+import ProjectDeletionSettings from "@/components/screens/settings/ProjectDeletionSettings";
 
 export const GITHUB_INSTALL_URL = `https://github.com/apps/Task-Bridge/installations/new?prompt=select_account&state=${random_global_auth_keyword()}`;
 
@@ -69,5 +70,10 @@ export const PROJECT_SETTINGS_TABS: SettingsTab[] = [
       Icon: Eye,
       component: NameAndVisibilitySettings,
    },
-   // deleting project.
+   {
+      value: "project-deletion",
+      label: "Delete Project",
+      Icon: AlertTriangle,
+      component: ProjectDeletionSettings,
+   },
 ];
