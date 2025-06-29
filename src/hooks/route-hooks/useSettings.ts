@@ -5,9 +5,13 @@ import { Settings } from "@/types/interfaces";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { load } from "@tauri-apps/plugin-store";
 import React from "react";
+import { useParams } from "react-router";
+import useGetProject from "../backend-api-hooks/internet-independant/useGetProject";
 
 export default function useSettings() {
    const client = useClient();
+   const { projectId } = useParams();
+   const { project, isLoading } = useGetProject(projectId);
 
    const { data, error, isPending } = useQuery({
       queryKey: ["settings"],
@@ -48,5 +52,5 @@ export default function useSettings() {
       mutate(data);
    }
 
-   return { settings: data, loading: isPending || isMutating, patchSettings };
+   return { project, settings: data, loading: isPending || isMutating || isLoading, patchSettings };
 }

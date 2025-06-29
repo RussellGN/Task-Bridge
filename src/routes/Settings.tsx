@@ -7,7 +7,7 @@ import useSettings from "@/hooks/route-hooks/useSettings";
 import SpinnerIcon from "@/components/general/SpinnerIcon";
 
 export default function Settings() {
-   const { settings, loading, patchSettings } = useSettings();
+   const { project, settings, loading, patchSettings } = useSettings();
 
    return (
       <div>
@@ -15,7 +15,7 @@ export default function Settings() {
             <BackBtn />
 
             <div className="flex items-center gap-2">
-               Settings <SettingsIcon className="mt-0.5" />
+               Settings <SettingsIcon className="mt-0.5" /> {project?.name}
             </div>
 
             <div className="lucide"></div>
