@@ -181,3 +181,7 @@ export interface SettingsTab {
    Icon: LucideIcon;
    component: FC<SettingsTabElementProps>;
 }
+
+export interface PossiblyPendingAuthor extends Author {
+   pending?: boolean;
+}

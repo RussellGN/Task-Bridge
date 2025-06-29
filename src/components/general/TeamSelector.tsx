@@ -4,9 +4,15 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Search } from "lucide-react";
 import Spinner from "./Spinner";
-import { Author } from "@/types/interfaces";
+import { PossiblyPendingAuthor } from "@/types/interfaces";
 
-export default function TeamSelector({ disabled, defaultTeam }: { disabled?: boolean; defaultTeam?: Author[] }) {
+export default function TeamSelector({
+   disabled,
+   defaultTeam,
+}: {
+   disabled?: boolean;
+   defaultTeam?: PossiblyPendingAuthor[];
+}) {
    const { team, query, loading, queriedUsers, teamInputValue, setQuery, selectUser, removeUser, handleSearch } =
       useTeamSelector(defaultTeam);
 
@@ -17,7 +23,12 @@ export default function TeamSelector({ disabled, defaultTeam }: { disabled?: boo
          <div className="flex flex-wrap gap-2">
             {team.length === 0 && <p className="text-muted-foreground text-sm">0 team members added.</p>}
             {team.map((user) => (
-               <TeamUserCard key={user.login} user={user} onRemove={disabled ? undefined : () => removeUser(user)} />
+               <TeamUserCard
+                  pending={user.pending}
+                  key={user.login}
+                  user={user}
+                  onRemove={disabled ? undefined : () => removeUser(user)}
+               />
             ))}
          </div>
 

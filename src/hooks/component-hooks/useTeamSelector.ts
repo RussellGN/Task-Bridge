@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { alertError, logInfo } from "@/lib/utils";
-import { Author } from "@/types/interfaces";
+import { PossiblyPendingAuthor } from "@/types/interfaces";
 import useSearchUsers from "../backend-api-hooks/internet-dependant/useSearchUsers";
 import { TEAM_LOGINS_SEPERATOR } from "@/lib/constants";
 import useGetUser from "../backend-api-hooks/internet-independant/useGetUser";
 
-export default function useTeamSelector(defaultTeam?: Author[]) {
-   const [team, setTeam] = useState<Author[]>(defaultTeam || []);
+export default function useTeamSelector(defaultTeam?: PossiblyPendingAuthor[]) {
+   const [team, setTeam] = useState<PossiblyPendingAuthor[]>(defaultTeam || []);
    const [query, setQuery] = useState("");
    const { error, loading, queriedUsers, startSearch } = useSearchUsers(query);
    const { user: loggedInUser } = useGetUser();
@@ -23,7 +23,7 @@ export default function useTeamSelector(defaultTeam?: Author[]) {
       else startSearch();
    }
 
-   function selectUser(user: Author) {
+   function selectUser(user: PossiblyPendingAuthor) {
       if (user.login === loggedInUser?.login) {
          alertError("[selectUser] You cannot invite yourself to the team. You are already a member.");
          return;
@@ -36,7 +36,7 @@ export default function useTeamSelector(defaultTeam?: Author[]) {
       setQuery("");
    }
 
-   function removeUser(user: Author) {
+   function removeUser(user: PossiblyPendingAuthor) {
       setTeam((prev) => prev.filter((u) => u.id !== user.id));
    }
 
