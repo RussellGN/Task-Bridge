@@ -5,8 +5,8 @@ import useSearchUsers from "../backend-api-hooks/internet-dependant/useSearchUse
 import { TEAM_LOGINS_SEPERATOR } from "@/lib/constants";
 import useGetUser from "../backend-api-hooks/internet-independant/useGetUser";
 
-export default function useTeamSelector() {
-   const [team, setTeam] = useState<Author[]>([]);
+export default function useTeamSelector(defaultTeam?: Author[]) {
+   const [team, setTeam] = useState<Author[]>(defaultTeam || []);
    const [query, setQuery] = useState("");
    const { error, loading, queriedUsers, startSearch } = useSearchUsers(query);
    const { user: loggedInUser } = useGetUser();

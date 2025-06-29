@@ -4,10 +4,11 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Search } from "lucide-react";
 import Spinner from "./Spinner";
+import { Author } from "@/types/interfaces";
 
-export default function TeamSelector({ disabled }: { disabled?: boolean }) {
+export default function TeamSelector({ disabled, defaultTeam }: { disabled?: boolean; defaultTeam?: Author[] }) {
    const { team, query, loading, queriedUsers, teamInputValue, setQuery, selectUser, removeUser, handleSearch } =
-      useTeamSelector();
+      useTeamSelector(defaultTeam);
 
    return (
       <div className="bg-background rounded-sm p-3">
