@@ -1,13 +1,15 @@
 import BackBtn from "@/components/general/BackBtn";
 import { SettingsIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SETTINGS_TABS } from "@/lib/constants";
+import { SETTINGS_TABS, PROJECT_SETTINGS_TABS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import useSettings from "@/hooks/route-hooks/useSettings";
 import SpinnerIcon from "@/components/general/SpinnerIcon";
 
 export default function Settings() {
    const { project, settings, loading, patchSettings } = useSettings();
+
+   const tabs = project ? PROJECT_SETTINGS_TABS : SETTINGS_TABS;
 
    return (
       <div>
@@ -23,7 +25,7 @@ export default function Settings() {
 
          <Tabs className="flex h-full grid-cols-12 flex-col gap-4 md:grid md:items-start">
             <TabsList className="col-span-2 flex gap-4 md:flex-col">
-               {SETTINGS_TABS.map((tab) => (
+               {tabs.map((tab) => (
                   <TabsTrigger
                      key={tab.value}
                      value={tab.value}
@@ -35,14 +37,14 @@ export default function Settings() {
                ))}
             </TabsList>
 
-            {SETTINGS_TABS.map((tab) => (
+            {tabs.map((tab) => (
                <TabsContent
                   key={tab.value}
                   value={tab.value}
                   className="bg-foreground/5 col-span-10 max-h-[80vh] grow overflow-y-auto rounded-md p-4"
                >
                   <form onSubmit={patchSettings}>
-                     <tab.component settings={settings} />
+                     <tab.component settings={settings} project={project} />
                      <div className="mt-4 text-right">
                         <Button disabled={loading} type="submit" variant="PRIMARY">
                            {loading ? (
