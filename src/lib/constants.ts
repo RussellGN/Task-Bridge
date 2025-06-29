@@ -6,10 +6,11 @@ import ProjectDashboard from "@/routes/ProjectDashboard";
 import { TaskPriority } from "@/types/types";
 import { ExternalToast } from "sonner";
 import Settings from "@/routes/Settings";
-import { RotateCcw, Users } from "lucide-react";
+import { Eye, RotateCcw, Users } from "lucide-react";
 import SyncSettings from "@/components/screens/settings/SyncSettings";
 import { SettingsTab } from "@/types/interfaces";
 import TeamManagementSettings from "@/components/screens/settings/TeamManagementSettings";
+import NameAndVisibilitySettings from "@/components/screens/settings/NameAndVisibilitySettings";
 
 export const GITHUB_INSTALL_URL = `https://github.com/apps/Task-Bridge/installations/new?prompt=select_account&state=${random_global_auth_keyword()}`;
 
@@ -56,14 +57,17 @@ export const SETTINGS_TABS: SettingsTab[] = [...BASE_SETTINGS_TABS];
 
 export const PROJECT_SETTINGS_TABS: SettingsTab[] = [
    ...BASE_SETTINGS_TABS,
-   // dismissing/inviting team members
    {
       value: "team-management",
       label: "Team Management",
       Icon: Users,
       component: TeamManagementSettings,
    },
-   // changing repo visibility
-   // changing repo/project name
+   {
+      value: "name-visibility",
+      label: "Name & Visibility",
+      Icon: Eye,
+      component: NameAndVisibilitySettings,
+   },
    // deleting project.
 ];
