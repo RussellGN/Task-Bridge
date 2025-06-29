@@ -25,7 +25,7 @@ export default function ProjectControls({ project }: { project: Project }) {
          </Button>
 
          <Button asChild size="icon" variant="outline">
-            <Link to="/settings">
+            <Link to={`/settings/${project.id}`}>
                <Settings />
             </Link>
          </Button>

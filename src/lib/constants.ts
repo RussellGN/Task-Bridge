@@ -19,6 +19,7 @@ export const ROUTES = [
    { path: "/", component: Signin },
    { path: "/home", component: Home },
    { path: "/settings", component: Settings },
+   { path: "/settings/:projectId", component: Settings },
    { path: "/project-dashboard/:projectId", component: ProjectDashboard },
    { path: "*", component: NotFound },
 ];
