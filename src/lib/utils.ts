@@ -124,3 +124,8 @@ export function getTimeElapsedSince(date: Date | string): string {
       return `${elapsedMinutes} min`;
    }
 }
+
+export function stringifyAndRemoveQuotes<T>(arg: T) {
+   const str = JSON.stringify(arg);
+   return str.slice(1, str.length - 1);
+}

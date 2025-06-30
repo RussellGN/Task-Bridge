@@ -175,6 +175,19 @@ export interface AppPreferences {
    project_sync_interval?: number;
 }
 
+export interface ProjectSettingsPatchPayload {
+   // name & visibility settings
+   name?: string;
+   repoName?: string;
+   repoVisibility?: "public" | "private";
+   // team settings
+   team?: string;
+   // sync settings
+   project_sync_interval?: number;
+   // delete options
+   permanentDeleteProject?: string;
+}
+
 export interface SettingsTab {
    value: string;
    label: string;
