@@ -13,7 +13,7 @@ export default function useSyncProjectWithGitHub(project: Project) {
    const client = useClient();
    const { doIfOnline } = useConnectionStatus();
    const { syncIfNotSynced } = useSyncedProjects();
-   const { settings } = useSettings();
+   const { appPreferences } = useSettings();
 
    const { isPending, mutate } = useMutation({
       mutationFn: () => invoke("sync_project_with_github", { projectId: project.id }),
@@ -35,8 +35,8 @@ export default function useSyncProjectWithGitHub(project: Project) {
       // sync on mount
       syncIfNotSynced(project.id, syncProjectWithGitHub);
 
-      const intervalLength = settings?.project_sync_interval
-         ? settings?.project_sync_interval * 1000
+      const intervalLength = appPreferences?.project_sync_interval
+         ? appPreferences?.project_sync_interval * 1000
          : PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS;
 
       dbg(

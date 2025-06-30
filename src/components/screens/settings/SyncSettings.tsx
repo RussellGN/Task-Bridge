@@ -3,7 +3,7 @@ import SettingSkeleton from "./SettingSkeleton";
 import { PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS } from "@/lib/constants";
 import { SettingsTabElementProps } from "@/types/types";
 
-export default function SyncSettings({ settings }: SettingsTabElementProps) {
+export default function SyncSettings({ appPreferences: settings }: SettingsTabElementProps) {
    const intervalLength = settings?.project_sync_interval || PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS / 1000;
 
    return (

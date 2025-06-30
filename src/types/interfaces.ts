@@ -171,7 +171,7 @@ export interface Setting {
    children: React.ReactNode;
 }
 
-export interface Settings {
+export interface AppPreferences {
    project_sync_interval?: number;
 }
 

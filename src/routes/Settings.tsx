@@ -7,7 +7,7 @@ import useSettings from "@/hooks/route-hooks/useSettings";
 import SpinnerIcon from "@/components/general/SpinnerIcon";
 
 export default function Settings() {
-   const { project, settings, loading, patchSettings } = useSettings();
+   const { project, appPreferences, loading, updateAppPreferences } = useSettings();
 
    const tabs = project ? PROJECT_SETTINGS_TABS : SETTINGS_TABS;
 
@@ -43,8 +43,8 @@ export default function Settings() {
                   value={tab.value}
                   className="bg-foreground/5 col-span-10 max-h-[80vh] grow overflow-y-auto rounded-md p-4"
                >
-                  <form onSubmit={patchSettings}>
-                     <tab.component settings={settings} project={project} />
+                  <form onSubmit={project ? undefined : updateAppPreferences}>
+                     <tab.component appPreferences={appPreferences} project={project} />
                      <div className="mt-4 text-right">
                         <Button disabled={loading} type="submit" variant="PRIMARY">
                            {loading ? (
