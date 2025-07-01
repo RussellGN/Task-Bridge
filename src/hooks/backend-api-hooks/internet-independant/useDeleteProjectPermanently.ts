@@ -14,12 +14,12 @@ export default function useDeleteProjectPermanently(projectId: string | undefine
    const { mutate, isPending } = useMutation({
       mutationFn: () => invoke("delete_project_permanently", { projectId }),
       onError(err: Error | string) {
-         dbg("[useDeleteProject]", err);
+         dbg("[useDeleteProjectPermanently]", err);
          const errorMessage = err instanceof Error ? err.message : err;
-         alertError("[useDeleteProject] Error deleting project permanently", errorMessage);
+         alertError("[useDeleteProjectPermanently] Error deleting project permanently", errorMessage);
       },
       onSuccess() {
-         alertSuccess("[useDeleteProject] project deleted!", `Id: ${projectId}`);
+         alertSuccess("[useDeleteProjectPermanently] project deleted permanently!", `Id: ${projectId}`);
          client.removeQueries({ queryKey: ["project", projectId] });
          client.setQueryData(["projects"], (prev: Project[] | null) =>
             prev ? prev.filter((p) => p.id !== projectId) : null,
