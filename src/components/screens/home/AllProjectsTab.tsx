@@ -26,6 +26,9 @@ export default function AllProjectsTab() {
          {isLoading ? (
             <div className="mb-3 pt-30 text-center">
                <Spinner size="lg" />
+               <div className="text-foreground/50 mt-2 text-sm">
+                  This may take a few minutes depending on the number <br /> of GitHub repositories you have.
+               </div>
             </div>
          ) : projects?.length === 0 ? (
             <p className="text-foreground/50 text-center">No projects found</p>
