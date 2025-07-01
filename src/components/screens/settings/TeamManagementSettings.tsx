@@ -15,7 +15,7 @@ export default function TeamManagementSettings({ project }: SettingsTabElementPr
             title="Team Management"
             description="Add/Remove developers working on this project (having access to it on GitHub). Developers who have not yet accepted your collaboration request have a grey ring around their avatar, whilst those who've accepted will have a green ringed avatar"
          >
-            <TeamSelector defaultTeam={currentTeam} />
+            <TeamSelector defaultTeam={currentTeam} className="mb-[25ch]" />
          </SettingSkeleton>
       </div>
    );

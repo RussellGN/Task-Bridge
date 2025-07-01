@@ -5,19 +5,22 @@ import { Button } from "../ui/button";
 import { Search } from "lucide-react";
 import Spinner from "./Spinner";
 import { PossiblyPendingAuthor } from "@/types/interfaces";
+import { cn } from "@/lib/utils";
 
 export default function TeamSelector({
    disabled,
    defaultTeam,
+   className,
 }: {
    disabled?: boolean;
    defaultTeam?: PossiblyPendingAuthor[];
+   className?: string;
 }) {
    const { team, query, loading, queriedUsers, teamInputValue, setQuery, selectUser, removeUser, handleSearch } =
       useTeamSelector(defaultTeam);
 
    return (
-      <div className="bg-background rounded-sm p-3">
+      <div className={cn("bg-background rounded-sm p-3", className)}>
          <input type="hidden" name="team" id="team" value={teamInputValue} readOnly />
 
          <div className="flex flex-wrap gap-2">
