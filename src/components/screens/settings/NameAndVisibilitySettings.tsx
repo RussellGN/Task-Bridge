@@ -24,7 +24,7 @@ export default function NameAndVisibilitySettings({ project }: SettingsTabElemen
                </Label>
                <Input
                   type="text"
-                  name="repoName"
+                  name="repo_name"
                   maxLength={40}
                   minLength={2}
                   required
@@ -42,7 +42,7 @@ export default function NameAndVisibilitySettings({ project }: SettingsTabElemen
                   />
                </Label>
 
-               <Select name="repoVisibility" defaultValue={project?.repo.visibility}>
+               <Select name="repo_visibility" defaultValue={project?.repo.visibility}>
                   <SelectTrigger>
                      <SelectValue placeholder={project?.repo.visibility} />
                   </SelectTrigger>

@@ -178,14 +178,14 @@ export interface AppPreferences {
 export interface ProjectSettingsPatchPayload {
    // name & visibility settings
    name?: string;
-   repoName?: string;
-   repoVisibility?: "public" | "private";
+   repo_name?: string;
+   repo_visibility?: "public" | "private";
    // team settings
    team?: string;
    // sync settings
    project_sync_interval?: number;
    // delete options
-   permanentDeleteProject?: string;
+   permanent_delete_project?: string;
 }
 
 export interface SettingsTab {

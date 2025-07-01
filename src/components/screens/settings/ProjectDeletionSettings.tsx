@@ -31,7 +31,7 @@ export default function ProjectDeletionSettings({ project }: SettingsTabElementP
             <div>
                <Input
                   type="text"
-                  name="permanentDeleteProject"
+                  name="permanent_delete_project"
                   required
                   className="border-DANGER"
                   placeholder="Enter 'delete' followed by this project's exact name and click save to delete"

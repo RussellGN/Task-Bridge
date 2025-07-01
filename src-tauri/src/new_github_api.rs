@@ -431,6 +431,24 @@ impl GithubAPI {
       Ok(all_issues)
    }
 
+   pub async fn delete_repo(repo: &models::Repository, token: &AccessToken) -> crate::Result {
+      const F: &str = "[GithubAPI::delete_repo]";
+
+      log!("{F} deleting repo '{}'", repo.name);
+
+      let octo = create_authenticated_octo(&token.get_token())?;
+      let owner = repo
+         .owner
+         .clone()
+         .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name));
+
+      octo
+         .repos(&owner.login, &repo.name)
+         .delete()
+         .await
+         .map_err(|e| format!("{F} error deleting repo {}. {e}", repo.name))
+   }
+
    pub async fn get_branch_commits(
       repo: &models::Repository,
       branch_name: &str,

@@ -419,3 +419,23 @@ pub async fn sync_task_activity<R: Runtime>(
       task_id,
    })
 }
+
+#[tauri::command]
+pub async fn delete_project_permanently<R: Runtime>(app: tauri::AppHandle<R>, project_id: String) -> crate::Result {
+   const F: &str = "[delete_project_permanently]";
+
+   log!("{F} deleting project with id '{project_id}' permanently");
+   let store = get_store(app)?;
+   let token = get_token(&Arc::clone(&store))?;
+
+   let project = store
+      .get(&project_id)
+      .ok_or(format!("{F} project with id {project_id} not found"))?;
+
+   let project = serde_json::from_value::<Project>(project)
+      .map_err(|e| format!("{F} failed to read project with id '{project_id}': {e}",))?;
+
+   log!("{F} successfully deleted project with id '{project_id}' permanently");
+
+   project.delete_permanently(&token, store).await
+}

@@ -40,7 +40,8 @@ pub fn run() {
          commands::edit_draft_task,
          commands::assign_draft_task_now,
          commands::sync_task_activity,
-         experimental::clear_store
+         commands::delete_project_permanently,
+         experimental::clear_store,
       ])
       .run(tauri::generate_context!())
       .expect("error while running tauri application");
