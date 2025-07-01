@@ -138,17 +138,18 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
                            </SelectItem>
                         ))}
                         {pendingTeam?.map((user) => (
-                           <InfoTooltip
-                              isError
-                              key={user.login}
-                              trigger={
-                                 <SelectItem disabled value={user.login}>
-                                    <UserAvatar user={user} className="size-4.5" />
-                                    {user.login}
-                                 </SelectItem>
-                              }
-                              content={user.login + " has not yet accepted your invitation."}
-                           />
+                           <div key={user.login}>
+                              <InfoTooltip
+                                 isError
+                                 trigger={
+                                    <SelectItem disabled value={user.login}>
+                                       <UserAvatar user={user} className="size-4.5" />
+                                       {user.login}
+                                    </SelectItem>
+                                 }
+                                 content={user.login + " has not yet accepted your invitation."}
+                              />
+                           </div>
                         ))}
                      </SelectContent>
                   </Select>
