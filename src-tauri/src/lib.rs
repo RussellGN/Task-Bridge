@@ -42,6 +42,7 @@ pub fn run() {
          commands::sync_task_activity,
          commands::delete_project_permanently,
          commands::delete_project_locally,
+         commands::update_project_team,
          experimental::clear_store,
       ])
       .run(tauri::generate_context!())

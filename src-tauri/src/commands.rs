@@ -9,7 +9,7 @@ use crate::{
    new_github_api::GithubAPI,
    project::{
       task::{DraftTask, NewDraftTaskPayload, NewTaskPayload, Task},
-      Project, ProjectPayload,
+      Project, ProjectPatchArgs, ProjectPayload,
    },
    utils::{dbg_store, get_store, get_token, IssueExt},
 };
@@ -456,5 +456,29 @@ pub async fn delete_project_locally<R: Runtime>(app: tauri::AppHandle<R>, projec
 
    project.delete_locally(store)?;
    log!("{F} successfully deleted project with id '{project_id}' from local store");
+   Ok(())
+}
+
+#[tauri::command]
+pub async fn update_project_team<R: Runtime>(app: tauri::AppHandle<R>, patch_args: ProjectPatchArgs) -> crate::Result {
+   const F: &str = "[update_project_team]";
+
+   log!("{F} updating team for project with id '{}'", patch_args.project_id);
+   let store = get_store(app)?;
+
+   let project = store
+      .get(&patch_args.project_id)
+      .ok_or(format!("{F} project with id {} not found", patch_args.project_id))?;
+
+   let mut project = serde_json::from_value::<Project>(project)
+      .map_err(|e| format!("{F} failed to read project with id '{}': {e}", patch_args.project_id))?;
+
+   if let Some(updated_team_logins) = patch_args.settings_patch.team {
+      project.update_and_save_team(updated_team_logins, store).await?;
+      log!("{F} team updated for project '{}'", patch_args.project_id);
+   } else {
+      log!("{F} no team updates were made for project '{}'", patch_args.project_id);
+   }
+
    Ok(())
 }

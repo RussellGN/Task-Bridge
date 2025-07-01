@@ -7,6 +7,7 @@ import { useParams } from "react-router";
 import { invoke } from "@tauri-apps/api/core";
 import useDeleteProjectLocally from "./backend-api-hooks/internet-independant/useDeleteProjectLocally";
 import useUpdateProjectSyncSettings from "./useUpdateProjectSyncSettings";
+import useUpdateProjectTeam from "./backend-api-hooks/internet-dependant/useUpdateProjectTeam";
 
 export default function useProjectSettings() {
    const F = "[useProjectSettings]";
@@ -15,6 +16,7 @@ export default function useProjectSettings() {
    const { deleteProjectPermanently, isPending: isProjectDeleting } = useDeleteProjectPermanently(projectId);
    const { deleteProjectLocally, isPending: isProjectDeletingLocally } = useDeleteProjectLocally(projectId);
    const { updateProjectSyncSettings, isPending: isUpdatingSyncSettings } = useUpdateProjectSyncSettings();
+   const { updateProjectTeam, isPending: isProjectTeamUpdating } = useUpdateProjectTeam(projectId);
 
    function updateProjectSettings(e: React.FormEvent<HTMLFormElement>) {
       e.preventDefault();
@@ -43,7 +45,7 @@ export default function useProjectSettings() {
                await invoke("update_general_project_metadata", { patchArgs });
             }
 
-            if (settings_patch.team) await invoke("update_project_team", { patchArgs });
+            if (settings_patch.team) await updateProjectTeam(patchArgs);
 
             if (settings_patch.project_sync_interval_mins) await updateProjectSyncSettings(patchArgs);
          } catch (error) {
@@ -54,7 +56,8 @@ export default function useProjectSettings() {
 
    return {
       project,
-      projectLoading: isLoading || isProjectDeleting || isProjectDeletingLocally || isUpdatingSyncSettings,
+      projectLoading:
+         isLoading || isProjectDeleting || isProjectDeletingLocally || isUpdatingSyncSettings || isProjectTeamUpdating,
       updateProjectSettings,
    };
 }

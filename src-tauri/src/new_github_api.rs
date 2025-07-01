@@ -4,7 +4,7 @@ use futures_util::StreamExt;
 use octocrab::{models, params::State};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::Value;
-use tauri::http::{header, HeaderValue, Method};
+use tauri::http::{header, HeaderValue, Method, StatusCode};
 use tauri_plugin_http::reqwest;
 use urlencoding::encode;
 
@@ -76,7 +76,7 @@ impl GithubAPI {
       path_query: impl Into<String>,
       token: &AccessToken,
       payload: Option<P>,
-   ) -> crate::Result<(R, GithubResponseParts)>
+   ) -> crate::Result<(Option<R>, GithubResponseParts)>
    where
       R: DeserializeOwned + Debug,
       P: Serialize + Debug,
@@ -129,6 +129,17 @@ impl GithubAPI {
       match res.error_for_status() {
          Ok(res) => {
             // log response
+            let content_length = (res
+               .headers()
+               .get(header::CONTENT_LENGTH)
+               .unwrap_or(&HeaderValue::from_static("0"))
+               .to_str()
+               .unwrap_or("0")
+               .parse::<f64>()
+               .unwrap_or(0f64)
+               / 1024f64)
+               .round();
+
             log!(
                "{F} -- request sent, got response :-> status - {} @ {}?{} | returned {} with content-length = {} KBs",
                res.status(),
@@ -139,16 +150,7 @@ impl GithubAPI {
                   .unwrap_or(&HeaderValue::from_static("N/A"))
                   .to_str()
                   .unwrap_or("N/A"),
-               (res
-                  .headers()
-                  .get(header::CONTENT_LENGTH)
-                  .unwrap_or(&HeaderValue::from_static("0"))
-                  .to_str()
-                  .unwrap_or("0")
-                  .parse::<f64>()
-                  .unwrap_or(0f64)
-                  / 1024f64)
-                  .round(),
+               content_length,
             );
 
             // create response parts
@@ -158,13 +160,17 @@ impl GithubAPI {
                url: res.url().clone(),
             };
 
-            // log and return reponse data
-            let json_data = res
-               .json::<R>()
-               .await
-               .map_err(|e| format!("{F} error reading response body: {e}",))?;
+            // log and return reponse data if available
+            if content_length != 0.0 {
+               let json_data = res
+                  .json::<R>()
+                  .await
+                  .map_err(|e| format!("{F} error reading response body: {e}",))?;
 
-            Ok((json_data, parts))
+               Ok((Some(json_data), parts))
+            } else {
+               Ok((None, parts))
+            }
          }
          Err(e) => {
             let status_code = e.status().expect(&format!("{F} no error status code found: {e}"));
@@ -212,7 +218,8 @@ impl GithubAPI {
       log!("{F} creating new repo, payload: {payload:#?}");
       let repo: models::Repository = Self::request(Method::POST, "/user/repos", &token, Some(payload))
          .await?
-         .0;
+         .0
+         .expect("cannot be empty");
       log!("{F} new repo created: {}", repo.name);
 
       Ok(repo)
@@ -250,14 +257,105 @@ impl GithubAPI {
       let was_successfull = status == reqwest::StatusCode::CREATED || status == reqwest::StatusCode::NO_CONTENT;
 
       if was_successfull {
+         let invite_response = invite_response.expect("cannot be empty");
          log!(
             "{F} successfully invited {login}, status: {status} invite-response-invitee: {}-{}",
             invite_response.invitee.login,
-            invite_response.invitee.id
+            invite_response.id
          );
          Ok(invite_response.invitee)
       } else {
          let msg = format!("{F} failed to invite {login} to {owner}/{repo}, status: {status}",);
+         Err(msg)
+      }
+   }
+
+   pub async fn remove_collaborator(
+      login: &str,
+      token: &AccessToken,
+      owner: &str,
+      repo: &models::Repository,
+   ) -> crate::Result {
+      const F: &str = "[GithubAPI::remove_collaborator]";
+
+      log!("{F} about to remove collaborator with login: {login}");
+      let path_n_query = format!("/repos/{owner}/{}/collaborators/{login}", repo.name);
+
+      let (_, parts) = Self::request::<Value, Value>(Method::DELETE, path_n_query, token, None).await?;
+
+      let status = *parts.status();
+      let was_successfull = status == reqwest::StatusCode::NO_CONTENT;
+
+      if was_successfull {
+         log!("{F} successfully removed {login}, status: {status}",);
+         Ok(())
+      } else {
+         let msg = format!(
+            "{F} failed to remove collaborator {login} in {owner}/{}, status: {status}",
+            repo.name
+         );
+         Err(msg)
+      }
+   }
+
+   pub async fn cancel_any_invite_to(
+      login: &str,
+      token: &AccessToken,
+      owner: &str,
+      repo: &models::Repository,
+   ) -> crate::Result {
+      const F: &str = "[GithubAPI::cancel_invite]";
+
+      log!("{F} fetching all repo invites");
+      let path_n_query = format!("/repos/{owner}/{}/invitations", repo.name);
+
+      #[derive(Deserialize, Debug, Clone)]
+      struct TempInvitee {
+         login: String,
+      }
+
+      #[derive(Deserialize, Debug, Clone)]
+      struct TempInvitation {
+         id: usize,
+         invitee: TempInvitee,
+      }
+
+      let (invitations, parts) =
+         Self::request::<Vec<TempInvitation>, Value>(Method::GET, path_n_query, token, None).await?;
+
+      if parts.status != StatusCode::OK {
+         return Err(format!(
+            "{F} failed to retrieve collab invites for {}: status: {}",
+            repo.name, parts.status
+         ));
+      }
+
+      let invitations = invitations.expect("caanot be empty");
+      let invitation_id = if let Some(invitation) = invitations.iter().find(|i| i.invitee.login == login) {
+         invitation.id
+      } else {
+         return Err(format!(
+            "{F} failed to retrieve collab invite sent to {login}: status: {}",
+            parts.status
+         ));
+      };
+
+      log!("{F} cancelling collab invite '{invitation_id}' sent to: {login}");
+      let path_n_query = format!("/repos/{owner}/{}/invitations/{invitation_id}", repo.name);
+
+      let (_, parts) = Self::request::<Value, Value>(Method::DELETE, path_n_query, token, None).await?;
+
+      let status = *parts.status();
+      let was_successfull = status == reqwest::StatusCode::NO_CONTENT;
+
+      if was_successfull {
+         log!("{F} successfully cancelled invite sent to {login}, status: {status}",);
+         Ok(())
+      } else {
+         let msg = format!(
+            "{F} failed to cancel invite sent to {login} in {owner}/{}, status: {status}",
+            repo.name
+         );
          Err(msg)
       }
    }
@@ -273,6 +371,8 @@ impl GithubAPI {
          None,
       )
       .await?;
+
+      let repos = repos.expect("caanot be empty");
 
       log!("{F} reading link header, if any");
       if let Some(link_header) = parts.headers.get("link") {
@@ -375,6 +475,7 @@ impl GithubAPI {
       let invites = Self::request::<Vec<PendingInviteResponse>, Value>(Method::GET, url, &token, None)
          .await?
          .0
+         .expect("cannot be empty")
          .into_iter()
          .map(|i| i.invitee)
          .collect::<Vec<_>>();
@@ -479,7 +580,7 @@ impl GithubAPI {
       log!("{F} fetching exclusive commits @ {path_query} ");
 
       match Self::request::<BranchesComparison, Value>(Method::GET, &path_query, token, None).await {
-         Ok((BranchesComparison { commits }, _)) => Ok(commits),
+         Ok((Some(BranchesComparison { commits }), _)) => Ok(commits),
          Err(e) => {
             log!("{F} failed to fetch exclusive commits @ {path_query}. {e} ");
             if repo.default_branch.is_some() {
@@ -493,11 +594,15 @@ impl GithubAPI {
             );
 
             log!("{F} retrying exclusive commits fetch @ {path_query}");
-            let (BranchesComparison { commits }, _) =
-               Self::request::<BranchesComparison, Value>(Method::GET, path_query, token, None).await?;
+            let BranchesComparison { commits } =
+               Self::request::<BranchesComparison, Value>(Method::GET, path_query, token, None)
+                  .await?
+                  .0
+                  .expect("cannot be empty");
 
             Ok(commits)
          }
+         _ => panic!("should not be possible"),
       }
    }
 

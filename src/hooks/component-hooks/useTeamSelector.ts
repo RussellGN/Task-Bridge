@@ -30,7 +30,7 @@ export default function useTeamSelector(defaultTeam?: PossiblyPendingAuthor[]) {
       }
 
       setTeam((prev) => {
-         const newTeam = [...prev, user];
+         const newTeam = [...prev, { ...user, pending: true } as PossiblyPendingAuthor];
          return newTeam.filter((u, i) => newTeam.findIndex((user) => user.id === u.id) === i); // remove duplicates
       });
       setQuery("");

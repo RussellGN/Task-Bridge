@@ -1,6 +1,6 @@
 pub mod task;
 
-use std::{clone, sync::Arc};
+use std::sync::Arc;
 
 use octocrab::models;
 use serde::{Deserialize, Serialize};
@@ -45,6 +45,8 @@ pub enum RepoVisibilty {
    PRIVATE,
 }
 
+#[allow(unused)]
+#[derive(Deserialize)]
 pub struct ProjectSettingsPatchPayload {
    // name & visibility settings
    pub name: Option<String>,
@@ -59,6 +61,7 @@ pub struct ProjectSettingsPatchPayload {
    pub permanent_delete_project: Option<String>,
 }
 
+#[derive(Deserialize)]
 pub struct ProjectPatchArgs {
    pub project_id: String,
    pub settings_patch: ProjectSettingsPatchPayload,
@@ -151,6 +154,71 @@ impl Project {
       log!("{F} final step complete! project saved to store. Now returning project: project");
 
       Ok(project)
+   }
+
+   pub async fn update_and_save_team(&mut self, team_logins: String, store: Arc<Store<impl Runtime>>) -> crate::Result {
+      const F: &str = "[Project::update_and_save_team]";
+      let token = get_token(&store)?;
+
+      let new_team_logins = team_logins.split(TEAM_LOGINS_SEPERATOR).collect::<Vec<_>>();
+      log!("{F} team-logins = {new_team_logins:#?}");
+
+      let owner = self.repo.owner.clone().ok_or(format!(
+         "{F} repo '{}' somehow does not have an owner set up",
+         self.repo.name
+      ))?;
+
+      // invite new collaborators
+      for login in new_team_logins.clone() {
+         let is_part_of_team = self.team.iter().find(|a| a.login == login).is_some();
+         let is_pending = self.pending_invites.iter().find(|a| a.login == login).is_some();
+         if login.trim().is_empty() || is_part_of_team || is_pending {
+            continue;
+         }
+
+         let collaborator_invited =
+            GithubAPI::invite_collaborator(login, &token, &owner.login, &self.repo.name).await?;
+         self.pending_invites.push(collaborator_invited);
+         log!("{F} successfully invited {login} to team!");
+      }
+
+      // remove removed collaborators
+      for login in self.team.iter().map(|a| a.login.clone()).collect::<Vec<String>>() {
+         let is_part_of_new_team = new_team_logins.contains(&login.as_str());
+         if login.trim().is_empty() || is_part_of_new_team {
+            continue;
+         }
+
+         GithubAPI::remove_collaborator(&login, &token, &owner.login, &self.repo).await?;
+
+         self.team = self
+            .team
+            .clone()
+            .into_iter()
+            .filter(|a| a.login.to_string() != login.to_string())
+            .collect();
+         log!("{F} successfully removed {login} from team!");
+      }
+
+      // cancel pending invites to removed collaborators
+      for login in self.pending_invites.iter().map(|a| a.login.clone()).collect::<Vec<_>>() {
+         let is_part_of_new_team = new_team_logins.contains(&login.as_str());
+         if login.trim().is_empty() || is_part_of_new_team {
+            continue;
+         }
+
+         GithubAPI::cancel_any_invite_to(&login, &token, &owner.login, &self.repo).await?;
+
+         self.pending_invites = self
+            .pending_invites
+            .clone()
+            .into_iter()
+            .filter(|a| a.login.to_string() != login.to_string())
+            .collect();
+         log!("{F} cancelled collab invite sent to {login}!");
+      }
+
+      self.save_updates_to_store(store)
    }
 
    pub fn place_in_store(&self, store: Arc<Store<impl Runtime>>) -> crate::Result {
@@ -638,7 +706,7 @@ impl Project {
             None,
          )
          .await?;
-         pull_request_branch_names.push(branch_name.head.ref_field);
+         pull_request_branch_names.push(branch_name.expect("cannot be empty").head.ref_field);
       }
 
       for task in tasks.iter_mut() {
