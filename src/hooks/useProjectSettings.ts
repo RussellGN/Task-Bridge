@@ -1,6 +1,6 @@
 import React from "react";
 import useGetProject from "./backend-api-hooks/internet-independant/useGetProject";
-import useDeleteProject from "./backend-api-hooks/internet-independant/useDeleteProject";
+import useDeleteProjectPermanently from "./backend-api-hooks/internet-independant/useDeleteProjectPermanently";
 import { ProjectSettingsPatchPayload } from "@/types/interfaces";
 import { alertError, dbg } from "@/lib/utils";
 import { useParams } from "react-router";
@@ -10,7 +10,7 @@ export default function useProjectSettings() {
    const F = "[useProjectSettings]";
    const { projectId } = useParams();
    const { project, isLoading } = useGetProject(projectId);
-   const { deleteProject, isPending: isProjectDeleting } = useDeleteProject(projectId);
+   const { deleteProjectPermanently, isPending: isProjectDeleting } = useDeleteProjectPermanently(projectId);
 
    function updateProjectSettings(e: React.FormEvent<HTMLFormElement>) {
       e.preventDefault();
@@ -21,7 +21,7 @@ export default function useProjectSettings() {
 
       (async () => {
          if (settings_patch.permanent_delete_project) {
-            if (settings_patch.permanent_delete_project === `delete ${project?.name}`) deleteProject();
+            if (settings_patch.permanent_delete_project === `delete ${project?.name}`) deleteProjectPermanently();
             else alertError(`${F} Delete instruction does not match expected format`);
             return;
          }

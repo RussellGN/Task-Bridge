@@ -6,7 +6,7 @@ import { useNavigate } from "react-router";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { alertError, alertSuccess, dbg } from "@/lib/utils";
 
-export default function useDeleteProject(projectId: string | undefined) {
+export default function useDeleteProjectPermanently(projectId: string | undefined) {
    const client = useClient();
    const navigate = useNavigate();
    const { doIfOnline } = useConnectionStatus();
@@ -30,7 +30,7 @@ export default function useDeleteProject(projectId: string | undefined) {
    });
 
    return {
-      deleteProject: () => doIfOnline(mutate, "Cannot delete project permanently whilst offline"),
+      deleteProjectPermanently: () => doIfOnline(mutate, "Cannot delete project permanently whilst offline"),
       isPending,
    };
 }
