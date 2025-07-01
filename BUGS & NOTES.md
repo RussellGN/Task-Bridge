@@ -12,3 +12,4 @@
 8. need to go through rust code, and refactor, clean alot of repeated and inefficient code
 9. determine board for each task in backend, create root field 'state' in Task: chich is either: backlog, in-progress etc...
 10.   find ways to to auto generate TS types and interfaces from rust types
+11.   decompose rust modules further
