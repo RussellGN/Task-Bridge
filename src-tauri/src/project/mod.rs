@@ -36,6 +36,7 @@ pub struct Project {
    repo_id: String,
    tasks: Option<Vec<Task>>,
    draft_tasks: Option<Vec<DraftTask>>,
+   project_sync_interval_mins: Option<i32>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -52,7 +53,7 @@ pub struct ProjectSettingsPatchPayload {
    // team settings
    pub team: Option<String>,
    // sync settings
-   pub project_sync_interval: Option<usize>,
+   pub project_sync_interval_mins: Option<i32>,
    // delete options
    pub locally_delete_project: Option<String>,
    pub permanent_delete_project: Option<String>,
@@ -72,6 +73,7 @@ impl Project {
       repo: models::Repository,
       tasks: Option<Vec<Task>>,
       draft_tasks: Option<Vec<DraftTask>>,
+      project_sync_interval_mins: Option<i32>,
    ) -> Self {
       let creation_timestamp = chrono::Utc::now().timestamp_millis();
       let name = name.into();
@@ -89,6 +91,7 @@ impl Project {
          repo_id,
          tasks,
          draft_tasks,
+         project_sync_interval_mins,
       }
    }
 
@@ -143,7 +146,7 @@ impl Project {
       }
 
       // final step : save project to store and return
-      let project = Self::new(payload.name, true, vec![], pending_invites, repo, None, None);
+      let project = Self::new(payload.name, true, vec![], pending_invites, repo, None, None, None);
       project.place_in_store(store)?;
       log!("{F} final step complete! project saved to store. Now returning project: project");
 

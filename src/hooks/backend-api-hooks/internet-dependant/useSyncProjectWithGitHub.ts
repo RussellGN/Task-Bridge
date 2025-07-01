@@ -35,9 +35,11 @@ export default function useSyncProjectWithGitHub(project: Project) {
       // sync on mount
       syncIfNotSynced(project.id, syncProjectWithGitHub);
 
-      const intervalLength = appPreferences?.project_sync_interval
-         ? appPreferences?.project_sync_interval * 1000
-         : PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS;
+      const intervalLength = project.project_sync_interval_mins
+         ? project.project_sync_interval_mins * 1000
+         : appPreferences?.project_sync_interval_mins
+           ? appPreferences?.project_sync_interval_mins * 1000
+           : PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS;
 
       dbg(
          "[useSyncProjectWithGitHub]",

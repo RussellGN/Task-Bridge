@@ -50,6 +50,7 @@ export interface Project {
    repo_id: string;
    tasks: Task[] | null;
    draft_tasks: DraftTask[] | null;
+   project_sync_interval_mins?: number;
 }
 
 export interface Issue {
@@ -172,7 +173,7 @@ export interface Setting {
 }
 
 export interface AppPreferences {
-   project_sync_interval?: number;
+   project_sync_interval_mins?: number;
 }
 
 export interface ProjectSettingsPatchPayload {
@@ -183,7 +184,7 @@ export interface ProjectSettingsPatchPayload {
    // team settings
    team?: string;
    // sync settings
-   project_sync_interval?: number;
+   project_sync_interval_mins?: number;
    // delete options
    locally_delete_project?: string;
    permanent_delete_project?: string;

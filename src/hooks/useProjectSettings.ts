@@ -42,7 +42,7 @@ export default function useProjectSettings() {
 
          if (settings_patch.team) await invoke("update_project_team", patchArgs);
 
-         if (settings_patch.project_sync_interval) await invoke("update_project_sync_settings", patchArgs);
+         if (settings_patch.project_sync_interval_mins) await invoke("update_project_sync_settings", patchArgs);
       })();
    }
 

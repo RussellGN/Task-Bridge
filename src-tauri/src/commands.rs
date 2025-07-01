@@ -96,7 +96,7 @@ pub async fn sync_projects_with_github<R: Runtime>(app: tauri::AppHandle<R>) -> 
          None
       };
 
-      let project = Project::new(repo.name.clone(), false, team, pending_invites, repo, tasks, None);
+      let project = Project::new(repo.name.clone(), false, team, pending_invites, repo, tasks, None, None);
 
       project.place_in_store(Arc::clone(&store))?;
    }

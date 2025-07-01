@@ -3,8 +3,11 @@ import SettingSkeleton from "./SettingSkeleton";
 import { PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS } from "@/lib/constants";
 import { SettingsTabElementProps } from "@/types/types";
 
-export default function SyncSettings({ appPreferences: settings }: SettingsTabElementProps) {
-   const intervalLength = settings?.project_sync_interval || PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS / 1000;
+export default function SyncSettings({ appPreferences, project }: SettingsTabElementProps) {
+   const intervalLength =
+      project?.project_sync_interval_mins ||
+      appPreferences?.project_sync_interval_mins ||
+      PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS / 1000;
 
    return (
       <div>
@@ -20,8 +23,8 @@ export default function SyncSettings({ appPreferences: settings }: SettingsTabEl
                   className="w-fit"
                   defaultValue={intervalLength}
                   type="number"
-                  name="project_sync_interval"
-                  id="project_sync_interval"
+                  name="project_sync_interval_mins"
+                  id="project_sync_interval_mins"
                   max={24 * 60}
                   min={1}
                   required
