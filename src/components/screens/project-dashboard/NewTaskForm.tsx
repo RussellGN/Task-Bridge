@@ -34,11 +34,13 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
       itemToEdit,
       pendingTeam,
       errorMessage,
+      submitBtnClicked,
       setIsDraft,
       setAssignee,
       onOpenChange,
       handleSubmit,
       setAddToBacklog,
+      setSubmitBtnClicked,
    } = useNewTaskForm(project);
 
    return (
@@ -182,9 +184,10 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
                                  onClick={() => {
                                     setIsDraft(false);
                                     setAddToBacklog(true);
+                                    setSubmitBtnClicked("backlog");
                                  }}
                               >
-                                 {isPending ? (
+                                 {isPending && submitBtnClicked === "backlog" ? (
                                     <>
                                        Adding to backlog... <SpinnerIcon />
                                     </>
@@ -202,9 +205,10 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
                                  onClick={() => {
                                     setIsDraft(false);
                                     setAddToBacklog(false);
+                                    setSubmitBtnClicked("assign");
                                  }}
                               >
-                                 {isPending ? (
+                                 {isPending && submitBtnClicked === "assign" ? (
                                     <>
                                        Assigning task... <SpinnerIcon />
                                     </>
@@ -223,9 +227,10 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
                                  onClick={() => {
                                     setIsDraft(true);
                                     setAddToBacklog(false);
+                                    setSubmitBtnClicked("draft");
                                  }}
                               >
-                                 {isPending ? (
+                                 {isPending && submitBtnClicked === "draft" ? (
                                     <>
                                        Saving draft... <SpinnerIcon />
                                     </>
@@ -240,7 +245,7 @@ export default function NewTaskForm({ project }: NewTaskFormProps) {
                                  content="No assignee selected!"
                                  trigger={
                                     <div className="btn btn-PRIMARY cursor-not-allowed opacity-25 active:scale-100">
-                                       {isPending ? (
+                                       {isPending && submitBtnClicked === "assign" ? (
                                           <>
                                              Assigning task... <SpinnerIcon />
                                           </>

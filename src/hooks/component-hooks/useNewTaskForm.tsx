@@ -15,6 +15,7 @@ export default function useNewTaskForm(project: Project) {
    const [searchParams, setSearchParams] = useSearchParams();
    const [assignee, setAssignee] = React.useState<string | undefined>(undefined);
    const [addToBacklog, setAddToBacklog] = React.useState(false);
+   const [submitBtnClicked, setSubmitBtnClicked] = React.useState<null | "backlog" | "draft" | "assign">(null);
    const { createTask, isPending: creationPending, errorMessage: taskCreationError } = useCreateTask(project.id);
    const { createDraft, isPending: draftPending, errorMessage: draftCreationError } = useCreateDraftTask(project.id);
    const {
@@ -92,6 +93,7 @@ export default function useNewTaskForm(project: Project) {
       assignee,
       isEditing,
       itemToEdit,
+      submitBtnClicked,
       team: project.team,
       pendingTeam: project.pending_invites,
       isPending: creationPending || draftPending || backlogAdditionPending || editPending || editDraftPending,
@@ -102,5 +104,6 @@ export default function useNewTaskForm(project: Project) {
       onOpenChange,
       handleSubmit,
       setAddToBacklog,
+      setSubmitBtnClicked,
    };
 }
