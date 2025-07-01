@@ -185,6 +185,7 @@ export interface ProjectSettingsPatchPayload {
    // sync settings
    project_sync_interval?: number;
    // delete options
+   locally_delete_project?: string;
    permanent_delete_project?: string;
 }
 

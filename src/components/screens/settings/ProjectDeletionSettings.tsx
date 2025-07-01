@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import SettingSkeleton from "./SettingSkeleton";
 import { SettingsTabElementProps } from "@/types/types";
 import { Input } from "@/components/ui/input";
@@ -15,9 +14,13 @@ export default function ProjectDeletionSettings({ project }: SettingsTabElementP
                <b>Note, all draft tasks will be lost and cannot be restored.</b>
             </p>
             <div>
-               <Button type="button" variant="destructive">
-                  Delete Local Project
-               </Button>
+               <Input
+                  type="text"
+                  name="locally_delete_project"
+                  required
+                  className="border-DANGER"
+                  placeholder="Enter 'delete' followed by this project's exact name and click save to delete"
+               />
             </div>
          </div>
 

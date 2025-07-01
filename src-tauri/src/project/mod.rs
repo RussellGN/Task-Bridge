@@ -54,6 +54,7 @@ pub struct ProjectSettingsPatchPayload {
    // sync settings
    pub project_sync_interval: Option<usize>,
    // delete options
+   pub locally_delete_project: Option<String>,
    pub permanent_delete_project: Option<String>,
 }
 
@@ -494,6 +495,40 @@ impl Project {
       const F: &str = "[GithubAPI::delete_permanently]";
 
       GithubAPI::delete_repo(&self.repo, token).await?;
+      store.delete(&self.id);
+
+      // update project-ids
+      if let Some(project_ids) = store.get("project-ids") {
+         let mut project_ids = serde_json::from_value::<Vec<String>>(project_ids)
+            .map_err(|e| format!("{F} could not deserialize project-ids: {e}"))?;
+
+         project_ids = project_ids
+            .iter()
+            .filter(|id| id.to_string() != self.id)
+            .map(|id| id.to_owned())
+            .collect();
+         store.set("project-ids", project_ids);
+      }
+
+      // update repo-ids
+      if let Some(repo_ids) = store.get("repo-ids") {
+         let mut repo_ids = serde_json::from_value::<Vec<String>>(repo_ids)
+            .map_err(|e| format!("{F} could not deserialize repo-ids: {e}"))?;
+
+         repo_ids = repo_ids
+            .iter()
+            .filter(|id| id.to_string() != self.repo_id)
+            .map(|id| id.to_owned())
+            .collect();
+         store.set("repo-ids", repo_ids);
+      }
+
+      Ok(())
+   }
+
+   pub fn delete_locally(self, store: Arc<Store<impl Runtime>>) -> crate::Result {
+      const F: &str = "[GithubAPI::delete_locally]";
+
       store.delete(&self.id);
 
       // update project-ids

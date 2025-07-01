@@ -5,12 +5,14 @@ import { ProjectSettingsPatchPayload } from "@/types/interfaces";
 import { alertError, dbg } from "@/lib/utils";
 import { useParams } from "react-router";
 import { invoke } from "@tauri-apps/api/core";
+import useDeleteProjectLocally from "./backend-api-hooks/internet-independant/useDeleteProjectLocally";
 
 export default function useProjectSettings() {
    const F = "[useProjectSettings]";
    const { projectId } = useParams();
    const { project, isLoading } = useGetProject(projectId);
    const { deleteProjectPermanently, isPending: isProjectDeleting } = useDeleteProjectPermanently(projectId);
+   const { deleteProjectLocally, isPending: isProjectDeletingLocally } = useDeleteProjectLocally(projectId);
 
    function updateProjectSettings(e: React.FormEvent<HTMLFormElement>) {
       e.preventDefault();
@@ -22,6 +24,12 @@ export default function useProjectSettings() {
       (async () => {
          if (settings_patch.permanent_delete_project) {
             if (settings_patch.permanent_delete_project === `delete ${project?.name}`) deleteProjectPermanently();
+            else alertError(`${F} Delete instruction does not match expected format`);
+            return;
+         }
+
+         if (settings_patch.locally_delete_project) {
+            if (settings_patch.locally_delete_project === `delete ${project?.name}`) deleteProjectLocally();
             else alertError(`${F} Delete instruction does not match expected format`);
             return;
          }
@@ -38,5 +46,9 @@ export default function useProjectSettings() {
       })();
    }
 
-   return { project, projectLoading: isLoading || isProjectDeleting, updateProjectSettings };
+   return {
+      project,
+      projectLoading: isLoading || isProjectDeleting || isProjectDeletingLocally,
+      updateProjectSettings,
+   };
 }

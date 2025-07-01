@@ -435,7 +435,26 @@ pub async fn delete_project_permanently<R: Runtime>(app: tauri::AppHandle<R>, pr
    let project = serde_json::from_value::<Project>(project)
       .map_err(|e| format!("{F} failed to read project with id '{project_id}': {e}",))?;
 
+   project.delete_permanently(&token, store).await?;
    log!("{F} successfully deleted project with id '{project_id}' permanently");
+   Ok(())
+}
 
-   project.delete_permanently(&token, store).await
+#[tauri::command]
+pub async fn delete_project_locally<R: Runtime>(app: tauri::AppHandle<R>, project_id: String) -> crate::Result {
+   const F: &str = "[delete_project_locally]";
+
+   log!("{F} deleting project with id '{project_id}' from local store");
+   let store = get_store(app)?;
+
+   let project = store
+      .get(&project_id)
+      .ok_or(format!("{F} project with id {project_id} not found"))?;
+
+   let project = serde_json::from_value::<Project>(project)
+      .map_err(|e| format!("{F} failed to read project with id '{project_id}': {e}",))?;
+
+   project.delete_locally(store)?;
+   log!("{F} successfully deleted project with id '{project_id}' from local store");
+   Ok(())
 }
