@@ -25,6 +25,7 @@ export default function TeamSelector({
             {team.map((user) => (
                <TeamUserCard
                   pending={user.pending}
+                  showPendingState
                   key={user.login}
                   user={user}
                   onRemove={disabled ? undefined : () => removeUser(user)}

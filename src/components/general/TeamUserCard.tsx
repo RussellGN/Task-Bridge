@@ -9,12 +9,16 @@ type TeamUserCardProps = {
    onRemove?: () => void;
    className?: string;
    pending?: boolean;
+   showPendingState?: boolean;
 };
 
-export default function TeamUserCard({ user, pending, className, onRemove }: TeamUserCardProps) {
+export default function TeamUserCard({ user, pending, className, showPendingState, onRemove }: TeamUserCardProps) {
    return (
       <div className={cn("bg-foreground/5 flex items-center gap-2 rounded-sm border px-2 py-0.5 text-xs", className)}>
-         <UserAvatar user={user} className={`size-6 border-3 ${pending ? "border-[grey]" : "border-PRIMARY"}`} />
+         <UserAvatar
+            user={user}
+            className={`size-6 ${showPendingState ? "border-3" : "border-0"} ${pending ? "border-[grey]" : "border-PRIMARY"}`}
+         />
 
          <div className="flex flex-col">
             <p className="font-semibold">{user.login}</p>
