@@ -200,3 +200,8 @@ export interface SettingsTab {
 export interface PossiblyPendingAuthor extends Author {
    pending?: boolean;
 }
+
+export interface ProjectPatchArgs {
+   project_id: string;
+   settings_patch: ProjectSettingsPatchPayload;
+}
