@@ -205,3 +205,15 @@ export interface ProjectPatchArgs {
    project_id: string;
    settings_patch: ProjectSettingsPatchPayload;
 }
+
+export interface Stat {
+   label: string;
+   value: string | number;
+   color: "PRIMARY" | "DANGER";
+   teamMember?: PossiblyPendingAuthor;
+}
+
+export interface OverallStat {
+   label: string;
+   value: string | number;
+}

@@ -3,7 +3,7 @@ import TeamAvatars from "./TeamAvatars";
 import useProjectControls from "@/hooks/component-hooks/useProjectControls";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
-import { ChartBar, Loader2, RotateCcw, Settings } from "lucide-react";
+import { ChartColumn, Loader2, RotateCcw, Settings } from "lucide-react";
 
 export default function ProjectControls({ project }: { project: Project }) {
    const { team, isSyncing, syncProjectWithGitHub } = useProjectControls(project);
@@ -26,8 +26,8 @@ export default function ProjectControls({ project }: { project: Project }) {
 
          <Button asChild variant="outline">
             <Link to={`/analytics/${project.id}`}>
-               Team Analysis
-               <ChartBar />
+               Project Analysis
+               <ChartColumn />
             </Link>
          </Button>
 

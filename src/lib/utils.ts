@@ -125,6 +125,37 @@ export function getTimeElapsedSince(date: Date | string): string {
    }
 }
 
+export function getTimeElapsedSinceVerbose(date: Date | string): string {
+   const currentDate = new Date();
+   const startDate = typeof date === "string" ? new Date(date) : date;
+
+   const elapsedMilliseconds = currentDate.getTime() - startDate.getTime();
+
+   if (elapsedMilliseconds < 1) return "now";
+
+   const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
+   const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+   const elapsedHours = Math.floor(elapsedMinutes / 60);
+   const elapsedDays = Math.floor(elapsedHours / 24);
+   const elapsedWeeks = Math.floor(elapsedDays / 7);
+   const elapsedMonths = Math.floor(elapsedDays / 30);
+   const elapsedYears = Math.floor(elapsedDays / 365);
+
+   if (elapsedYears > 0) {
+      return `${elapsedYears} year${elapsedYears > 1 ? "s" : ""}`;
+   } else if (elapsedMonths > 0) {
+      return `${elapsedMonths} month${elapsedMonths > 1 ? "s" : ""}`;
+   } else if (elapsedWeeks > 0) {
+      return `${elapsedWeeks} week${elapsedWeeks > 1 ? "s" : ""}`;
+   } else if (elapsedDays > 0) {
+      return `${elapsedDays} day${elapsedDays > 1 ? "s" : ""}`;
+   } else if (elapsedHours > 0) {
+      return `${elapsedHours} hour${elapsedHours > 1 ? "s" : ""}`;
+   } else {
+      return `${elapsedMinutes} minute${elapsedMinutes > 1 ? "s" : ""}`;
+   }
+}
+
 export function stringifyAndRemoveQuotes<T>(arg: T) {
    const str = JSON.stringify(arg);
    return str.slice(1, str.length - 1);
