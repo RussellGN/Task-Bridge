@@ -383,7 +383,7 @@ impl GithubAPI {
       log!("{F} about to remove collaborator with login: {login}");
       let path_n_query = format!("/repos/{owner}/{}/collaborators/{login}", repo.name);
 
-      let (_, parts) = Self::request::<Value, Value>(Method::DELETE, path_n_query, token, None).await?;
+      let (_, parts) = Self::request_with_option_res::<Value, Value>(Method::DELETE, path_n_query, token, None).await?;
 
       let status = *parts.status();
       let was_successfull = status == reqwest::StatusCode::NO_CONTENT;
