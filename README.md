@@ -62,8 +62,7 @@
 You can view and download all documented versions of the app from the [GitHub Releases](https://github.com/russellgn/task-bridge/releases) section.
 
 ⚠️ **Important:** Install only the latest patched version. Previous versions are less stable and are available for reference and testing only.  
-ℹ️ The installer will automatically remove previous versions if already installed.  
-⏳ More installer types and platform support are coming soon.
+ℹ️ The installer will automatically remove previous versions if already installed.
 
 ### Undocumented Versions
 
