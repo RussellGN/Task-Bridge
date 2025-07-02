@@ -406,7 +406,7 @@ impl GithubAPI {
       owner: &str,
       repo: &models::Repository,
    ) -> crate::Result {
-      const F: &str = "[GithubAPI::cancel_invite]";
+      const F: &str = "[GithubAPI::cancel_any_invite_to]";
 
       log!("{F} fetching all repo invites");
       let path_n_query = format!("/repos/{owner}/{}/invitations", repo.name);
@@ -423,7 +423,7 @@ impl GithubAPI {
       }
 
       let (invitations, parts) =
-         Self::request_with_option_res::<Vec<TempInvitation>, Value>(Method::GET, path_n_query, token, None).await?;
+         Self::request::<Vec<TempInvitation>, Value>(Method::GET, path_n_query, token, None).await?;
 
       if parts.status != StatusCode::OK {
          return Err(format!(
@@ -432,7 +432,6 @@ impl GithubAPI {
          ));
       }
 
-      let invitations = invitations.expect("caanot be empty");
       let invitation_id = if let Some(invitation) = invitations.iter().find(|i| i.invitee.login == login) {
          invitation.id
       } else {
@@ -445,7 +444,7 @@ impl GithubAPI {
       log!("{F} cancelling collab invite '{invitation_id}' sent to: {login}");
       let path_n_query = format!("/repos/{owner}/{}/invitations/{invitation_id}", repo.name);
 
-      let (_, parts) = Self::request::<Value, Value>(Method::DELETE, path_n_query, token, None).await?;
+      let (_, parts) = Self::request_with_option_res::<Value, Value>(Method::DELETE, path_n_query, token, None).await?;
 
       let status = *parts.status();
       let was_successfull = status == reqwest::StatusCode::NO_CONTENT;
