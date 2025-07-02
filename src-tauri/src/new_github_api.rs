@@ -76,7 +76,7 @@ impl GithubAPI {
       path_query: impl Into<String>,
       token: &AccessToken,
       payload: Option<P>,
-   ) -> crate::Result<(Option<R>, GithubResponseParts)>
+   ) -> crate::Result<(R, GithubResponseParts)>
    where
       R: DeserializeOwned + Debug,
       P: Serialize + Debug,
@@ -160,17 +160,13 @@ impl GithubAPI {
                url: res.url().clone(),
             };
 
-            // log and return reponse data if available
-            if content_length != 0.0 {
-               let json_data = res
-                  .json::<R>()
-                  .await
-                  .map_err(|e| format!("{F} error reading response body: {e}",))?;
+            // log and return reponse data
+            let json_data = res
+               .json::<R>()
+               .await
+               .map_err(|e| format!("{F} error reading response body: {e}",))?;
 
-               Ok((Some(json_data), parts))
-            } else {
-               Ok((None, parts))
-            }
+            Ok((json_data, parts))
          }
          Err(e) => {
             let status_code = e.status().expect(&format!("{F} no error status code found: {e}"));
@@ -218,8 +214,7 @@ impl GithubAPI {
       log!("{F} creating new repo, payload: {payload:#?}");
       let repo: models::Repository = Self::request(Method::POST, "/user/repos", &token, Some(payload))
          .await?
-         .0
-         .expect("cannot be empty");
+         .0;
       log!("{F} new repo created: {}", repo.name);
 
       Ok(repo)
@@ -257,7 +252,6 @@ impl GithubAPI {
       let was_successfull = status == reqwest::StatusCode::CREATED || status == reqwest::StatusCode::NO_CONTENT;
 
       if was_successfull {
-         let invite_response = invite_response.expect("cannot be empty");
          log!(
             "{F} successfully invited {login}, status: {status} invite-response-invitee: {}-{}",
             invite_response.invitee.login,
@@ -321,7 +315,7 @@ impl GithubAPI {
       }
 
       let (invitations, parts) =
-         Self::request::<Vec<TempInvitation>, Value>(Method::GET, path_n_query, token, None).await?;
+         Self::request_with_option_res::<Vec<TempInvitation>, Value>(Method::GET, path_n_query, token, None).await?;
 
       if parts.status != StatusCode::OK {
          return Err(format!(
@@ -371,8 +365,6 @@ impl GithubAPI {
          None,
       )
       .await?;
-
-      let repos = repos.expect("caanot be empty");
 
       log!("{F} reading link header, if any");
       if let Some(link_header) = parts.headers.get("link") {
@@ -475,7 +467,6 @@ impl GithubAPI {
       let invites = Self::request::<Vec<PendingInviteResponse>, Value>(Method::GET, url, &token, None)
          .await?
          .0
-         .expect("cannot be empty")
          .into_iter()
          .map(|i| i.invitee)
          .collect::<Vec<_>>();
@@ -580,7 +571,7 @@ impl GithubAPI {
       log!("{F} fetching exclusive commits @ {path_query} ");
 
       match Self::request::<BranchesComparison, Value>(Method::GET, &path_query, token, None).await {
-         Ok((Some(BranchesComparison { commits }), _)) => Ok(commits),
+         Ok((BranchesComparison { commits }, _)) => Ok(commits),
          Err(e) => {
             log!("{F} failed to fetch exclusive commits @ {path_query}. {e} ");
             if repo.default_branch.is_some() {
@@ -597,12 +588,9 @@ impl GithubAPI {
             let BranchesComparison { commits } =
                Self::request::<BranchesComparison, Value>(Method::GET, path_query, token, None)
                   .await?
-                  .0
-                  .expect("cannot be empty");
-
+                  .0;
             Ok(commits)
          }
-         _ => panic!("should not be possible"),
       }
    }
 
@@ -740,5 +728,113 @@ impl GithubAPI {
       })?;
 
       Ok(updated_repo)
+   }
+
+   pub async fn request_with_option_res<R, P>(
+      method: Method,
+      path_query: impl Into<String>,
+      token: &AccessToken,
+      payload: Option<P>,
+   ) -> crate::Result<(Option<R>, GithubResponseParts)>
+   where
+      R: DeserializeOwned + Debug,
+      P: Serialize + Debug,
+   {
+      const F: &str = "[GithubAPI::request]";
+
+      // formulate url
+      let path = path_query.into();
+      let path = if path.starts_with("/") {
+         path
+      } else {
+         format!("/{path}")
+      };
+      let url = format!("{GITHUB_API_BASENAME}{path}");
+
+      // build request, with headers: auth, user-agent, accept
+      let req = reqwest::Client::new()
+         .request(method, url)
+         .bearer_auth(token.get_token())
+         .header(header::USER_AGENT, "task-bridge")
+         .header(header::ACCEPT, "application/json")
+         .json(&payload)
+         .build()
+         .map_err(|e| format!("{F} failed to build request, error: {}", e.to_string()))?;
+
+      // log request
+      log!(
+         "{F} -- request built successfully, request :-> {} {}?{} | body content-length = {} KBs",
+         req.method(),
+         req.url().path(),
+         req.url().query().unwrap_or(""),
+         (req
+            .headers()
+            .get(header::CONTENT_LENGTH)
+            .unwrap_or(&HeaderValue::from_static("0"))
+            .to_str()
+            .unwrap_or("0")
+            .parse::<f64>()
+            .unwrap_or(0f64)
+            / 1024f64)
+            .round(),
+      );
+
+      // send request
+      let res = reqwest::Client::new()
+         .execute(req)
+         .await
+         .map_err(|e| format!("{F} error sending request, error: {}", e.to_string()))?;
+
+      match res.error_for_status() {
+         Ok(res) => {
+            // log response
+            let content_length = (res
+               .headers()
+               .get(header::CONTENT_LENGTH)
+               .unwrap_or(&HeaderValue::from_static("0"))
+               .to_str()
+               .unwrap_or("0")
+               .parse::<f64>()
+               .unwrap_or(0f64)
+               / 1024f64)
+               .round();
+
+            log!(
+               "{F} -- request sent, got response :-> status - {} @ {}?{} | returned {} with content-length = {} KBs",
+               res.status(),
+               res.url().path(),
+               res.url().query().unwrap_or(""),
+               res.headers()
+                  .get(header::CONTENT_TYPE)
+                  .unwrap_or(&HeaderValue::from_static("N/A"))
+                  .to_str()
+                  .unwrap_or("N/A"),
+               content_length,
+            );
+
+            // create response parts
+            let parts = GithubResponseParts {
+               status: res.status(),
+               headers: res.headers().clone(),
+               url: res.url().clone(),
+            };
+
+            // log and return reponse data if available
+            if content_length != 0.0 {
+               let json_data = res
+                  .json::<R>()
+                  .await
+                  .map_err(|e| format!("{F} error reading response body: {e}",))?;
+
+               Ok((Some(json_data), parts))
+            } else {
+               Ok((None, parts))
+            }
+         }
+         Err(e) => {
+            let status_code = e.status().expect(&format!("{F} no error status code found: {e}"));
+            return Err(format!("{F} received error response with status '{status_code}', {e}",));
+         }
+      }
    }
 }
