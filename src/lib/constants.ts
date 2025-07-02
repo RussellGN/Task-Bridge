@@ -12,6 +12,7 @@ import { SettingsTab } from "@/types/interfaces";
 import TeamManagementSettings from "@/components/screens/settings/TeamManagementSettings";
 import NameAndVisibilitySettings from "@/components/screens/settings/NameAndVisibilitySettings";
 import ProjectDeletionSettings from "@/components/screens/settings/ProjectDeletionSettings";
+import Analytics from "@/routes/Analytics";
 
 export const GITHUB_INSTALL_URL = `https://github.com/apps/Task-Bridge/installations/new?prompt=select_account&state=${random_global_auth_keyword()}`;
 
@@ -25,6 +26,7 @@ export const ROUTES = [
    { path: "/settings", component: Settings },
    { path: "/settings/:projectId", component: Settings },
    { path: "/project-dashboard/:projectId", component: ProjectDashboard },
+   { path: "/analytics/:projectId", component: Analytics },
    { path: "*", component: NotFound },
 ];
 
