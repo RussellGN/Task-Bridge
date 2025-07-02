@@ -706,7 +706,7 @@ impl Project {
             None,
          )
          .await?;
-         pull_request_branch_names.push(branch_name.expect("cannot be empty").head.ref_field);
+         pull_request_branch_names.push(branch_name.head.ref_field);
       }
 
       for task in tasks.iter_mut() {
