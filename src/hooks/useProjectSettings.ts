@@ -1,13 +1,13 @@
-import React from "react";
-import useGetProject from "./backend-api-hooks/internet-independant/useGetProject";
-import useDeleteProjectPermanently from "./backend-api-hooks/internet-independant/useDeleteProjectPermanently";
-import { ProjectPatchArgs, ProjectSettingsPatchPayload } from "@/types/interfaces";
-import { alertError, dbg } from "@/lib/utils";
-import { useParams } from "react-router";
 import { invoke } from "@tauri-apps/api/core";
-import useDeleteProjectLocally from "./backend-api-hooks/internet-independant/useDeleteProjectLocally";
+import { useParams } from "react-router";
+import { alertError, dbg } from "@/lib/utils";
+import { ProjectPatchArgs, ProjectSettingsPatchPayload } from "@/types/interfaces";
+import useDeleteProjectPermanently from "./backend-api-hooks/internet-independant/useDeleteProjectPermanently";
 import useUpdateProjectSyncSettings from "./useUpdateProjectSyncSettings";
+import useDeleteProjectLocally from "./backend-api-hooks/internet-independant/useDeleteProjectLocally";
 import useUpdateProjectTeam from "./backend-api-hooks/internet-dependant/useUpdateProjectTeam";
+import useGetProject from "./backend-api-hooks/internet-independant/useGetProject";
+import React from "react";
 
 export default function useProjectSettings() {
    const F = "[useProjectSettings]";
