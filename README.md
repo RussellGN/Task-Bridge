@@ -2,7 +2,7 @@
 
 **Task-Bridge** is a project management solution with deep GitHub integration. It simplifies development team coordination and software project oversight for non-technical or GitHub-averse project managers through a simple, abstracted, and intuitive desktop interface.
 
-## Screenshots (version 0.2.1)
+## Screenshots (version 0.6.1)
 
 <table>
   <tr>
@@ -31,8 +31,8 @@
       <em>All Projects – local and synced</em>
     </td>
     <td align="center">
-      <img src="./doc/screenshots/5-project-dashboard-with-expanded-team-and-alert.png" width="90%"/><br/>
-      <em>Dashboard – task items, team view, and alerts</em>
+      <img src="./doc/screenshots/5-project-dashboard.png" width="90%"/><br/>
+      <em>Dashboard – main project view</em>
     </td>
   </tr>
   <tr>
@@ -53,6 +53,37 @@
     <td align="center">
       <img src="./doc/screenshots/9-task-creation-modal.png" width="90%"/><br/>
       <em>Task Modal – task creation and assignment</em>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center">
+      <img src="./doc/screenshots/10-app-preferences-global-project-sync-interval.png" width="90%"/><br/>
+      <em>Preferences – global project sync interval</em>
+    </td>
+    <td align="center">
+      <img src="./doc/screenshots/11-project-settings-general.png" width="90%"/><br/>
+      <em>Project Settings – general options</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./doc/screenshots/12-project-settings-team-management.png" width="90%"/><br/>
+      <em>Project Settings – team management</em>
+    </td>
+    <td align="center">
+      <img src="./doc/screenshots/13-project-settings-sync-interval.png" width="90%"/><br/>
+      <em>Project Settings – sync interval</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./doc/screenshots/14-project-settings-delete-options.png" width="90%"/><br/>
+      <em>Project Settings – delete options</em>
+    </td>
+    <td align="center">
+      <img src="./doc/screenshots/15-project-analytics.png" width="90%"/><br/>
+      <em>Project Analytics – insights and stats</em>
     </td>
   </tr>
 </table>
