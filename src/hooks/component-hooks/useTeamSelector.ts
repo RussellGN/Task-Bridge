@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { alertError, logInfo } from "@/lib/utils";
 import { PossiblyPendingAuthor } from "@/types/interfaces";
-import useSearchUsers from "../backend-api-hooks/internet-dependant/useSearchUsers";
 import { TEAM_LOGINS_SEPERATOR } from "@/lib/constants";
+import useSearchUsers from "../backend-api-hooks/internet-dependant/useSearchUsers";
 import useGetUser from "../backend-api-hooks/internet-independant/useGetUser";
 
 export default function useTeamSelector(defaultTeam?: PossiblyPendingAuthor[]) {
@@ -40,5 +40,27 @@ export default function useTeamSelector(defaultTeam?: PossiblyPendingAuthor[]) {
       setTeam((prev) => prev.filter((u) => u.id !== user.id));
    }
 
-   return { team, query, loading, queriedUsers, teamInputValue, setQuery, selectUser, removeUser, handleSearch };
+   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setQuery((e.target as HTMLInputElement).value);
+   };
+
+   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+         e.preventDefault();
+         handleSearch();
+      }
+   };
+
+   return {
+      team,
+      query,
+      loading,
+      queriedUsers,
+      teamInputValue,
+      selectUser,
+      removeUser,
+      handleSearch,
+      handleChange,
+      handleKeyDown,
+   };
 }

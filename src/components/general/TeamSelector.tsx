@@ -16,14 +16,24 @@ export default function TeamSelector({
    defaultTeam?: PossiblyPendingAuthor[];
    className?: string;
 }) {
-   const { team, query, loading, queriedUsers, teamInputValue, setQuery, selectUser, removeUser, handleSearch } =
-      useTeamSelector(defaultTeam);
+   const {
+      team,
+      query,
+      loading,
+      queriedUsers,
+      teamInputValue,
+      selectUser,
+      removeUser,
+      handleSearch,
+      handleChange,
+      handleKeyDown,
+   } = useTeamSelector(defaultTeam);
 
    return (
       <div className={cn("bg-background rounded-sm p-3", className)}>
          <input type="hidden" name="team" id="team" value={teamInputValue} readOnly />
 
-         <div className="flex flex-wrap gap-2">
+         <div className="flex max-h-[15ch] flex-wrap gap-2 overflow-y-auto">
             {team.length === 0 && <p className="text-muted-foreground text-sm">0 team members added.</p>}
             {team.map((user) => (
                <TeamUserCard
@@ -44,7 +54,8 @@ export default function TeamSelector({
                   placeholder="GitHub user's full username or PUBLIC email"
                   className={"w-[40ch] " + (loading ? "opacity-30" : "")}
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  onChange={handleChange}
+                  onKeyDown={handleKeyDown}
                   disabled={loading || disabled}
                />
                {queriedUsers !== undefined && (

@@ -20,10 +20,7 @@ export default function TeamUserCard({ user, pending, className, showPendingStat
             className={`size-6 ${showPendingState ? "border-3" : "border-0"} ${pending ? "border-[grey]" : "border-PRIMARY"}`}
          />
 
-         <div className="flex flex-col">
-            <p className="font-semibold">{user.login}</p>
-            <p className="text-foreground/50">{user.email || "no public email"}</p>
-         </div>
+         <div className="font-semibold">{user.login}</div>
 
          {onRemove && (
             <Button onClick={onRemove} variant="link" type="button" size="icon">
