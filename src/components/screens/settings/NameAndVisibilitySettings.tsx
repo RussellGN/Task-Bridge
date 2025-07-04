@@ -33,7 +33,7 @@ export default function NameAndVisibilitySettings({ project }: SettingsTabElemen
             </div>
 
             <div className="mb-5 items-center gap-10 lg:flex">
-               <Label htmlFor="priority" className="mb-2 min-w-1/5 text-nowrap">
+               <Label htmlFor="repo_visibility" className="mb-2 min-w-1/5 text-nowrap">
                   Repo Visibility<span className="text-PRIMARY">*</span>
                   <InfoTooltip
                      align="start"
