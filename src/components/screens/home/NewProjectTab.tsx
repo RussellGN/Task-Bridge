@@ -1,13 +1,16 @@
-import ErrorDisplay from "@/components/general/ErrorDisplay";
-import InfoTooltip from "@/components/general/InfoTooltip";
 import Spinner from "@/components/general/Spinner";
+import InfoTooltip from "@/components/general/InfoTooltip";
 import TeamSelector from "@/components/general/TeamSelector";
+import ErrorDisplay from "@/components/general/ErrorDisplay";
+import useNewProjectTab from "@/hooks/component-hooks/useNewProjectTab";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Globe, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import useNewProjectTab from "@/hooks/component-hooks/useNewProjectTab";
+import { Label } from "@/components/ui/label";
 
 export default function NewProjectTab() {
-   const { isPending, projectName, projectCreationErr, handleSubmit, setProjectName } = useNewProjectTab();
+   const { isPending, projectCreationErr, handleSubmit } = useNewProjectTab();
 
    return (
       <form onSubmit={handleSubmit} className="flex h-full flex-1 flex-col gap-4 p-5">
@@ -17,48 +20,55 @@ export default function NewProjectTab() {
 
          <div className="mb-5 items-center gap-10 lg:flex">
             <label htmlFor="name" className="mb-2 block min-w-1/5 text-nowrap">
-               Project name:
+               Project name
+            </label>
+            <Input type="text" name="name" id="name" maxLength={40} minLength={2} required disabled={isPending} />
+         </div>
+
+         <div className="mb-5 items-center gap-10 lg:flex">
+            <label htmlFor="repo_name" className="mb-2 flex min-w-1/5 items-center gap-3 text-nowrap">
+               GitHub repo name
+               <InfoTooltip align="start" className="-mb-1" content="Name of the project's Github repository." />
             </label>
             <Input
                type="text"
-               name="name"
-               id="name"
+               name="repo_name"
+               id="repo_name"
                maxLength={40}
                minLength={2}
-               placeholder="Your new project's name..."
                required
-               value={projectName}
-               onChange={(e) => setProjectName(e.target.value)}
                disabled={isPending}
             />
          </div>
 
          <div className="mb-5 items-center gap-10 lg:flex">
-            <label htmlFor="repoName" className="mb-2 flex min-w-1/5 items-center gap-3 text-nowrap">
-               GitHub Repo name:
+            <Label htmlFor="repo_visibility" className="mb-2 min-w-1/5 text-nowrap">
+               GitHub repo visibility
                <InfoTooltip
                   align="start"
                   className="-mb-1"
-                  content="Name of the project's Github repository. Derived from project name"
+                  content="Whether the project's GitHub repository is publicly visible or private."
                />
-            </label>
-            <Input
-               type="text"
-               name="repoName"
-               id="repoName"
-               maxLength={40}
-               minLength={2}
-               required
-               placeholder="Derived from project name..."
-               value={projectName}
-               readOnly
-               disabled={isPending}
-            />
+            </Label>
+
+            <Select required name="repo_visibility" defaultValue="public" disabled={isPending}>
+               <SelectTrigger>
+                  <SelectValue placeholder="public" />
+               </SelectTrigger>
+               <SelectContent>
+                  <SelectItem value="public">
+                     <Globe /> Public
+                  </SelectItem>
+                  <SelectItem value="private">
+                     <Lock /> Private
+                  </SelectItem>
+               </SelectContent>
+            </Select>
          </div>
 
          <div className="mb-5 items-start gap-10 lg:flex">
             <label htmlFor="team" className="mb-2 flex min-w-1/5 items-center gap-3 text-nowrap">
-               Team:
+               Team
                <InfoTooltip
                   align="start"
                   className="-mb-1"

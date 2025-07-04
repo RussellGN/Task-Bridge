@@ -22,6 +22,7 @@ pub struct ProjectPayload {
    name: String,
    repo_name: String,
    team: String,
+   repo_is_private: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -151,7 +152,7 @@ impl Project {
       let token = get_token(&store)?;
 
       // step 1: Create the Repository
-      let repo_payload = RepoPayload::new(Some(payload.repo_name.clone()), None);
+      let repo_payload = RepoPayload::new(Some(payload.repo_name.clone()), Some(payload.repo_is_private));
       let repo = GithubAPI::create_repo(repo_payload, &token).await?;
       log!("{F} step 1 complete! repo created: {}", repo.name);
 

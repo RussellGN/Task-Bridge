@@ -320,6 +320,28 @@ impl GithubAPI {
    pub async fn create_repo(payload: RepoPayload, token: &AccessToken) -> crate::Result<models::Repository> {
       const F: &str = "[GithubAPI::create_repo]";
 
+      log!("{F} building create-request payload");
+      let payload = match payload {
+         RepoPayload {
+            name: Some(name),
+            private: Some(private),
+         } => json!({"name": name, "private": private}),
+         RepoPayload {
+            name: Some(name),
+            private: None,
+         } => json!({"name": name}),
+         RepoPayload {
+            name: None,
+            private: Some(private),
+         } => json!({"private": private}),
+         RepoPayload {
+            name: None,
+            private: None,
+         } => {
+            return Err(format!("{F} cannot create repo with no name nor visibility parameters"));
+         }
+      };
+
       log!("{F} creating new repo, payload: {payload:#?}");
       let repo: models::Repository = Self::request(Method::POST, "/user/repos", &token, Some(payload))
          .await?

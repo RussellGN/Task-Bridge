@@ -36,6 +36,7 @@ export interface Author {
 export interface NewProjectPayload {
    name: string;
    repo_name: string;
+   repo_is_private: boolean;
    team: string;
 }
 
