@@ -487,7 +487,7 @@ pub async fn update_project_team<R: Runtime>(app: tauri::AppHandle<R>, patch_arg
 pub async fn update_general_project_metadata<R: Runtime>(
    app: tauri::AppHandle<R>,
    patch_args: ProjectPatchArgs,
-) -> crate::Result {
+) -> crate::Result<Project> {
    const F: &str = "[update_general_project_metadata]";
 
    log!(
@@ -547,8 +547,8 @@ pub async fn update_general_project_metadata<R: Runtime>(
    if new_repo_name.is_some() || new_repo_is_private.is_some() {
       project
          .update_repo(new_repo_name, new_repo_is_private, store, &token)
-         .await
-   } else {
-      Ok(())
+         .await?;
    }
+
+   Ok(project)
 }
