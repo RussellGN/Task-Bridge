@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import { useParams } from "react-router";
 import { alertError, dbg } from "@/lib/utils";
 import { ProjectPatchArgs, ProjectSettingsPatchPayload } from "@/types/interfaces";
@@ -8,6 +7,7 @@ import useDeleteProjectLocally from "./backend-api-hooks/internet-independant/us
 import useUpdateProjectTeam from "./backend-api-hooks/internet-dependant/useUpdateProjectTeam";
 import useGetProject from "./backend-api-hooks/internet-independant/useGetProject";
 import React from "react";
+import useUpdateGeneralProjectMetadata from "./backend-api-hooks/internet-dependant/useUpdateGeneralProjectMetadata";
 
 export default function useProjectSettings() {
    const F = "[useProjectSettings]";
@@ -17,12 +17,16 @@ export default function useProjectSettings() {
    const { deleteProjectLocally, isPending: isProjectDeletingLocally } = useDeleteProjectLocally(projectId);
    const { updateProjectSyncSettings, isPending: isUpdatingSyncSettings } = useUpdateProjectSyncSettings();
    const { updateProjectTeam, isPending: isProjectTeamUpdating } = useUpdateProjectTeam(projectId);
+   const { updateGeneralProjectMetadata, isPending: isProjectMetaUpdating } =
+      useUpdateGeneralProjectMetadata(projectId);
 
    function updateProjectSettings(e: React.FormEvent<HTMLFormElement>) {
       e.preventDefault();
-      const settings_patch = Object.fromEntries(
-         new FormData(e.currentTarget),
-      ) as unknown as ProjectSettingsPatchPayload;
+      const data = new FormData(e.currentTarget);
+      const settings_patch = Object.fromEntries(data) as unknown as ProjectSettingsPatchPayload;
+      settings_patch.repo_is_private = undefined;
+      settings_patch.repo_is_private = data.get("repo_visibility") === "private" ? true : false;
+
       dbg("[updateProjectSettings] Updating project settings", settings_patch);
 
       (async () => {
@@ -41,8 +45,8 @@ export default function useProjectSettings() {
 
             const patchArgs = { project_id: project!.id, settings_patch: settings_patch } as ProjectPatchArgs;
 
-            if (settings_patch.name && settings_patch.repo_name && settings_patch.repo_visibility) {
-               await invoke("update_general_project_metadata", { patchArgs });
+            if (settings_patch.name || settings_patch.repo_name || settings_patch.repo_is_private) {
+               await updateGeneralProjectMetadata(patchArgs);
             }
 
             if (settings_patch.team) await updateProjectTeam(patchArgs);
@@ -57,7 +61,12 @@ export default function useProjectSettings() {
    return {
       project,
       projectLoading:
-         isLoading || isProjectDeleting || isProjectDeletingLocally || isUpdatingSyncSettings || isProjectTeamUpdating,
+         isLoading ||
+         isProjectDeleting ||
+         isProjectDeletingLocally ||
+         isUpdatingSyncSettings ||
+         isProjectTeamUpdating ||
+         isProjectMetaUpdating,
       updateProjectSettings,
    };
 }

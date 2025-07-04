@@ -482,3 +482,73 @@ pub async fn update_project_team<R: Runtime>(app: tauri::AppHandle<R>, patch_arg
 
    Ok(())
 }
+
+#[tauri::command]
+pub async fn update_general_project_metadata<R: Runtime>(
+   app: tauri::AppHandle<R>,
+   patch_args: ProjectPatchArgs,
+) -> crate::Result {
+   const F: &str = "[update_general_project_metadata]";
+
+   log!(
+      "{F} updating general metadata for project with id '{}'",
+      patch_args.project_id
+   );
+   let store = get_store(app)?;
+   let token = get_token(&store)?;
+
+   let project = store
+      .get(&patch_args.project_id)
+      .ok_or(format!("{F} project with id {} not found", patch_args.project_id))?;
+
+   let mut project = serde_json::from_value::<Project>(project)
+      .map_err(|e| format!("{F} failed to read project with id '{}': {e}", patch_args.project_id))?;
+
+   // update name if different
+   if let Some(new_project_name) = &patch_args.settings_patch.name {
+      if new_project_name != project.name() {
+         project.partial_update(
+            Some(new_project_name.to_string()),
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+         );
+         project.save_updates_to_store(Arc::clone(&store))?;
+      }
+   };
+
+   // update repo name and visibility if different
+   let new_repo_name = if patch_args
+      .settings_patch
+      .repo_name
+      .clone()
+      .is_some_and(|n| n != project.repo().name)
+   {
+      patch_args.settings_patch.repo_name
+   } else {
+      None
+   };
+
+   let new_repo_is_private = if patch_args
+      .settings_patch
+      .repo_is_private
+      .is_some_and(|is_prvt| Some(is_prvt) != project.repo().private)
+   {
+      patch_args.settings_patch.repo_is_private
+   } else {
+      None
+   };
+
+   if new_repo_name.is_some() || new_repo_is_private.is_some() {
+      project
+         .update_repo(new_repo_name, new_repo_is_private, store, &token)
+         .await
+   } else {
+      Ok(())
+   }
+}

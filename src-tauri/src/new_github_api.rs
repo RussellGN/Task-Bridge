@@ -3,7 +3,7 @@ use std::fmt::{Debug, Display};
 use futures_util::StreamExt;
 use octocrab::{models, params::State};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{json, Value};
 use tauri::http::{header, HeaderValue, Method, StatusCode};
 use tauri_plugin_http::reqwest;
 use urlencoding::encode;
@@ -36,12 +36,13 @@ const GITHUB_API_BASENAME: &str = "https://api.github.com";
 
 #[derive(Serialize, Debug)]
 pub struct RepoPayload {
-   name: String,
+   name: Option<String>,
+   private: Option<bool>,
 }
 
 impl RepoPayload {
-   pub fn new(name: String) -> Self {
-      Self { name }
+   pub fn new(name: Option<String>, private: Option<bool>) -> Self {
+      Self { name, private }
    }
 }
 
@@ -628,6 +629,62 @@ impl GithubAPI {
       );
 
       Ok(all_issues)
+   }
+
+   pub async fn update_repo(
+      payload: RepoPayload,
+      repo: &models::Repository,
+      token: &AccessToken,
+   ) -> crate::Result<models::Repository> {
+      const F: &str = "[GithubAPI::update_repo]";
+
+      let owner = repo
+         .owner
+         .clone()
+         .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name))
+         .login;
+
+      let path_n_query = format!("/repos/{owner}/{}", repo.name);
+
+      log!("{F} building update request payload");
+      let payload = match payload {
+         RepoPayload {
+            name: Some(name),
+            private: Some(private),
+         } => json!({"name": name, "private": private}),
+         RepoPayload {
+            name: Some(name),
+            private: None,
+         } => json!({"name": name}),
+         RepoPayload {
+            name: None,
+            private: Some(private),
+         } => json!({"private": private}),
+         RepoPayload {
+            name: None,
+            private: None,
+         } => {
+            return Err(format!("{F} cannot update repo with no name nor visibility parameters"));
+         }
+      };
+      log!("{F} sending update request");
+      log!("{F} repo update payload is:\n{payload:#?}",);
+
+      let new_repo: models::Repository = Self::request(Method::PATCH, path_n_query, &token, Some(payload))
+         .await?
+         .0;
+
+      log!(
+         "{F} repo updated from {} | {:?} | {} to {} | {:?} | {}!",
+         repo.name,
+         repo.private,
+         repo.id,
+         new_repo.name,
+         new_repo.private,
+         new_repo.id,
+      );
+
+      Ok(new_repo)
    }
 
    pub async fn delete_repo(repo: &models::Repository, token: &AccessToken) -> crate::Result {

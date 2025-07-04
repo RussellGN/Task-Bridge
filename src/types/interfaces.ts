@@ -180,7 +180,7 @@ export interface ProjectSettingsPatchPayload {
    // name & visibility settings
    name?: string;
    repo_name?: string;
-   repo_visibility?: "public" | "private";
+   repo_is_private?: boolean;
    // team settings
    team?: string;
    // sync settings

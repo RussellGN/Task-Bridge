@@ -43,6 +43,7 @@ pub fn run() {
          commands::delete_project_permanently,
          commands::delete_project_locally,
          commands::update_project_team,
+         commands::update_general_project_metadata,
          experimental::clear_store,
       ])
       .run(tauri::generate_context!())

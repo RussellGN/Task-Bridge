@@ -2,7 +2,7 @@ pub mod task;
 
 use std::sync::Arc;
 
-use octocrab::models;
+use octocrab::models::{self};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use task::{DraftTask, NewDraftTaskPayload, NewTaskPayload, Task};
@@ -39,19 +39,13 @@ pub struct Project {
    project_sync_interval_mins: Option<i32>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
-pub enum RepoVisibilty {
-   PUBLIC,
-   PRIVATE,
-}
-
 #[allow(unused)]
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct ProjectSettingsPatchPayload {
    // name & visibility settings
    pub name: Option<String>,
    pub repo_name: Option<String>,
-   pub repo_visibility: Option<RepoVisibilty>,
+   pub repo_is_private: Option<bool>,
    // team settings
    pub team: Option<String>,
    // sync settings
@@ -61,7 +55,7 @@ pub struct ProjectSettingsPatchPayload {
    pub permanent_delete_project: Option<String>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct ProjectPatchArgs {
    pub project_id: String,
    pub settings_patch: ProjectSettingsPatchPayload,
@@ -111,12 +105,53 @@ impl Project {
       self.tasks = tasks;
    }
 
+   pub fn partial_update(
+      &mut self,
+      upd_name: Option<String>,
+      upd_locally_created: Option<bool>,
+      upd_team: Option<Vec<models::Author>>,
+      upd_pending_invites: Option<Vec<models::Author>>,
+      upd_repo: Option<models::Repository>,
+      upd_repo_id: Option<String>,
+      upd_tasks: Option<Option<Vec<Task>>>,
+      upd_draft_tasks: Option<Option<Vec<DraftTask>>>,
+      upd_project_sync_interval_mins: Option<Option<i32>>,
+   ) {
+      if let Some(upd_name) = upd_name {
+         self.name = upd_name
+      }
+      if let Some(upd_locally_created) = upd_locally_created {
+         self.locally_created = upd_locally_created
+      }
+      if let Some(upd_team) = upd_team {
+         self.team = upd_team
+      }
+      if let Some(upd_pending_invites) = upd_pending_invites {
+         self.pending_invites = upd_pending_invites
+      }
+      if let Some(upd_repo) = upd_repo {
+         self.repo = upd_repo
+      }
+      if let Some(upd_repo_id) = upd_repo_id {
+         self.repo_id = upd_repo_id
+      }
+      if let Some(upd_tasks) = upd_tasks {
+         self.tasks = upd_tasks
+      }
+      if let Some(upd_draft_tasks) = upd_draft_tasks {
+         self.draft_tasks = upd_draft_tasks
+      }
+      if let Some(upd_project_sync_interval_mins) = upd_project_sync_interval_mins {
+         self.project_sync_interval_mins = upd_project_sync_interval_mins
+      }
+   }
+
    pub async fn create_and_save(payload: ProjectPayload, store: Arc<Store<impl Runtime>>) -> crate::Result<Self> {
       const F: &str = "[create_and_save]";
       let token = get_token(&store)?;
 
       // step 1: Create the Repository
-      let repo_payload = RepoPayload::new(payload.repo_name.clone());
+      let repo_payload = RepoPayload::new(Some(payload.repo_name.clone()), None);
       let repo = GithubAPI::create_repo(repo_payload, &token).await?;
       log!("{F} step 1 complete! repo created: {}", repo.name);
 
@@ -718,5 +753,34 @@ impl Project {
       }
 
       Ok(tasks)
+   }
+
+   pub async fn update_repo(
+      &mut self,
+      new_repo_name: Option<String>,
+      new_repo_is_private: Option<bool>,
+      store: Arc<Store<impl Runtime>>,
+      token: &AccessToken,
+   ) -> crate::Result {
+      const F: &str = "[Project::update_repo]";
+
+      log!(
+         "{F} updating repo '{}' with {new_repo_name:?}, {new_repo_is_private:?}",
+         self.repo.name
+      );
+      let payload = RepoPayload::new(new_repo_name, new_repo_is_private);
+
+      let new_repo = GithubAPI::update_repo(payload, &self.repo, token).await?;
+      self.repo = new_repo;
+
+      self.save_updates_to_store(store)
+   }
+
+   pub fn name(&self) -> &str {
+      &self.name
+   }
+
+   pub fn repo(&self) -> &models::Repository {
+      &self.repo
    }
 }
