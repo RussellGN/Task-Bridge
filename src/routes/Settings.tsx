@@ -23,7 +23,10 @@ export default function Settings() {
             <div className="lucide"></div>
          </div>
 
-         <Tabs className="flex h-full grid-cols-12 flex-col gap-4 md:grid md:items-start">
+         <Tabs
+            defaultValue={tabs[0].value || undefined}
+            className="flex h-full grid-cols-12 flex-col gap-4 md:grid md:items-start"
+         >
             <TabsList className="col-span-2 flex gap-4 md:flex-col">
                {tabs.map((tab) => (
                   <TabsTrigger
