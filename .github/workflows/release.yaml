@@ -8,6 +8,7 @@ env:
    CLIENT_SECRET: ${{ secrets.CLIENT_SECRET}}
    PROCEED_TO_AUTH_URI: ${{secrets.PROCEED_TO_AUTH_URI }}
    FINNISH_AUTH_URI: ${{secrets.FINNISH_AUTH_URI }}
+   RELEASE_BODY: ""
 
 jobs:
    publish-tauri:
@@ -72,13 +73,22 @@ jobs:
          - name: install frontend dependencies
            run: pnpm install
 
+         - name: Set RELEASE_BODY from tag message
+           run: |
+              TAG_MESSAGE=$(git tag -l --format='%(contents)' "${{ github.ref_name }}")
+              echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
+              echo "${TAG_MESSAGE}" >> $GITHUB_ENV
+              echo "" >> $GITHUB_ENV
+              echo "Download the appropriate installer for your system from the assets below." >> $GITHUB_ENV
+              echo "EOF" >> $GITHUB_ENV
+
          - uses: tauri-apps/tauri-action@v0
            env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
            with:
               tagName: ${{ github.ref_name }}
               releaseName: Task Bridge ${{ github.ref_name }}
-              releaseBody: "Download the appropriate installer for your system from the assets below."
+              releaseBody: ${{ env.RELEASE_BODY}}
               releaseDraft: false
               prerelease: false
               args: ${{ matrix.args }}
