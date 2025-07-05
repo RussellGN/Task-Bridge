@@ -10,7 +10,7 @@ export default function Signin() {
 
    return (
       <div className="flex flex-col items-center justify-center gap-3 pt-30 text-center">
-         <img src="/public/github-placeholder-avatar.jpg" alt="GitHub logo" className="size-24 rounded-full" />
+         <img src="/github-placeholder-avatar.jpg" alt="GitHub logo" className="size-24 rounded-full" />
 
          <p>
             Integrate Your <span className="font-bold">GitHub</span> Account
