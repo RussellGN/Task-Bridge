@@ -30,6 +30,9 @@ jobs:
       runs-on: ${{ matrix.platform }}
       steps:
          - uses: actions/checkout@v4
+           with:
+              fetch-depth: 0
+              fetch-tags: true
 
          - name: install dependencies (ubuntu only)
            if: matrix.platform == 'ubuntu-22.04'
