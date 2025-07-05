@@ -13,3 +13,4 @@
 9. determine board for each task in backend, create root field 'state' in Task: chich is either: backlog, in-progress etc...
 10.   decompose rust modules further
 11.   migrate to GitHub graphql API
+12.   Allow multiple assignees for each task.
