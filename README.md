@@ -1,6 +1,6 @@
 # Task-Bridge
 
-**Task-Bridge** is a desktop-based project management solution. It is built specificallty around GitHub, and is meant to simplify work management & project oversight for GitHub-averse project managers.
+**Task-Bridge** is a desktop-based project management solution. It is built specifically around GitHub, and is meant to simplify work management & project oversight for GitHub-averse project managers.
 
 ## Screenshots
 
