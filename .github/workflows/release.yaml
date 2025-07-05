@@ -74,6 +74,7 @@ jobs:
            run: pnpm install
 
          - name: Set RELEASE_BODY from tag message
+           shell: bash
            run: |
               TAG_MESSAGE=$(git tag -l --format='%(contents)' "${{ github.ref_name }}")
               echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
