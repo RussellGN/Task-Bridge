@@ -1,13 +1,13 @@
 import { Input } from "@/components/ui/input";
 import SettingSkeleton from "./SettingSkeleton";
-import { PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS } from "@/lib/constants";
+import { DEFAULT_PROJECT_SYNC_INTERVAL_MINS } from "@/lib/constants";
 import { SettingsTabElementProps } from "@/types/types";
 
 export default function SyncSettings({ appPreferences, project }: SettingsTabElementProps) {
-   const intervalLength =
+   const intervalLengthMins =
       project?.project_sync_interval_mins ||
       appPreferences?.project_sync_interval_mins ||
-      PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS / 1000;
+      DEFAULT_PROJECT_SYNC_INTERVAL_MINS;
 
    return (
       <div>
@@ -21,12 +21,12 @@ export default function SyncSettings({ appPreferences, project }: SettingsTabEle
                </label>
                <Input
                   className="w-fit"
-                  defaultValue={intervalLength}
+                  defaultValue={intervalLengthMins}
                   type="number"
                   name="project_sync_interval_mins"
                   id="project_sync_interval_mins"
                   max={24 * 60}
-                  min={1}
+                  min={5}
                   required
                />
             </div>

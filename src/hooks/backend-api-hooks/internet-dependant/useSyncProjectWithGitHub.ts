@@ -1,5 +1,5 @@
 import useSettings from "@/hooks/route-hooks/useSettings";
-import { PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS } from "@/lib/constants";
+import { DEFAULT_PROJECT_SYNC_INTERVAL_MINS } from "@/lib/constants";
 import { alertError, alertInfo, alertSuccess, dbg } from "@/lib/utils";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { useClient } from "@/providers/ReactQueryProvider";
@@ -35,28 +35,27 @@ export default function useSyncProjectWithGitHub(project: Project) {
       // sync on mount
       syncIfNotSynced(project.id, syncProjectWithGitHub);
 
-      const intervalLength = project.project_sync_interval_mins
-         ? project.project_sync_interval_mins * 1000
+      const intervalLengthMins = project.project_sync_interval_mins
+         ? project.project_sync_interval_mins
          : appPreferences?.project_sync_interval_mins
-           ? appPreferences?.project_sync_interval_mins * 1000
-           : PROJECT_DASHBOARD_SYNC_INTERVAL_MILLI_SECONDS;
+           ? appPreferences?.project_sync_interval_mins
+           : DEFAULT_PROJECT_SYNC_INTERVAL_MINS;
 
-      dbg(
-         "[useSyncProjectWithGitHub]",
-         `registering interval (${intervalLength / 1000} min) to sync project data for`,
-         project.name,
+      dbg("[useSyncProjectWithGitHub]", `registering ${intervalLengthMins} minute sync interval for`, project.name);
+
+      const interval = window.setInterval(
+         () => {
+            doIfOnline(
+               () => {
+                  alertInfo(`[useSyncProjectWithGitHub] Syncing ${project.name} with GitHub...`);
+                  mutate();
+               },
+               "GitHub sync attempt failed!",
+               "This sync happens periodically in the background, but will not be attempted if you are offline.",
+            );
+         },
+         intervalLengthMins * 60 * 1000,
       );
-
-      const interval = window.setInterval(() => {
-         doIfOnline(
-            () => {
-               alertInfo(`[useSyncProjectWithGitHub] Syncing ${project.name} with GitHub...`);
-               mutate();
-            },
-            "GitHub sync attempt failed!",
-            "This sync happens periodically in the background, but will not be attempted if you are offline.",
-         );
-      }, intervalLength);
 
       dbg("[useSyncProjectWithGitHub]", "interval configured is", interval);
 
