@@ -11,6 +11,8 @@ const buttonVariants = cva(
          variant: {
             PRIMARY: "bg-PRIMARY text-black shadow-xs hover:bg-PRIMARY/90",
             default: "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
+            menuBarItem:
+               "bg-transparent active:scale-none cursor-pointer hover:text-white focus-visible:border-0 focus-visible:ring-0 text-white/80 transition-all text-xs",
             destructive:
                "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
             outline:
@@ -23,6 +25,7 @@ const buttonVariants = cva(
             default: "h-9 px-4 py-2 has-[>svg]:px-3",
             sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
             lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+            menuBarItem: "h-fit rounded-none py-1 px-3",
             icon: "size-9",
          },
       },
