@@ -1,14 +1,16 @@
-import { LucideIcon } from "lucide-react";
 import Repository from "./Repository";
 import { SettingsTabElementProps, TaskPriority } from "./types";
+import { LucideIcon } from "lucide-react";
 import { FC } from "react";
 
-export interface User {
-   login: string;
-   avatar_url: string;
-   email: string | undefined;
-   url?: string | undefined;
-}
+// export interface User {
+//    login: string;
+//    avatar_url: string;
+//    email: string | undefined;
+//    url?: string | undefined;
+//    html_url: string;
+//    type: string;
+// }
 
 export interface Author {
    login: string;

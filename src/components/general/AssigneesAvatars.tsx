@@ -1,11 +1,11 @@
-import { Author, User } from "@/types/interfaces";
+import { Author } from "@/types/interfaces";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Users } from "lucide-react";
 
 type AssigneesAvatarsProps = {
-   assignees: (User | Author)[];
+   assignees: Author[];
    triggerClassName?: string;
    contentClassName?: string;
    avatarClassName?: string;

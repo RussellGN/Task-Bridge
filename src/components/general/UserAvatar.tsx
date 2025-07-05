@@ -1,8 +1,8 @@
-import { Author, User } from "@/types/interfaces";
+import { Author } from "@/types/interfaces";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
-export function UserAvatar({ user, className }: { user: User | Author; className?: string }) {
+export function UserAvatar({ user, className }: { user: Author; className?: string }) {
    return (
       <Avatar className={cn("border-foreground/50 border", className)}>
          <AvatarImage src={user.avatar_url} />
