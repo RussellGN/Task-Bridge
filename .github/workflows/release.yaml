@@ -76,7 +76,7 @@ jobs:
          - name: Set RELEASE_BODY from tag message
            shell: bash
            run: |
-              TAG_MESSAGE=$(git tag -l --format='%(contents)' "${{ github.ref_name }}")
+              TAG_MESSAGE=$(git for-each-ref refs/tags/${{ github.ref_name }} --format='%(contents)')
               echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
               echo "${TAG_MESSAGE}" >> $GITHUB_ENV
               echo "" >> $GITHUB_ENV
