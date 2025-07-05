@@ -1,13 +1,21 @@
 import { useState } from "react";
 import useGetUser from "../backend-api-hooks/internet-independant/useGetUser";
+import useSignout from "../backend-api-hooks/internet-independant/useSignout";
 
 export default function useAccountManager() {
-   const { user } = useGetUser();
+   const { user, loading: userLoading } = useGetUser();
+   const { isPending: isSigningOut, signout } = useSignout();
    const [showSignoutDialog, setShowSignoutDialog] = useState(false);
 
-   function signout() {
-      console.log("User signed out");
-   }
-
-   return { user, showSignoutDialog, signout, setShowSignoutDialog };
+   return {
+      user,
+      isSigningOut,
+      userLoading,
+      showSignoutDialog,
+      signout: () => {
+         signout();
+         setShowSignoutDialog(false);
+      },
+      setShowSignoutDialog,
+   };
 }

@@ -18,22 +18,25 @@ import MenuBarItem from "./MenuBarItem";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "./UserAvatar";
-import { LogOut, User } from "lucide-react";
+import { Loader2, LogOut } from "lucide-react";
+import SpinnerIcon from "./SpinnerIcon";
 
 export function AccountManager() {
-   const { user, showSignoutDialog, signout, setShowSignoutDialog } = useAccountManager();
+   const { user, isSigningOut, userLoading, showSignoutDialog, signout, setShowSignoutDialog } = useAccountManager();
 
-   if (!user) {
+   if (userLoading) {
       return (
-         <MenuBarItem disabled Icon={User} className="cursor-not-allowed">
+         <MenuBarItem disabled Icon={Loader2} iconClassName="animate-spin" className="cursor-not-allowed">
             Account
          </MenuBarItem>
       );
    }
 
+   if (!user) return;
+
    return (
       <>
-         <Dialog open={showSignoutDialog} onOpenChange={setShowSignoutDialog}>
+         <Dialog open={showSignoutDialog} onOpenChange={isSigningOut ? undefined : setShowSignoutDialog}>
             <DialogContent className="sm:max-w-[425px]">
                <DialogHeader>
                   <DialogTitle>Sign Out & Clear Data</DialogTitle>
@@ -43,13 +46,22 @@ export function AccountManager() {
                </DialogHeader>
 
                <DialogFooter>
-                  <DialogClose asChild>
+                  <DialogClose disabled={isSigningOut} asChild>
                      <Button variant="outline">Cancel</Button>
                   </DialogClose>
 
-                  <Button onClick={signout}>
-                     Signout
-                     <LogOut />
+                  <Button disabled={isSigningOut} onClick={signout}>
+                     {isSigningOut ? (
+                        <>
+                           Signing out...
+                           <SpinnerIcon />
+                        </>
+                     ) : (
+                        <>
+                           Sign Out
+                           <LogOut />
+                        </>
+                     )}
                   </Button>
                </DialogFooter>
             </DialogContent>
