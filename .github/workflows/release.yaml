@@ -34,6 +34,14 @@ jobs:
               fetch-depth: 0
               fetch-tags: true
 
+         - name: Ensure annotated tag object is fetched
+           run: |
+              git fetch origin "refs/tags/${{ github.ref_name }}:refs/tags/${{ github.ref_name }}"
+
+         - name: Debug tag object
+           run: |
+              git cat-file -t "refs/tags/${{ github.ref_name }}"
+
          - name: install dependencies (ubuntu only)
            if: matrix.platform == 'ubuntu-22.04'
            run: |
