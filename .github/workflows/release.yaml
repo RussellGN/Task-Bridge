@@ -73,10 +73,43 @@ jobs:
          - name: install frontend dependencies
            run: pnpm install
 
-         - name: Set RELEASE_BODY to annotated tag's message
+         - name: Set RELEASE_BODY using GitHub API (Node.js)
            shell: bash
+           env:
+              GH_REPO: ${{ github.repository }}
+              GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              GH_TAG: ${{ github.ref_name }}
            run: |
-              echo "RELEASE_BODY=$(git tag -l --format='%(contents)' ${{ github.ref_name }}) Download the appropriate installer for your system from the assets below." >> $GITHUB_ENV
+              node <<'EOF'
+              const https = require('https');
+
+              const headers = {
+                 'User-Agent': 'GitHub Actions',
+                 Authorization: 'Bearer process.env.GH_TOKEN',
+              };
+
+              function fetch(url) {
+                 return new Promise((resolve, reject) => {
+                 https.get(url, { headers }, (res) => {
+                    let data = '';
+                    res.on('data', (chunk) => (data += chunk));
+                    res.on('end', () => resolve(JSON.parse(data)));
+                 }).on('error', reject);
+                 });
+              }
+
+              (async () => {
+                 const refData = await fetch(`https://api.github.com/repos/${process.env.GH_REPO}/git/ref/tags/${process.env.GH_TAG}`);
+                 const tagData = await fetch(refData.object.url);
+                 const message = tagData.message || '';
+
+                 const fs = require('fs');
+                 fs.appendFileSync(process.env.GITHUB_ENV, `RELEASE_BODY<<EOF\n`);
+                 fs.appendFileSync(process.env.GITHUB_ENV, message + '\n\n');
+                 fs.appendFileSync(process.env.GITHUB_ENV, 'Download the appropriate installer for your system from the assets below.\n');
+                 fs.appendFileSync(process.env.GITHUB_ENV, 'EOF\n');
+              })();
+              EOF
 
          - uses: tauri-apps/tauri-action@v0
            env:
