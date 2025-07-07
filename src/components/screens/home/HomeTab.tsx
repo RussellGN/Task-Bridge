@@ -63,7 +63,7 @@ export default function HomeTab({ loading, error, user }: DefaultTabProps) {
 
                <div className="mt-auto">
                   <p className="text-muted-foreground text-xs">
-                     &copy; {new Date().getFullYear()} Task Bridge <br /> {appVersion}
+                     &copy; {new Date().getFullYear()} Task Bridge V {appVersion}
                   </p>
                </div>
             </>
