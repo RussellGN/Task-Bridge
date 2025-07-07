@@ -76,8 +76,7 @@ jobs:
          - name: Set RELEASE_BODY to annotated tag's message
            shell: bash
            run: |
-              echo "RELEASE_BODY=$(git tag -l --format='%(contents)' ${{ github.ref_name }})" >> $GITHUB_ENV
-              echo " Download the appropriate installer for your system from the assets below." >> $GITHUB_ENV
+              echo "RELEASE_BODY=$(git tag -l --format='%(contents)' ${{ github.ref_name }}) Download the appropriate installer for your system from the assets below." >> $GITHUB_ENV
 
          - uses: tauri-apps/tauri-action@v0
            env:
