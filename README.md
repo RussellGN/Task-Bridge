@@ -5,7 +5,7 @@
 ## Screenshots
 
 <details>
-<summary><strong>Screenshots @ V0.6.1-alpha</strong></summary>
+<summary><strong>Screenshots @ V0.7.2-alpha</strong></summary>
 
 <br/>
 
