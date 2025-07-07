@@ -8,7 +8,7 @@ env:
    CLIENT_SECRET: ${{ secrets.CLIENT_SECRET}}
    PROCEED_TO_AUTH_URI: ${{secrets.PROCEED_TO_AUTH_URI }}
    FINNISH_AUTH_URI: ${{secrets.FINNISH_AUTH_URI }}
-   # RELEASE_BODY: ""
+   RELEASE_BODY: ""
 
 jobs:
    publish-tauri:
@@ -30,17 +30,6 @@ jobs:
       runs-on: ${{ matrix.platform }}
       steps:
          - uses: actions/checkout@v4
-         #   with:
-         #      fetch-depth: 0
-         #      fetch-tags: true
-
-         # - name: Ensure annotated tag object is fetched
-         #   run: |
-         #      git fetch origin "refs/tags/${{ github.ref_name }}:refs/tags/${{ github.ref_name }}"
-
-         # - name: Debug tag object
-         #   run: |
-         #      git cat-file -t "refs/tags/${{ github.ref_name }}"
 
          - name: install dependencies (ubuntu only)
            if: matrix.platform == 'ubuntu-22.04'
@@ -84,30 +73,11 @@ jobs:
          - name: install frontend dependencies
            run: pnpm install
 
-         # - name: Show tag details
-         #   run: |
-         #      echo "REF: ${{ github.ref }}"
-         #      echo "REF_NAME: ${{ github.ref_name }}"
-         #      echo "---- git tag output ----"
-         #      git tag -n
-         #      echo "---- git show output ----"
-         #      git show "refs/tags/${{ github.ref_name }}"
-
-         # - name: Set RELEASE_BODY from annotated tag message
-         #   shell: bash
-         #   run: |
-         #      TAG_OBJECT=$(git rev-parse --verify "refs/tags/${{ github.ref_name }}^{tag}" 2>/dev/null || true)
-         #      if [ -n "$TAG_OBJECT" ]; then
-         #         TAG_MESSAGE=$(git for-each-ref refs/tags/${{ github.ref_name }} --format='%(contents)')
-         #      else
-         #         TAG_MESSAGE=""
-         #      fi
-
-         #      echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
-         #      echo "${TAG_MESSAGE}" >> $GITHUB_ENV
-         #      echo "" >> $GITHUB_ENV
-         #      echo "Download the appropriate installer for your system from the assets below." >> $GITHUB_ENV
-         #      echo "EOF" >> $GITHUB_ENV
+         - name: Set RELEASE_BODY to annotated tag's message
+           shell: bash
+           run: |
+              echo "RELEASE_BODY=$(git tag -l --format='%(contents)' ${{ github.ref_name }})" >> $GITHUB_ENV
+              echo " Download the appropriate installer for your system from the assets below." >> $GITHUB_ENV
 
          - uses: tauri-apps/tauri-action@v0
            env:
@@ -115,9 +85,9 @@ jobs:
            with:
               tagName: ${{ github.ref_name }}
               releaseName: Task Bridge ${{ github.ref_name }}
-              #   releaseBody: ${{ env.RELEASE_BODY}}
-              #   releaseDraft: true
-              releaseBody: "Download the appropriate installer for your system from the assets below."
-              releaseDraft: false
+              releaseBody: ${{ env.RELEASE_BODY }}
+              releaseDraft: true
+              #   releaseBody: "Download the appropriate installer for your system from the assets below."
+              #   releaseDraft: false
               prerelease: false
               args: ${{ matrix.args }}
