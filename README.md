@@ -102,7 +102,3 @@ Some older versions are not listed in the releases section, but are available [h
 ⚠️ Prefer to install the latest patched version. Older versions are less stable and available for reference and testing only.  
 ⚠️ Always toggle `uninstall first` and `clear previous data` options before installing newer versions.
 
-## Roadmap
-
-The current roadmap includes minor versions up to **0.7.0**, introducing new features, fixes, and improvements ahead of a stable **1.0.0** release. <br/>
-You can find specs for all versions in the [docs](https://github.com/RussellGN/Task-Bridge/tree/v0.2.2-alpha/doc) folder.
