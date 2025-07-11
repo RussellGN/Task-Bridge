@@ -7,9 +7,10 @@ import { invoke } from "@tauri-apps/api/core";
 export default function useSyncProjectsList() {
    const client = useClient();
    const { doIfOnline } = useConnectionStatus();
+   // useListenForSyncUpdateMessage();
 
    const { mutate, isPending, error } = useMutation({
-      mutationFn: () => invoke("sync_projects_with_github"),
+      mutationFn: () => invoke("sync_projects_with_github_v2"),
       onError(err: Error | string) {
          dbg("[useSyncProjectsList]", err);
          const errorMessage = err instanceof Error ? err.message : err;

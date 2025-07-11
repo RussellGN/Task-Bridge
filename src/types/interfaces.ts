@@ -220,3 +220,8 @@ export interface OverallStat {
    label: string;
    value: string | number;
 }
+
+export interface ProjectSyncResult {
+   was_successfull: boolean;
+   message: string;
+}

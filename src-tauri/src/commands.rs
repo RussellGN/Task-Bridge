@@ -1,8 +1,9 @@
 use std::sync::Arc;
 
+use futures_util::future::join_all;
 use octocrab::models::{self, repos::RepoCommit};
 use serde::Serialize;
-use tauri::{AppHandle, Runtime};
+use tauri::{AppHandle, Emitter, Manager, Runtime};
 
 use crate::{
    log,
@@ -99,6 +100,109 @@ pub async fn sync_projects_with_github<R: Runtime>(app: tauri::AppHandle<R>) -> 
       let project = Project::new(repo.name.clone(), false, team, pending_invites, repo, tasks, None, None);
 
       project.place_in_store(Arc::clone(&store))?;
+   }
+
+   Ok(())
+}
+
+#[derive(Debug, Serialize, Clone)]
+pub struct ProjectSyncResult {
+   was_successfull: bool,
+   message: String,
+}
+
+impl ProjectSyncResult {
+   pub fn new(was_successfull: bool, message: String) -> Self {
+      Self {
+         was_successfull,
+         message,
+      }
+   }
+}
+
+#[tauri::command]
+pub async fn sync_projects_with_github_v2<R: Runtime>(app: tauri::AppHandle<R>) -> crate::Result {
+   const F: &str = "[sync_projects_with_github]";
+
+   let main_window = app.get_webview_window("main");
+   let store = get_store(app)?;
+   let token = get_token(&store)?;
+
+   // get repos from github
+   let repos = GithubAPI::get_repos(&token, None).await?;
+
+   // save them to store with project-name = repo-name
+   // (making sure to fetch the repo's issues if it has any, and converting them to tasks)
+   log!("{F} converting repos to projects (with tasks if any) and saving to store");
+   let mut sync_result_futures = vec![];
+
+   let repo_ids = if let Some(repo_ids) = store.get("repo-ids") {
+      serde_json::from_value::<Vec<String>>(repo_ids).map_err(|e| format!("{F} could not read repo-ids: {e}"))?
+   } else {
+      vec![]
+   };
+
+   for repo in repos {
+      // first determine if repo already has project in store
+      if repo_ids.contains(&repo.id.to_string()) {
+         log!(
+            "{F} repo '{}' with id '{}' already has a project in store, skipping it!",
+            repo.name,
+            repo.id
+         );
+         continue;
+      }
+
+      let sync_fut = async {
+         let team = GithubAPI::get_repo_collaborators(&repo, &token).await?;
+
+         let pending_invites = GithubAPI::get_repo_collab_invitees(&repo, &token).await?;
+
+         let tasks = if repo.has_issues.unwrap_or(false) {
+            let issues = GithubAPI::get_repo_issues(&repo, &token).await?;
+            let tasks = Project::map_issues_to_tasks_with_review_status(issues, &token).await?;
+            Some(tasks)
+         } else {
+            None
+         };
+
+         Ok(Project::new(
+            repo.name.clone(),
+            false,
+            team,
+            pending_invites,
+            repo,
+            tasks,
+            None,
+            None,
+         ))
+      };
+
+      sync_result_futures.push(sync_fut);
+   }
+
+   let project_results: Vec<Result<Project, String>> = join_all(sync_result_futures).await;
+   for (num, project_result) in project_results.into_iter().enumerate() {
+      let sync_message = match project_result {
+         Ok(project) => {
+            project.place_in_store(Arc::clone(&store))?;
+            let msg = format!("Successfully pulled and created project for '{}'", project.name());
+            log!("{F} {msg}");
+            ProjectSyncResult::new(true, msg)
+         }
+         Err(e) => {
+            let msg = format!("Failed to pull repo and create project (#{num}). {e}");
+            log!("{F} {msg}");
+            ProjectSyncResult::new(true, msg)
+         }
+      };
+
+      // emit error
+      if let Some(main_window) = &main_window {
+         if let Err(e) = main_window.emit("project_sync_result", sync_message) {
+            log!("{F} failed to emit sync message {e}");
+         }
+      };
    }
 
    Ok(())
