@@ -48,5 +48,15 @@ export default function useAppPreferences() {
       mutate(data);
    }
 
-   return { appPreferences: data, appPreferencesloading: isPending || isMutating, updateAppPreferences };
+   function updateAppPreferencesManually(newAppPreferences: AppPreferences) {
+      dbg("Updating app preferences with data:", newAppPreferences);
+      mutate(newAppPreferences);
+   }
+
+   return {
+      appPreferences: data,
+      appPreferencesloading: isPending || isMutating,
+      updateAppPreferences,
+      updateAppPreferencesManually,
+   };
 }

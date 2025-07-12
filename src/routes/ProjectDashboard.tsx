@@ -1,4 +1,5 @@
 import BackBtn from "@/components/general/BackBtn";
+import BranchConventionAlertBar from "@/components/general/BranchConventionAlertBar";
 import ErrorDisplay from "@/components/general/ErrorDisplay";
 import Spinner from "@/components/general/Spinner";
 import KanbanBoard from "@/components/screens/project-dashboard/KanbanBoard";
@@ -44,6 +45,8 @@ export default function ProjectDashboard() {
 
             <ErrorDisplay containerClassName="mb-3" error={errorMessage} />
          </div>
+
+         <BranchConventionAlertBar />
 
          {project && <KanbanBoard project={project} />}
       </div>

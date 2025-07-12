@@ -177,6 +177,7 @@ export interface Setting {
 
 export interface AppPreferences {
    project_sync_interval_mins?: number;
+   show_branch_convention_alert?: "no";
 }
 
 export interface ProjectSettingsPatchPayload {
