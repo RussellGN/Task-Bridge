@@ -237,7 +237,7 @@ pub async fn sync_project_with_github<R: Runtime>(app: tauri::AppHandle<R>, proj
 
       for task in updated_tasks.iter_mut() {
          let branch_name = task.get_inner_issue().task_branch_name();
-         let updated_commits = GithubAPI::get_branch_commits(&updated_repo, &branch_name, &token)
+         let updated_commits = GithubAPI::get_branch_commits(&updated_repo, branch_name, &token)
             .await
             .ok();
          task.update(None, None, None, None, updated_commits);
@@ -513,7 +513,7 @@ pub async fn sync_task_activity<R: Runtime>(
       .map_err(|e| format!("{F} failed to read project with id '{project_id}': {e}",))?;
 
    let synced_activity = project
-      .sync_activity_for_task(task_id.clone(), &token, Arc::clone(&store))
+      .sync_activity_for_task_v2(task_id.clone(), &token, Arc::clone(&store))
       .await?;
 
    log!("{F} now returning synced task activity");

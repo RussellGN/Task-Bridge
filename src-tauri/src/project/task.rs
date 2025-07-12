@@ -147,6 +147,10 @@ impl Task {
    pub fn get_inner_issue(&self) -> &models::issues::Issue {
       &self.inner_issue
    }
+
+   pub fn is_corresponding_branch(&self, branch_name: &str) -> bool {
+      branch_name.ends_with(&format!("_{}", self.inner_issue.number))
+   }
 }
 
 #[derive(Serialize, Deserialize, Debug)]

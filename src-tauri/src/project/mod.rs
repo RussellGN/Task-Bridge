@@ -2,7 +2,8 @@ pub mod task;
 
 use std::sync::Arc;
 
-use octocrab::models::{self};
+use futures_util::future::join_all;
+use octocrab::models;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use task::{DraftTask, NewDraftTaskPayload, NewTaskPayload, Task};
@@ -403,6 +404,7 @@ impl Project {
       Ok(updated_task)
    }
 
+   #[allow(unused)]
    pub async fn sync_activity_for_task(
       &mut self,
       task_id: String,
@@ -421,9 +423,58 @@ impl Project {
          None => return Err(format!("{F} project {} has no task with id {task_id}", self.name)),
       };
 
-      let branch_name = &task.get_inner_issue().task_branch_name();
+      let branch_name = task.get_inner_issue().task_branch_name();
       let commits = GithubAPI::get_branch_commits(&self.repo, branch_name, token).await?;
 
+      task.update(None, None, None, None, Some(commits.clone()));
+      self.save_updates_to_store(store)?;
+
+      Ok(commits)
+   }
+
+   pub async fn sync_activity_for_task_v2(
+      &mut self,
+      task_id: String,
+      token: &AccessToken,
+      store: Arc<Store<impl Runtime>>,
+   ) -> crate::Result<Vec<models::repos::RepoCommit>> {
+      const F: &str = "[Project::sync_activity_for_task_v2]";
+
+      let repo = self.repo.clone();
+      let tasks = match &mut self.tasks {
+         Some(tasks) => tasks,
+         None => return Err(format!("{F} project {} has no tasks", self.name)),
+      };
+
+      let task = match tasks.iter_mut().find(|t| t.get_inner_issue().id.to_string() == task_id) {
+         Some(task) => task,
+         None => return Err(format!("{F} project {} has no task with id {task_id}", self.name)),
+      };
+
+      // 1. get branch names that end in '_<task number>'
+      let branches = GithubAPI::get_branches(&repo, token).await?;
+      let corresponding_branches = branches
+         .into_iter()
+         .filter(|b| task.is_corresponding_branch(&b.name))
+         .collect::<Vec<_>>();
+
+      // 2. fetch all commits unique to those branches and qualify them with their branch names
+      let commits_futs = corresponding_branches
+         .into_iter()
+         .map(|b| GithubAPI::get_branch_commits(&self.repo, b.name, token))
+         .collect::<Vec<_>>();
+
+      let commits_fetch_results = join_all(commits_futs).await;
+      let mut commits = vec![];
+
+      for (i, commits_fetch_result) in commits_fetch_results.into_iter().enumerate() {
+         match commits_fetch_result {
+            Ok(mut cs) => commits.append(&mut cs),
+            Err(e) => log!("{F} couldnt fetch commits for branch {i}: {e}"),
+         }
+      }
+
+      // 3. set activity to these commits, update store, and return
       task.update(None, None, None, None, Some(commits.clone()));
       self.save_updates_to_store(store)?;
 

@@ -775,7 +775,7 @@ impl GithubAPI {
 
    pub async fn get_branch_commits(
       repo: &models::Repository,
-      branch_name: &str,
+      branch_name: String,
       token: &AccessToken,
    ) -> crate::Result<Vec<models::repos::RepoCommit>> {
       const F: &str = "[GithubAPI::get_branch_commits]";
@@ -797,7 +797,7 @@ impl GithubAPI {
          owner.login,
          repo.name,
          repo.default_branch.clone().unwrap_or("main".to_string()),
-         encode(branch_name).as_ref()
+         encode(&branch_name).as_ref()
       );
 
       log!("{F} fetching exclusive commits @ {path_query} ");
@@ -813,7 +813,7 @@ impl GithubAPI {
                "/repos/{}/{}/compare/master...{}",
                owner.login,
                repo.name,
-               encode(branch_name).as_ref()
+               encode(&branch_name).as_ref()
             );
 
             log!("{F} retrying exclusive commits fetch @ {path_query}");
