@@ -1,7 +1,10 @@
-use std::fmt::{Debug, Display};
+use std::{
+   fmt::{Debug, Display},
+   future::Future,
+};
 
 use futures_util::StreamExt;
-use octocrab::{models, params::State};
+use octocrab::{models, params::State, Octocrab, Page};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::{json, Value};
 use tauri::http::{header, HeaderValue, Method, StatusCode};
@@ -72,6 +75,49 @@ impl GithubResponseParts {
 pub struct GithubAPI;
 
 impl GithubAPI {
+   fn octo(token: &AccessToken) -> crate::Result<Octocrab> {
+      create_authenticated_octo(&token.get_token())
+   }
+
+   fn repo_owner(repo: &models::Repository) -> crate::Result<models::Author> {
+      const F: &str = "[GithubAPI::repo_owner]";
+      repo
+         .owner
+         .clone()
+         .ok_or(format!("{F} '{}' repo somehow does not have an owner", repo.name))
+   }
+
+   async fn stream_all<T, S, F>(items_fut: S, octo: &Octocrab, exceptance_cb: F) -> crate::Result<Vec<T>>
+   where
+      T: DeserializeOwned + Clone + 'static,
+      S: Future<Output = Result<Page<T>, octocrab::Error>>,
+      F: Fn(T) -> bool,
+   {
+      const F: &str = "[GithubAPI::stream_all]";
+
+      log!("{F} streaming items");
+
+      let items_stream = items_fut
+         .await
+         .map_err(|e| format!("{F} Failed to stream items. {e}"))?
+         .into_stream(octo);
+
+      let mut items_stream = Box::pin(items_stream);
+      log!("{F} placing in local vector");
+      let mut all_items = vec![];
+
+      while let Some(response) = items_stream.next().await {
+         match response {
+            Ok(item) if exceptance_cb(item.clone()) => all_items.push(item),
+            Err(e) => return Err(format!("{F} Failed to fetch next item in loop. {e}")),
+            _ => {}
+         };
+      }
+
+      log!("{F} streamed {} items, now returning", all_items.len());
+      Ok(all_items)
+   }
+
    pub async fn request<R, P>(
       method: Method,
       path_query: impl Into<String>,
