@@ -961,4 +961,22 @@ impl GithubAPI {
 
       Ok(updated_repo)
    }
+
+   pub async fn get_branches(
+      repo: &models::Repository,
+      token: &AccessToken,
+   ) -> crate::Result<Vec<models::repos::Branch>> {
+      const F: &str = "[GithubAPI::get_branches]";
+
+      log!("{F} fetching branches for repo {}", repo.name);
+      let octo = Self::octo(token)?;
+      let owner = Self::repo_owner(repo)?;
+
+      Self::stream_all(
+         octo.repos(&owner.login, &repo.name).list_branches().send(),
+         &octo,
+         |_| true,
+      )
+      .await
+   }
 }
