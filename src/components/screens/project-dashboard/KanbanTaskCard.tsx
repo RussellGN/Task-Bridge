@@ -40,7 +40,8 @@ export default function KanbanTaskCard({ task, project }: { task: Task; project:
                      )}
                   </div>
                   <span className={open ? "" : "line-clamp-1"}>
-                     <span className="text-PRIMARY">{task.inner_issue.number}.</span> {task.inner_issue.title}
+                     <span className="text-PRIMARY">{task.inner_issue.number}.</span>{" "}
+                     {task.inner_issue.title.replace(`#${task.inner_issue.number}`, "")}
                   </span>
                </CollapsibleTrigger>
 
