@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn, getTimeElapsedSince } from "@/lib/utils";
-import { Task } from "@/types/interfaces";
+import { Commit, Task } from "@/types/interfaces";
 import { Clock, RotateCw } from "lucide-react";
 
 type TaskTimelineProps = {
@@ -10,6 +10,18 @@ type TaskTimelineProps = {
 };
 
 export default function TaskTimeline({ task, className, syncActivity }: TaskTimelineProps) {
+   const uniqueCommits = new Map<string, Commit>();
+   task.commits?.forEach((commit) => {
+      if (!uniqueCommits.has(commit.sha)) {
+         uniqueCommits.set(commit.sha, commit);
+      }
+   });
+   const commits = Array.from(uniqueCommits.values()).sort((a, b) => {
+      const dateA = a.commit.committer.date || a.commit.author.date || new Date();
+      const dateB = b.commit.committer.date || b.commit.author.date || new Date();
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+   });
+
    return (
       <div
          className={cn(
@@ -26,7 +38,7 @@ export default function TaskTimeline({ task, className, syncActivity }: TaskTime
          </div>
 
          <ul className="flex max-h-32 flex-col gap-1 overflow-y-auto pr-2">
-            {task.commits?.map((commit) => {
+            {commits.map((commit) => {
                const date = commit.commit.committer.date || commit.commit.author.date;
                return (
                   <li key={commit.sha} className="flex items-center gap-1 text-xs">
