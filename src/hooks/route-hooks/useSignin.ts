@@ -23,5 +23,17 @@ export default function useSignin() {
       })();
    }, []);
 
+   useEffect(() => {
+      const handleFocus = () => {
+         window.location.reload();
+      };
+
+      window.addEventListener("focus", handleFocus);
+
+      return () => {
+         window.removeEventListener("focus", handleFocus);
+      };
+   }, []);
+
    return { loading };
 }
