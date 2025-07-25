@@ -31,13 +31,15 @@ jobs:
                  args: ""
 
       runs-on: ${{ matrix.platform }}
+      defaults:
+         run:
+            shell: "bash"
       steps:
          - uses: actions/checkout@v4
            with:
               fetch-depth: 2 # required for git diff to identify changes
 
          - name: Validate version change
-           shell: "bash"
            id: version_validation
            run: |
               cd src-tauri
