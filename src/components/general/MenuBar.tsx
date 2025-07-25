@@ -2,8 +2,13 @@ import { Menubar } from "@/components/ui/menubar";
 import { AccountManager } from "./AccountManager";
 import MenuBarLinkItem from "./MenuBarLinkItem";
 import { HelpCircle, HomeIcon, Settings } from "lucide-react";
+import { useLocation } from "react-router";
 
 export default function MenuBar() {
+   const location = useLocation();
+
+   if (location.pathname === "/signin") return null;
+
    return (
       <Menubar>
          <MenuBarLinkItem to="/home" Icon={HomeIcon}>
