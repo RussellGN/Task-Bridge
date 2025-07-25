@@ -14,23 +14,16 @@ import { Button } from "@/components/ui/button";
 import { UserAvatar } from "./UserAvatar";
 import { Loader2, LogOut } from "lucide-react";
 import SpinnerIcon from "./SpinnerIcon";
+import MenuBarLinkItem from "./MenuBarLinkItem";
 
 export function AccountManager() {
    const { user, isSigningOut, userLoading, showSignoutDialog, signout, setShowSignoutDialog } = useAccountManager();
 
    if (userLoading) {
       return (
-         <>
-            <MenubarMenu>
-               <MenubarTrigger
-                  disabled
-                  className="flex cursor-not-allowed items-center gap-1.5 opacity-50 hover:border-transparent hover:bg-transparent"
-               >
-                  <Loader2 className="mt-0.5 size-3.5 animate-spin" />
-                  Account
-               </MenubarTrigger>
-            </MenubarMenu>
-         </>
+         <MenuBarLinkItem disabled to="" Icon={Loader2} iconClassName="animate-spin">
+            Account
+         </MenuBarLinkItem>
       );
    }
 
@@ -71,8 +64,8 @@ export function AccountManager() {
 
          <MenubarMenu>
             <MenubarTrigger className="flex items-center gap-1.5">
+               Account
                <UserAvatar user={user} className="border-PRIMARY mt-0.5 size-3.5 border-2" />
-               {user.login}
             </MenubarTrigger>
 
             <MenubarContent>
