@@ -1,14 +1,17 @@
-name: "Build & Publish Release"
+name: "Build & Publish Release (Auto-versioned)"
 
 on:
    push:
-      paths: "tauri.conf.json"
+      paths:
+         - "src-tauri/tauri.conf.json"
+      branches:
+         - main
+
 env:
-   CLIENT_ID: ${{ secrets.CLIENT_ID}}
-   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET}}
-   PROCEED_TO_AUTH_URI: ${{secrets.PROCEED_TO_AUTH_URI }}
-   FINNISH_AUTH_URI: ${{secrets.FINNISH_AUTH_URI }}
-   VERSION:
+   CLIENT_ID: ${{ secrets.CLIENT_ID }}
+   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+   PROCEED_TO_AUTH_URI: ${{ secrets.PROCEED_TO_AUTH_URI }}
+   FINNISH_AUTH_URI: ${{ secrets.FINNISH_AUTH_URI }}
 
 jobs:
    publish-tauri:
@@ -30,39 +33,61 @@ jobs:
       runs-on: ${{ matrix.platform }}
       steps:
          - uses: actions/checkout@v4
+           with:
+              fetch-depth: 2 # required for git diff to identify changes
 
-         - name: extract new version number from tauri.conf.json
-           id: extract_version
+         - name: Validate version change
+           id: version_validation
            run: |
-              VERSION=$(jq -r '.package.version' tauri.conf.json)
-              echo "version=$VERSION" >> $GITHUB_OUTPUT
+              cd src-tauri
+              # Validate JSON structure
+              if ! jq empty tauri.conf.json; then
+                echo "::error::Invalid JSON in tauri.conf.json"
+                exit 1
+              fi
 
-         - name: Set version variable
-           run: echo "VERSION=${{ steps.extract_version.outputs.version }}" >> $GITHUB_ENV
+              # Extract current version
+              CURRENT_VERSION=$(jq -r '.version' tauri.conf.json)
+              if [ "$CURRENT_VERSION" = "null" ] || [ -z "$CURRENT_VERSION" ]; then
+                echo "::error::Version field missing in tauri.conf.json"
+                exit 1
+              fi
 
-         - name: install dependencies (ubuntu only)
+              # Compare with previous version
+              PREV_VERSION=$(git show HEAD^:src-tauri/tauri.conf.json | jq -r '.version')
+              if [ "$CURRENT_VERSION" = "$PREV_VERSION" ]; then
+                echo "::error::Version not changed (still $CURRENT_VERSION)"
+                exit 1
+              fi
+
+              echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+         - name: Set version environment variable
+           run: echo "VERSION=${{ steps.version_validation.outputs.version }}" >> $GITHUB_ENV
+
+         - name: Install Ubuntu dependencies
            if: matrix.platform == 'ubuntu-22.04'
            run: |
               sudo apt-get update
               sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
-         - name: install pnpm
+         - name: Install pnpm
            uses: pnpm/action-setup@v4
            with:
               version: latest
 
-         - name: setup node
+         - name: Setup Node.js
            uses: actions/setup-node@v4
            with:
               node-version: lts/*
               cache: "pnpm"
 
-         - name: install Rust stable
+         - name: Install Rust
            uses: dtolnay/rust-toolchain@stable
            with:
               targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
-         - name: Rust cache
+         - name: Cache Rust build
            uses: swatinem/rust-cache@v2
            with:
               workspaces: "./src-tauri -> target"
@@ -79,15 +104,16 @@ jobs:
               echo CLIENT_ID=${{ secrets.CLIENT_ID }} >> ./src-tauri/.env
               echo CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} >> ./src-tauri/.env
 
-         - name: install frontend dependencies
+         - name: Install frontend dependencies
            run: pnpm install
 
-         - uses: tauri-apps/tauri-action@v0
+         - name: Tauri build and publish
+           uses: tauri-apps/tauri-action@v0
            env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
            with:
-              tagName: ${{ env.VERSION }}
-              releaseName: Task Bridge ${{ env.VERSION }}
+              tagName: "v${{ env.VERSION }}"
+              releaseName: "Task Bridge ${{ env.VERSION }}"
               releaseBody: "Download the appropriate installer for your system from the assets below."
               releaseDraft: false
               prerelease: false
