@@ -37,6 +37,7 @@ jobs:
               fetch-depth: 2 # required for git diff to identify changes
 
          - name: Validate version change
+           shell: "bash"
            id: version_validation
            run: |
               cd src-tauri
