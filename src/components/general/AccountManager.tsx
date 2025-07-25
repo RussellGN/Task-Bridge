@@ -1,3 +1,4 @@
+import { MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 import {
    Dialog,
    DialogClose,
@@ -7,14 +8,7 @@ import {
    DialogHeader,
    DialogTitle,
 } from "@/components/ui/dialog";
-import {
-   DropdownMenu,
-   DropdownMenuContent,
-   DropdownMenuItem,
-   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import useAccountManager from "@/hooks/component-hooks/useAccountManager";
-import MenuBarItem from "./MenuBarItem";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "./UserAvatar";
@@ -26,9 +20,17 @@ export function AccountManager() {
 
    if (userLoading) {
       return (
-         <MenuBarItem disabled Icon={Loader2} iconClassName="animate-spin" className="cursor-not-allowed">
-            Account
-         </MenuBarItem>
+         <>
+            <MenubarMenu>
+               <MenubarTrigger
+                  disabled
+                  className="flex cursor-not-allowed items-center gap-1.5 opacity-50 hover:border-transparent hover:bg-transparent"
+               >
+                  <Loader2 className="mt-0.5 size-3.5 animate-spin" />
+                  Account
+               </MenubarTrigger>
+            </MenubarMenu>
+         </>
       );
    }
 
@@ -67,24 +69,22 @@ export function AccountManager() {
             </DialogContent>
          </Dialog>
 
-         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-               <MenuBarItem>
-                  <UserAvatar user={user} className="border-PRIMARY size-4 border-2" />
-                  {user.login}
-               </MenuBarItem>
-            </DropdownMenuTrigger>
+         <MenubarMenu>
+            <MenubarTrigger className="flex items-center gap-1.5">
+               <UserAvatar user={user} className="border-PRIMARY mt-0.5 size-3.5 border-2" />
+               {user.login}
+            </MenubarTrigger>
 
-            <DropdownMenuContent className="w-56" align="start">
-               <DropdownMenuItem asChild>
+            <MenubarContent>
+               <MenubarItem asChild>
                   <Link target="_blank" to={user.html_url || "https://www.github.com"}>
                      Open GitHub
                   </Link>
-               </DropdownMenuItem>
+               </MenubarItem>
 
-               <DropdownMenuItem onClick={() => setShowSignoutDialog(true)}>Sign Out</DropdownMenuItem>
-            </DropdownMenuContent>
-         </DropdownMenu>
+               <MenubarItem onClick={() => setShowSignoutDialog(true)}>Sign Out</MenubarItem>
+            </MenubarContent>
+         </MenubarMenu>
       </>
    );
 }

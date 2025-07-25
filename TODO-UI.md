@@ -1,13 +1,12 @@
 # UI
 
-1. recreate menubar properly
-2. help section
-3. consistent theming
-4. adjust contrast and properly differentiate clickable and non-clickable items
-5. adjust UI structure, particularly sizing
-6. refine all toast alerts
-7. logo
-8. splashscreen
-9. screen by screen refinement
-10.   assistance tooltips (with setting to disable)
-11.   progress feedback for everything
+1. help section
+2. consistent theming
+3. adjust contrast and properly differentiate clickable and non-clickable items
+4. adjust UI structure, particularly sizing
+5. refine all toast alerts
+6. logo
+7. splashscreen
+8. screen by screen refinement
+9. assistance tooltips (with setting to disable)
+10.   progress feedback for everything
