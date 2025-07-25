@@ -2,10 +2,8 @@
 
 **Task-Bridge** is a desktop-based project management solution. It is built specifically around GitHub, and is meant to simplify work management & project oversight for GitHub-averse project managers.
 
-## Screenshots
-
 <details>
-<summary><strong>Screenshots @ V0.7.2-alpha</strong></summary>
+<summary>Screenshots @ V0.7.2-alpha</summary>
 
 <br/>
 
@@ -94,14 +92,14 @@
 
 </details>
 
-## Releases & Downloads
+## Download
 
-You can view and download all documented versions of the app from the [GitHub Releases](https://github.com/russellgn/task-bridge/releases) section, [or go to latest version](https://github.com/russellgn/task-bridge/releases/latest). <br/>
-Some older versions are not listed in the releases section, but are available [here](https://drive.google.com/drive/folders/1i988b_XsgcZ_Q5wK7dM5CCH7DYNJDwfV?usp=sharing).
+You can view and download all documented versions of the app from the [GitHub Releases](https://github.com/russellgn/task-bridge/releases) section. [Or Go to latest.](https://github.com/russellgn/task-bridge/releases/latest) <br/>
+Some older versions are not listed in the releases section, but are available [here](https://drive.google.com/drive/folders/1i988b_XsgcZ_Q5wK7dM5CCH7DYNJDwfV?usp=sharing). <br/>
 
-⚠️ Prefer to install the latest patched version. Older versions are less stable and available for reference and testing only.  
-⚠️ Always toggle `uninstall first` and `clear previous data` options before installing newer versions.
-
-## License
-
-This project is not open source. [See license](./LICENSE)
+⚠️ **Important** <br/>
+Install the latest patched version. Older versions may be buggier and less stable. <br/>
+Always enable `uninstall first` and `clear previous data` options when switching between versions.
+<br/>
+<br/>
+This repo is not open source. [See license](./LICENSE)
