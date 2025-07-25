@@ -1,0 +1,94 @@
+name: "Build & Publish Release"
+
+on:
+   push:
+      paths: "tauri.conf.json"
+env:
+   CLIENT_ID: ${{ secrets.CLIENT_ID}}
+   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET}}
+   PROCEED_TO_AUTH_URI: ${{secrets.PROCEED_TO_AUTH_URI }}
+   FINNISH_AUTH_URI: ${{secrets.FINNISH_AUTH_URI }}
+   VERSION:
+
+jobs:
+   publish-tauri:
+      permissions:
+         contents: write
+      strategy:
+         fail-fast: false
+         matrix:
+            include:
+               - platform: "macos-latest"
+                 args: "--target aarch64-apple-darwin"
+               - platform: "macos-latest"
+                 args: "--target x86_64-apple-darwin"
+               - platform: "ubuntu-22.04"
+                 args: ""
+               - platform: "windows-latest"
+                 args: ""
+
+      runs-on: ${{ matrix.platform }}
+      steps:
+         - uses: actions/checkout@v4
+
+         - name: extract new version number from tauri.conf.json
+           id: extract_version
+           run: |
+              VERSION=$(jq -r '.package.version' tauri.conf.json)
+              echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+         - name: Set version variable
+           run: echo "VERSION=${{ steps.extract_version.outputs.version }}" >> $GITHUB_ENV
+
+         - name: install dependencies (ubuntu only)
+           if: matrix.platform == 'ubuntu-22.04'
+           run: |
+              sudo apt-get update
+              sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+         - name: install pnpm
+           uses: pnpm/action-setup@v4
+           with:
+              version: latest
+
+         - name: setup node
+           uses: actions/setup-node@v4
+           with:
+              node-version: lts/*
+              cache: "pnpm"
+
+         - name: install Rust stable
+           uses: dtolnay/rust-toolchain@stable
+           with:
+              targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+         - name: Rust cache
+           uses: swatinem/rust-cache@v2
+           with:
+              workspaces: "./src-tauri -> target"
+
+         - name: Create .env file for Vite
+           run: |
+              echo VITE_CLIENT_ID=${{secrets.CLIENT_ID }} >> .env
+              echo VITE_CLIENT_SECRET=${{secrets.CLIENT_SECRET }} >> .env
+              echo VITE_PROCEED_TO_AUTH_URI=${{secrets.PROCEED_TO_AUTH_URI }} >> .env
+              echo VITE_FINNISH_AUTH_URI=${{secrets.FINNISH_AUTH_URI }} >> .env
+
+         - name: Create .env file for Tauri
+           run: |
+              echo CLIENT_ID=${{ secrets.CLIENT_ID }} >> ./src-tauri/.env
+              echo CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} >> ./src-tauri/.env
+
+         - name: install frontend dependencies
+           run: pnpm install
+
+         - uses: tauri-apps/tauri-action@v0
+           env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           with:
+              tagName: ${{ env.VERSION }}
+              releaseName: Task Bridge ${{ env.VERSION }}
+              releaseBody: "Download the appropriate installer for your system from the assets below."
+              releaseDraft: false
+              prerelease: false
+              args: ${{ matrix.args }}
