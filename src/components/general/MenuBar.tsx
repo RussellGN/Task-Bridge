@@ -7,7 +7,7 @@ import { useLocation } from "react-router";
 export default function MenuBar() {
    const location = useLocation();
 
-   if (location.pathname === "/signin") return null;
+   if (location.pathname.replace("/", "") === "") return null;
 
    return (
       <Menubar>
