@@ -7,22 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.1] - 2025-07-25
 
-### Added
+### Fixed
 
-- Home and Settings navigation links to Menu-bar for improved accessibility
-- Help section with comprehensive documentation and support resources
-- Added author's avatar to task activity display
-- Expandable task activity messages with detailed tooltip view
-
-### Improved
-
-- Enhanced menu styling and layout consistency
-
-### Documentation
-
-- Created product license
-- Improved README wording
-
-### Development
-
-- Created v2 of release workflow, with auto tagging and comprehensive validation checks
+- Menu-bar appearing on signin screen
