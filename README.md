@@ -102,3 +102,6 @@ Some older versions are not listed in the releases section, but are available [h
 ⚠️ Prefer to install the latest patched version. Older versions are less stable and available for reference and testing only.  
 ⚠️ Always toggle `uninstall first` and `clear previous data` options before installing newer versions.
 
+## License
+
+This project is not open source. [See license](./LICENSE)
