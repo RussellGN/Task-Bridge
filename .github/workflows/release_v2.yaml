@@ -107,6 +107,15 @@ jobs:
          - name: Install frontend dependencies
            run: pnpm install
 
+         - name: Extract release notes
+           id: changelog
+           run: |
+              # Extract everything between ## [2.0.1] and next ##
+              NOTES=$(awk '/## \['"${{ env.VERSION }}"'\]/{flag=1;next}/## \[/{flag=0}flag' CHANGELOG.md)
+              echo "notes<<EOF" >> $GITHUB_OUTPUT
+              echo "$NOTES" >> $GITHUB_OUTPUT
+              echo "EOF" >> $GITHUB_OUTPUT
+
          - name: Tauri build and publish
            uses: tauri-apps/tauri-action@v0
            env:
@@ -114,7 +123,7 @@ jobs:
            with:
               tagName: "v${{ env.VERSION }}"
               releaseName: "Task Bridge ${{ env.VERSION }}"
-              releaseBody: "Download the appropriate installer for your system from the assets below."
-              releaseDraft: false
+              releaseBody: ${{ steps.changelog.outputs.notes }}
+              releaseDraft: true
               prerelease: false
               args: ${{ matrix.args }}
