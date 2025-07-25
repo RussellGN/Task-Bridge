@@ -1,3 +1,5 @@
+import InfoTooltip from "@/components/general/InfoTooltip";
+import { UserAvatar } from "@/components/general/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { cn, getTimeElapsedSince } from "@/lib/utils";
 import { Commit, Task } from "@/types/interfaces";
@@ -42,9 +44,11 @@ export default function TaskTimeline({ task, className, syncActivity }: TaskTime
                const date = commit.commit.committer.date || commit.commit.author.date;
                return (
                   <li key={commit.sha} className="flex items-center gap-1 text-xs">
-                     <div title={commit.commit.message} className="line-clamp-1 pr-4">
-                        {commit.commit.message}
-                     </div>
+                     <UserAvatar user={(commit.committer || commit.author)!} className="size-4" />
+                     <InfoTooltip
+                        trigger={<div className="line-clamp-1 pr-4">{commit.commit.message}</div>}
+                        content={commit.commit.message}
+                     />
 
                      {date && (
                         <div className="text-foreground/50 ml-auto flex items-center gap-1 text-nowrap">
