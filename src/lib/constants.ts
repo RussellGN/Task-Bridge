@@ -13,6 +13,7 @@ import TeamManagementSettings from "@/components/screens/settings/TeamManagement
 import NameAndVisibilitySettings from "@/components/screens/settings/NameAndVisibilitySettings";
 import ProjectDeletionSettings from "@/components/screens/settings/ProjectDeletionSettings";
 import Analytics from "@/routes/Analytics";
+import Help from "@/routes/Help";
 
 export const GITHUB_INSTALL_URL = `https://github.com/apps/Task-Bridge/installations/new?prompt=select_account&state=${random_global_auth_keyword()}`;
 
@@ -27,6 +28,7 @@ export const ROUTES = [
    { path: "/settings/:projectId", component: Settings },
    { path: "/project-dashboard/:projectId", component: ProjectDashboard },
    { path: "/analytics/:projectId", component: Analytics },
+   { path: "/help", component: Help },
    { path: "*", component: NotFound },
 ];
 
@@ -79,3 +81,11 @@ export const PROJECT_SETTINGS_TABS: SettingsTab[] = [
       component: ProjectDeletionSettings,
    },
 ];
+
+export const GITHUB_REPO_URL = "https://github.com/russellgn/task-bridge";
+
+export const DOWNLOAD_URL = "https://github.com/russellgn/task-bridge/releases/latest";
+
+export const DOWNLOAD_URL_TEXT = "GitHub Releases";
+
+export const LICENSE_URL = "https://github.com/russellgn/task-bridge/blob/main/LICENSE";
