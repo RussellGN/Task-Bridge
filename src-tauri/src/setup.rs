@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use tauri::{App, AppHandle, Manager, Runtime};
-use tauri_plugin_deep_link::DeepLinkExt;
+use tauri_plugin_deep_link::{DeepLink, DeepLinkExt};
 
 use crate::{auth::proceed_to_auth, log, utils::get_env_vars};
 
@@ -39,6 +39,27 @@ pub fn setup_dev_plumbing(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Err
    Ok(())
 }
 
+fn register_scheme(deep_link: &DeepLink<impl Runtime>) -> Result<(), Box<dyn Error>> {
+   const F: &str = "[register_scheme]";
+
+   log!("{F} attempting to register scheme: {APP_URL_SCHEME}");
+   match deep_link.register(APP_URL_SCHEME) {
+      Ok(_) => {
+         log!("{F} '{APP_URL_SCHEME}' scheme registration was successfull");
+         log!(
+            "{F} {APP_URL_SCHEME} is now registered? {}",
+            deep_link.is_registered(APP_URL_SCHEME)?
+         );
+      }
+      Err(e) => {
+         log!("{F} '{APP_URL_SCHEME}' scheme registration failed. Error: {e}");
+         return Err(Box::new(e));
+      }
+   }
+
+   Ok(())
+}
+
 fn setup_deep_linking(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>> {
    const F: &str = "[setup_deep_linking]";
 
@@ -47,25 +68,14 @@ fn setup_deep_linking(app: &mut App<impl Runtime>) -> Result<(), Box<dyn Error>>
    match deep_link.is_registered(APP_URL_SCHEME) {
       Err(e) => {
          log!("{F} could not confirm if app is registered to handle '{APP_URL_SCHEME}' urls. Error: {e}");
-
-         log!("{F} attempting to register scheme: {APP_URL_SCHEME}");
-         match deep_link.register(APP_URL_SCHEME) {
-            Ok(_) => {
-               log!("{F} '{APP_URL_SCHEME}' scheme registration was successfull");
-               log!(
-                  "{F} {APP_URL_SCHEME} is_registered? {}",
-                  deep_link.is_registered("task-bridge").map_err(|e| e.to_string())?
-               );
-            }
-            Err(e) => {
-               log!("{F} '{APP_URL_SCHEME}' scheme registration failed. Error: {e}");
-               return Err(Box::new(e));
-            }
-         }
+         register_scheme(deep_link)?;
       }
 
       Ok(is_reg) => {
-         log!("{F} is app registered to handle 'task-bridge' urls? {is_reg}");
+         log!("{F} is app registered to handle '{APP_URL_SCHEME}' urls? {is_reg}");
+         if !is_reg {
+            register_scheme(deep_link)?;
+         }
       }
    }
 
