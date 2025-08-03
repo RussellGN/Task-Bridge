@@ -3,6 +3,7 @@ import { AccountManager } from "./AccountManager";
 import MenuBarLinkItem from "./MenuBarLinkItem";
 import { HelpCircle, HomeIcon, Settings } from "lucide-react";
 import { useLocation } from "react-router";
+import MenuBarBackBtn from "./MenuBarBackBtn";
 
 export default function MenuBar() {
    const location = useLocation();
@@ -11,6 +12,7 @@ export default function MenuBar() {
 
    return (
       <Menubar>
+         <MenuBarBackBtn />
          <MenuBarLinkItem to="/home" Icon={HomeIcon}>
             Home
          </MenuBarLinkItem>
