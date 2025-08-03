@@ -14,6 +14,7 @@ import NameAndVisibilitySettings from "@/components/screens/settings/NameAndVisi
 import ProjectDeletionSettings from "@/components/screens/settings/ProjectDeletionSettings";
 import Analytics from "@/routes/Analytics";
 import Help from "@/routes/Help";
+import ProjectsExplorer from "@/routes/ProjectsExplorer";
 
 export const GITHUB_INSTALL_URL = `https://github.com/apps/Task-Bridge/installations/new?prompt=select_account&state=${random_global_auth_keyword()}`;
 
@@ -24,6 +25,7 @@ export const STORE_PATH = "store.json";
 export const ROUTES = [
    { path: "/", component: Signin },
    { path: "/home", component: Home },
+   { path: "/projects", component: ProjectsExplorer },
    { path: "/settings", component: Settings },
    { path: "/settings/:projectId", component: Settings },
    { path: "/project-dashboard/:projectId", component: ProjectDashboard },

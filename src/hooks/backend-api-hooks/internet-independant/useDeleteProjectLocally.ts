@@ -23,7 +23,7 @@ export default function useDeleteProjectLocally(projectId: string | undefined) {
             prev ? prev.filter((p) => p.id !== projectId) : null,
          );
 
-         navigate("/home?tab=all");
+         navigate("/projects");
       },
    });
 

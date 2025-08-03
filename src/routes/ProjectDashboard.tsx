@@ -35,7 +35,7 @@ export default function ProjectDashboard() {
       <div className="flex h-full flex-col">
          <div className="w-full">
             <div className="mb-5 flex items-center gap-2">
-               <BackBtn path={"/home?tab=all"} />
+               <BackBtn path={"/projects"} />
                <h1 className="text-lg font-semibold italic">{project.name || projectId}</h1>
 
                <div className="ml-auto">

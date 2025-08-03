@@ -16,16 +16,21 @@ import Spinner from "@/components/general/Spinner";
 import TeamSelector from "@/components/general/TeamSelector";
 import useNewProjectForm from "@/hooks/component-hooks/useNewProjectForm";
 import { Plus, Globe, Lock } from "lucide-react";
+import { ReactNode } from "react";
 
-export default function NewProjectForm() {
+export default function NewProjectForm({ trigger }: { trigger?: ReactNode }) {
    const { isPending, projectCreationErr, handleSubmit } = useNewProjectForm();
 
    return (
       <Dialog>
          <DialogTrigger asChild>
-            <Button variant="PRIMARY">
-               New Project <Plus />
-            </Button>
+            {trigger ? (
+               trigger
+            ) : (
+               <Button variant="PRIMARY">
+                  New Project <Plus />
+               </Button>
+            )}
          </DialogTrigger>
 
          <DialogContent className="sm:max-w-4xl">

@@ -1,10 +1,10 @@
 import BackBtn from "@/components/general/BackBtn";
-import useHomeTab from "@/hooks/component-hooks/useHomeTab";
+import useAppVersion from "@/hooks/useAppVersion";
 import { DOWNLOAD_URL, DOWNLOAD_URL_TEXT, GITHUB_REPO_URL, LICENSE_URL } from "@/lib/constants";
 import { HelpCircle } from "lucide-react";
 
 export default function Help() {
-   const { appVersion } = useHomeTab();
+   const appVersion = useAppVersion();
 
    return (
       <div>

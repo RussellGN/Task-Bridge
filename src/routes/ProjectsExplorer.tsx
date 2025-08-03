@@ -1,12 +1,12 @@
-import ProjectCard from "./ProjectCard";
 import ErrorDisplay from "@/components/general/ErrorDisplay";
 import Spinner from "@/components/general/Spinner";
 import useLocalProjectsList from "@/hooks/backend-api-hooks/internet-independant/useLocalProjectsList";
 import { Button } from "@/components/ui/button";
 import { DownloadCloud } from "lucide-react";
-import NewProjectForm from "../projects-explorer/NewProjectForm";
+import NewProjectForm from "@/components/screens/projects-explorer/NewProjectForm";
+import ProjectCard from "@/components/screens/home/ProjectCard";
 
-export default function AllProjectsTab() {
+export default function ProjectsExplorer() {
    const { projects, isLoading, errorMessage, syncProjects } = useLocalProjectsList();
 
    return (

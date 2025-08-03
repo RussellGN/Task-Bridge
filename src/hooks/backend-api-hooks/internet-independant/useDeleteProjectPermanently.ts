@@ -25,7 +25,7 @@ export default function useDeleteProjectPermanently(projectId: string | undefine
             prev ? prev.filter((p) => p.id !== projectId) : null,
          );
 
-         navigate("/home?tab=all");
+         navigate("/projects");
       },
    });
 
