@@ -8,7 +8,7 @@ import ProjectCard from "@/components/screens/home/ProjectCard";
 export default function ProjectsExplorer() {
    const { projects, isLoading, syncProjects } = useLocalProjectsList();
 
-   const locallyCreatedProjects = new Array(100).fill((projects?.filter((p) => p.locally_created) || [])[0]);
+   const locallyCreatedProjects = projects?.filter((p) => p.locally_created) || [];
    const syncedProjects = projects?.filter((p) => !p.locally_created) || [];
 
    return (
@@ -56,10 +56,9 @@ export default function ProjectsExplorer() {
                <p className="text-foreground/50 pt-30 text-center text-sm">0 projects</p>
             ) : (
                <div className="flex max-h-[80vh] flex-wrap overflow-y-auto pr-3">
-                  {/* {syncedProjects.map((project, index) => (
-                     
+                  {syncedProjects.map((project, index) => (
                      <ProjectCard key={index} project={project} />
-                  ))} */}
+                  ))}
                </div>
             )}
          </div>
