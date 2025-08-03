@@ -3,7 +3,7 @@ import { NewProjectPayload } from "@/types/interfaces";
 import { FormEvent } from "react";
 import { dbg } from "@/lib/utils";
 
-export default function useNewProjectTab() {
+export default function useNewProjectForm() {
    const { errorMessage: projectCreationErr, isPending, createProject } = useCreateProject();
 
    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {

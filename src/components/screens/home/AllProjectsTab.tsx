@@ -4,14 +4,17 @@ import Spinner from "@/components/general/Spinner";
 import useLocalProjectsList from "@/hooks/backend-api-hooks/internet-independant/useLocalProjectsList";
 import { Button } from "@/components/ui/button";
 import { DownloadCloud } from "lucide-react";
+import NewProjectForm from "../projects-explorer/NewProjectForm";
 
 export default function AllProjectsTab() {
    const { projects, isLoading, errorMessage, syncProjects } = useLocalProjectsList();
 
    return (
       <div className="px-5">
-         <div className="mb-4 flex items-center justify-between gap-3">
-            <h1 className="text-foreground/50 flex items-center gap-2">Locally created projects</h1>
+         <div className="mb-4 flex items-center gap-3">
+            <h1 className="text-foreground/50 mr-auto flex items-center gap-2">Locally created projects</h1>
+
+            <NewProjectForm />
 
             <Button disabled={isLoading} variant="PRIMARY" onClick={syncProjects}>
                Sync With Github
