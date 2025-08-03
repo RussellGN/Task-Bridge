@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router";
 import { Button } from "../ui/button";
+import useBackBtn from "@/hooks/component-hooks/useBackBtn";
 
 type BackButtonProps = {
    className?: string;
@@ -8,9 +8,7 @@ type BackButtonProps = {
 };
 
 export default function BackBtn({ className, path }: BackButtonProps) {
-   const navigate = useNavigate();
-   const goBack = () => navigate(-1);
-   const goToPath = () => navigate(path || "/");
+   const { goBack, goToPath } = useBackBtn(path);
 
    return (
       <Button onClick={path ? goToPath : goBack} size="icon" variant="outline" className={className}>
