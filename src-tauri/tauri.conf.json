@@ -1,6 +1,6 @@
 {
    "$schema": "https://schema.tauri.app/config/2",
-   "productName": "task-bridge",
+   "productName": "Task Bridge",
    "version": "2.0.4",
    "identifier": "com.task-bridge.app",
    "build": {
@@ -12,11 +12,12 @@
    "app": {
       "windows": [
          {
-            "title": "task-bridge",
+            "title": "Task Bridge",
             "width": 800,
             "height": 600,
             "center": true,
-            "maximized": true
+            "maximized": true,
+            "backgroundColor": "#1c191f"
          }
       ],
       "security": {
