@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { load } from "@tauri-apps/plugin-store";
 import useSyncProjectsList from "../internet-dependant/useSyncProjectsList";
 import { alertError, dbg } from "@/lib/utils";
+import React from "react";
+import { toast } from "sonner";
 
 export default function useLocalProjectsList() {
    const F = "[useLocalProjectsList]";
@@ -38,10 +40,16 @@ export default function useLocalProjectsList() {
       enabled: true,
    });
 
+   React.useEffect(() => {
+      if (error) {
+         const errorMessage = e ? e : error instanceof Error ? error.message : error;
+         toast.error(`${F} ${errorMessage}`);
+      }
+   }, [error, e]);
+
    return {
       projects: data,
       isLoading: isLoading || isPending,
-      errorMessage: e ? e : error instanceof Error ? error.message : error,
       syncProjects: () => void syncProjects(),
    };
 }
