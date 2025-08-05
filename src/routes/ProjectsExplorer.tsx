@@ -1,15 +1,12 @@
 import Spinner from "@/components/general/Spinner";
-import useLocalProjectsList from "@/hooks/backend-api-hooks/internet-independant/useLocalProjectsList";
 import { Button } from "@/components/ui/button";
 import { DownloadCloud, Folder } from "lucide-react";
 import NewProjectForm from "@/components/screens/projects-explorer/NewProjectForm";
 import ProjectCard from "@/components/screens/home/ProjectCard";
+import useProjectsExplorer from "@/hooks/route-hooks/useProjectsExplorer";
 
 export default function ProjectsExplorer() {
-   const { projects, isLoading, syncProjects } = useLocalProjectsList();
-
-   const locallyCreatedProjects = projects?.filter((p) => p.locally_created) || [];
-   const syncedProjects = projects?.filter((p) => !p.locally_created) || [];
+   const { isLoading, syncedProjects, locallyCreatedProjects, syncProjects } = useProjectsExplorer();
 
    return (
       <div className="grid h-full grid-cols-2 items-start gap-5 p-5">
