@@ -6,7 +6,7 @@ export default function SettingSkeleton({ title, description, children }: Settin
       <div className="mb-10">
          <div className="mb-2 font-semibold">{title}</div>
 
-         <p className="text-foreground/70 mb-4 text-sm">
+         <p className="text-foreground/70 mb-8 text-sm">
             <Info className="text-PRIMARY/80 mr-1 mb-1 inline-block" />
             {description}
          </p>

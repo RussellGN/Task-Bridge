@@ -1,4 +1,3 @@
-import BackBtn from "@/components/general/BackBtn";
 import { SettingsIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SETTINGS_TABS, PROJECT_SETTINGS_TABS } from "@/lib/constants";
@@ -13,14 +12,8 @@ export default function Settings() {
 
    return (
       <div>
-         <div className="mb-4 flex items-center justify-between gap-2">
-            <BackBtn />
-
-            <div className="flex items-center gap-2">
-               Settings <SettingsIcon className="mt-0.5" /> {project?.name}
-            </div>
-
-            <div className="lucide"></div>
+         <div className="mb-4 flex items-center justify-center gap-2">
+            Settings <SettingsIcon className="mt-0.5" /> {project?.name}
          </div>
 
          <Tabs
@@ -44,7 +37,7 @@ export default function Settings() {
                <TabsContent
                   key={tab.value}
                   value={tab.value}
-                  className="bg-foreground/5 col-span-10 max-h-[80vh] grow overflow-y-auto rounded-md p-4"
+                  className="col-span-10 max-h-[80vh] grow overflow-y-auto px-8"
                >
                   <form onSubmit={handleSubmit}>
                      <tab.component appPreferences={appPreferences} project={project} />
