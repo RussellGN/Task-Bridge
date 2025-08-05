@@ -5,7 +5,7 @@ import { UserAvatar } from "@/components/general/UserAvatar";
 export default function StatCard({ stat }: { stat: Stat }) {
    return (
       <div>
-         <div className="gap2 bg-foreground/5 flex items-center justify-between rounded-b-lg p-4 shadow">
+         <div className="gap2 bg-card flex items-center justify-between rounded-lg p-4">
             <div>
                {stat.teamMember && (
                   <div className="flex items-center gap-2">

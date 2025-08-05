@@ -1,22 +1,15 @@
-import BackBtn from "@/components/general/BackBtn";
 import Spinner from "@/components/general/Spinner";
 import StatCard from "@/components/screens/analysis/StatCard";
 import useAnalytics from "@/hooks/component-hooks/useAnalytics";
-import { ChartColumn } from "lucide-react";
+import { ChartColumnBig } from "lucide-react";
 
 export default function Analytics() {
    const { project, overallStats, isLoading, taskCompletionStats } = useAnalytics();
 
    return (
       <div className="flex h-full flex-col gap-4">
-         <div className="mb-4 flex w-full items-center justify-between gap-2">
-            <BackBtn />
-
-            <div className="flex items-center gap-2">
-               Project Analysis <ChartColumn className="mt-0.5" /> {project?.name}
-            </div>
-
-            <div className="lucide"></div>
+         <div className="mb-4 flex w-full items-center justify-center gap-2">
+            Project Analysis <ChartColumnBig className="mt-0.5" /> {project?.name}
          </div>
 
          <div className="w-full p-5">
@@ -32,7 +25,7 @@ export default function Analytics() {
 
                      <div className="text-foreground/80 grid grid-cols-6 gap-5">
                         {overallStats.map((overallStat, index) => (
-                           <div key={index} className="bg-foreground/5 rounded-lg p-5">
+                           <div key={index} className="bg-card rounded-lg p-5">
                               <div className="mb-2 text-2xl">{overallStat.value}</div>
                               <div className="font-semibold capitalize">{overallStat.label}</div>
                            </div>

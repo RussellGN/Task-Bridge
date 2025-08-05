@@ -6,7 +6,7 @@ export function UserAvatar({ user, className }: { user: Author; className?: stri
    return (
       <Avatar className={cn("border-foreground/50 border", className)}>
          <AvatarImage src={user.avatar_url} />
-         <AvatarFallback>{user.login.charAt(0).toUpperCase()}</AvatarFallback>
+         <AvatarFallback className="">{user.login.charAt(0).toUpperCase()}</AvatarFallback>
       </Avatar>
    );
 }
