@@ -19,7 +19,7 @@ export default function KanbanDraftTaskCard({ draft, project }: { draft: DraftTa
    return (
       <div
          className={cn(
-            "bg-background border-foreground/40 hover:border-foreground/70 relative rounded-md border p-1 shadow transition-all",
+            "bg-card hover:border-foreground/40 relative rounded-md border p-1 shadow-md transition-all duration-75",
             isPending && "pointer-events-none opacity-50",
          )}
       >
@@ -37,10 +37,8 @@ export default function KanbanDraftTaskCard({ draft, project }: { draft: DraftTa
                   </div>
 
                   <span className={open ? "" : "line-clamp-1"}>
-                     <span className="text-foreground/50 border-foreground/30 rounded-sm border px-1 text-xs italic">
-                        Draft
-                     </span>{" "}
-                     {draft.title}
+                     <span className="text-foreground/50 px-1 text-xs italic">Draft</span> {draft.title}
+                     Lorem ipsum dolor sit.
                   </span>
                </CollapsibleTrigger>
 
@@ -82,7 +80,7 @@ export default function KanbanDraftTaskCard({ draft, project }: { draft: DraftTa
                </div>
             </div>
 
-            <CollapsibleContent className="bg-foreground/20 rounded-sm px-2 py-1 text-sm">
+            <CollapsibleContent className="bg-foreground/15 rounded-sm px-2 py-1 text-sm">
                <p>{draft.body || "no description"}</p>
             </CollapsibleContent>
          </Collapsible>

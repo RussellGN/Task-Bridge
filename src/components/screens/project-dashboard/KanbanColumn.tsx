@@ -15,11 +15,13 @@ type KanbanColumnProps = {
 
 export default function KanbanColumn({ project, title, Icon, tasks, newTaskForm, draftTasks }: KanbanColumnProps) {
    return (
-      <div className="bg-foreground/10 border-foreground/30 flex h-full max-h-[85vh] flex-col gap-3 rounded-lg border p-4 shadow-lg">
-         <h2 className="flex items-center gap-2 border-b-2 pb-2 font-semibold">
+      <div className="bg-foreground/5 flex h-full max-h-[85vh] flex-col gap-3 rounded-lg border p-4 shadow-lg">
+         <h2 className="mb-2 flex items-center gap-2 font-semibold">
             <span>{title}</span>
-            <Icon className="mt-0.5" />
-            <span className="ml-auto">{tasks.length + draftTasks.length}</span>
+            <Icon className="text-muted-foreground mt-0.5" />
+            <span className="ml-auto">
+               {tasks.length + draftTasks.length}/{(project.tasks?.length || 0) + (project.draft_tasks?.length || 0)}
+            </span>
          </h2>
 
          <div className="flex grow flex-col gap-3 overflow-y-auto pr-1">

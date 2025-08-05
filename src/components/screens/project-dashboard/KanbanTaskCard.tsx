@@ -23,7 +23,7 @@ export default function KanbanTaskCard({ task, project }: { task: Task; project:
    return (
       <div
          className={cn(
-            "bg-background border-foreground/40 hover:border-foreground/70 relative rounded-md border p-1 shadow transition-all",
+            "bg-card hover:border-foreground/40 relative rounded-md border p-1 shadow-md transition-all duration-75",
             isPending && "pointer-events-none opacity-50",
          )}
       >
@@ -39,10 +39,13 @@ export default function KanbanTaskCard({ task, project }: { task: Task; project:
                         <ChevronsDown className="text-PRIMARY mt-0.5" />
                      )}
                   </div>
-                  <span className={open ? "" : "line-clamp-1"}>
+
+                  <div className="flex items-start gap-1">
                      <span className="text-PRIMARY">{task.inner_issue.number}.</span>{" "}
-                     {task.inner_issue.title.replace(`#${task.inner_issue.number}`, "")}
-                  </span>
+                     <span className={open ? "" : "line-clamp-1"}>
+                        {task.inner_issue.title.replace(`#${task.inner_issue.number}`, "")}
+                     </span>
+                  </div>
                </CollapsibleTrigger>
 
                <div className="flex items-center gap-2">
@@ -101,7 +104,12 @@ export default function KanbanTaskCard({ task, project }: { task: Task; project:
 
             <CollapsibleContent>
                <div className="flex flex-1 flex-col gap-0.5 text-xs">
-                  <p className="bg-foreground/15 border-foreground/25 text-sml rounded-sm border px-2 py-1">
+                  <p
+                     className={cn(
+                        "bg-foreground/15 text-sml rounded-t-sm border px-2 py-1",
+                        !task.commits?.length && "rounded-b-sm",
+                     )}
+                  >
                      {task.inner_issue.body || "No description"}
                   </p>
                   {task.commits?.length ? (

@@ -26,16 +26,13 @@ export default function TaskTimeline({ task, className, syncActivity }: TaskTime
 
    return (
       <div
-         className={cn(
-            "bg-foreground/10 border-foreground/25 mt-1 flex flex-1 flex-col gap-1.5 rounded-sm border px-2 py-1",
-            className,
-         )}
+         className={cn("bg-foreground/10 mt-1 flex flex-1 flex-col gap-1.5 rounded-b-sm border px-2 py-1", className)}
       >
-         <div className="text-PRIMARY flex items-center justify-between gap-1 text-xs font-semibold">
+         <div className="text-muted-foreground flex items-center justify-between gap-1 text-xs font-semibold">
             Activity
-            <Button variant="link" className="text-foreground cursor-pointer text-xs" size="sm" onClick={syncActivity}>
+            <Button variant="link" className="text-PRIMARY cursor-pointer text-xs" size="sm" onClick={syncActivity}>
                Refresh
-               <RotateCw className="lucide-exempt" />
+               <RotateCw />
             </Button>
          </div>
 
