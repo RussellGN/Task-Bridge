@@ -1,4 +1,3 @@
-import BackBtn from "@/components/general/BackBtn";
 import useAppVersion from "@/hooks/useAppVersion";
 import { DOWNLOAD_URL, DOWNLOAD_URL_TEXT, GITHUB_REPO_URL, LICENSE_URL } from "@/lib/constants";
 import { HelpCircle } from "lucide-react";
@@ -8,14 +7,8 @@ export default function Help() {
 
    return (
       <div>
-         <div className="mb-4 flex items-center justify-between gap-2">
-            <BackBtn />
-
-            <div className="flex items-center gap-2">
-               User Guide <HelpCircle className="mt-0.5" />
-            </div>
-
-            <div className="lucide"></div>
+         <div className="mb-4 flex items-center justify-center gap-2">
+            User Guide <HelpCircle className="mt-0.5" />
          </div>
 
          <div className="mx-auto max-h-[80vh] max-w-4xl space-y-8 overflow-y-auto lg:p-8">
