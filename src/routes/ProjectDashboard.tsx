@@ -1,4 +1,3 @@
-import BackBtn from "@/components/general/BackBtn";
 import BranchConventionAlertBar from "@/components/general/BranchConventionAlertBar";
 import ErrorDisplay from "@/components/general/ErrorDisplay";
 import Spinner from "@/components/general/Spinner";
@@ -33,20 +32,19 @@ export default function ProjectDashboard() {
 
    return (
       <div className="flex h-full flex-col">
-         <div className="w-full">
-            <div className="mb-5 flex items-center gap-2">
-               <BackBtn path={"/projects"} />
-               <h1 className="text-lg font-semibold italic">{project.name || projectId}</h1>
+         <div className="mb-3 flex w-full flex-col gap-3 px-3">
+            <div className="flex items-center gap-2">
+               <h1 className="text-xl font-bold uppercase">{project.name || projectId}</h1>
 
                <div className="ml-auto">
                   <ProjectControls project={project} />
                </div>
             </div>
 
-            <ErrorDisplay containerClassName="mb-3" error={errorMessage} />
-         </div>
+            <ErrorDisplay error={errorMessage} />
 
-         <BranchConventionAlertBar />
+            <BranchConventionAlertBar />
+         </div>
 
          {project && <KanbanBoard project={project} />}
       </div>
