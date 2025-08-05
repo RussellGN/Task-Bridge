@@ -63,7 +63,7 @@ export function AccountManager() {
          </Dialog>
 
          <MenubarMenu>
-            <MenubarTrigger className="flex items-center gap-1.5">
+            <MenubarTrigger className="flex items-center gap-1.5 rounded-none border-0 hover:bg-black">
                Account
                <UserAvatar user={user} className="border-PRIMARY mt-0.5 size-3.5 border-2" />
             </MenubarTrigger>

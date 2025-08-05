@@ -26,10 +26,7 @@ export default function MenuBarLinkItem({
       <MenuBarItem
          asChild
          disabled={disabled}
-         className={cn(
-            "hover:border-foreground/30 cursor-pointer rounded-sm border border-transparent py-0.5",
-            containerClassName,
-         )}
+         className={cn("cursor-pointer py-0.5 hover:bg-black", containerClassName)}
       >
          <Link
             to={disabled ? "" : to}
