@@ -27,7 +27,7 @@ export default function NewProjectForm({ trigger }: { trigger?: ReactNode }) {
             {trigger ? (
                trigger
             ) : (
-               <Button variant="PRIMARY">
+               <Button variant="PRIMARY" size="sm">
                   New Project <Plus />
                </Button>
             )}
