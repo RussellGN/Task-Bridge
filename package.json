@@ -12,7 +12,8 @@
       "check-types": "tsc --noEmit",
       "qc": "pnpm check-types && pnpm lint",
       "fmt": "prettier . --write",
-      "check-fmt": "prettier . --check"
+      "check-fmt": "prettier . --check",
+      "icon": "tauri icon ./public/icon.png"
    },
    "dependencies": {
       "@radix-ui/react-avatar": "^1.1.4",
