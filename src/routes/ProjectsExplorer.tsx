@@ -33,7 +33,10 @@ export default function ProjectsExplorer() {
             ) : syncedProjects.length === 0 ? (
                <p className="text-foreground/50 pt-30 text-center text-sm">0 projects</p>
             ) : (
-               <div className="grid h-[80vh] grid-cols-2 items-start gap-2 overflow-y-auto pr-3 sm:grid-cols-3 lg:grid-cols-4">
+               <div className="h-[80vh] overflow-y-auto pr-3">
+                  {syncedProjects.map((project, index) => (
+                     <ProjectCard key={index} project={project} />
+                  ))}
                   {syncedProjects.map((project, index) => (
                      <ProjectCard key={index} project={project} />
                   ))}
@@ -54,7 +57,7 @@ export default function ProjectsExplorer() {
             {locallyCreatedProjects.length === 0 ? (
                <p className="text-foreground/50 pt-30 text-center text-sm">0 projects</p>
             ) : (
-               <div className="grid h-[80vh] grid-cols-2 items-start gap-2 overflow-y-auto pr-3 sm:grid-cols-3 lg:grid-cols-4">
+               <div className="h-[80vh] overflow-y-auto pr-3">
                   {locallyCreatedProjects.map((project, index) => (
                      <ProjectCard key={index} project={project} />
                   ))}
