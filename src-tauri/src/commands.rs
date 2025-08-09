@@ -16,6 +16,19 @@ use crate::{
 };
 
 #[tauri::command]
+pub async fn hide_splash<R: Runtime>(app: AppHandle<R>) -> crate::Result {
+   if let Some(splashscreen) = app.get_webview_window("splashscreen") {
+      let _ = splashscreen.close();
+   }
+   app.get_webview_window("main")
+      .expect("could not access main window")
+      .show()
+      .expect("could not display main window");
+
+   Ok(())
+}
+
+#[tauri::command]
 pub async fn fetch_save_and_return_user<R: Runtime>(app: AppHandle<R>) -> crate::Result<models::Author> {
    const F: &str = "[fetch_save_and_return_user]";
 

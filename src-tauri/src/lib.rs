@@ -25,6 +25,7 @@ pub fn run() {
       .plugin(tauri_plugin_http::init())
       .setup(setup::setup)
       .invoke_handler(tauri::generate_handler![
+         commands::hide_splash,
          commands::fetch_save_and_return_user,
          commands::find_users_matching_query,
          commands::create_project,
