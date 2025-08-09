@@ -45,7 +45,7 @@ export const MAX_ERR_LENGTH = 200;
 export const DEFAULT_NONE_SELECT_VALUE = "none";
 
 export const DEFAULT_TOAST_OPTIONS: ExternalToast = {
-   duration: 10000,
+   duration: Infinity,
    dismissible: true,
 };
 
