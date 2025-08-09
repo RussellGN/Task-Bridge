@@ -1,8 +1,6 @@
 # UI
 
 1. refine all toast alerts
-2. logo
-3. splashscreen
-4. screen by screen refinement
-5. assistance tooltips (with setting to disable)
-6. progress feedback for everything
+2. splashscreen
+3. assistance tooltips (with setting to disable)
+4. progress feedback for everything
