@@ -20,7 +20,7 @@ export default function Layout() {
                   success: <CheckCircle2 className="text-SUCCESS stroke-3" />,
                }}
                swipeDirections={[]}
-               duration={Infinity}
+               duration={30000}
             />
             <DevKit />
          </div>
