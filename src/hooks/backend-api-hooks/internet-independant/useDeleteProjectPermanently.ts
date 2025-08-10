@@ -4,7 +4,7 @@ import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
-import { alertError, alertSuccess, dbg } from "@/lib/utils";
+import { alertError, alertSuccess, dbg } from "@/lib/logging";
 
 export default function useDeleteProjectPermanently(projectId: string | undefined) {
    const client = useClient();

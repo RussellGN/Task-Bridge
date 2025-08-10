@@ -8,6 +8,7 @@ import { DEFAULT_NONE_SELECT_VALUE } from "@/lib/constants";
 import useCreateBacklogTask from "../backend-api-hooks/internet-dependant/useCreateBacklogTask";
 import useEditTask from "../backend-api-hooks/internet-dependant/useEditTask";
 import useEditDraftTask from "../backend-api-hooks/internet-dependant/useEditDraftTask";
+import { dbg } from "@/lib/logging";
 
 export default function useNewTaskForm(project: Project) {
    const [open, setOpen] = React.useState(false);
@@ -57,7 +58,7 @@ export default function useNewTaskForm(project: Project) {
       };
       payload.assignee_login =
          payload.assignee_login === DEFAULT_NONE_SELECT_VALUE ? undefined : payload.assignee_login;
-      console.log(data, payload);
+      dbg(data, payload);
 
       const drafting = isDraftFinal || payload?.assignee_login === DEFAULT_NONE_SELECT_VALUE;
 

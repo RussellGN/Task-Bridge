@@ -3,7 +3,7 @@ import { Project } from "@/types/interfaces";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
-import { alertError, alertSuccess, dbg } from "@/lib/utils";
+import { alertError, alertSuccess, dbg } from "@/lib/logging";
 
 export default function useDeleteProjectLocally(projectId: string | undefined) {
    const client = useClient();

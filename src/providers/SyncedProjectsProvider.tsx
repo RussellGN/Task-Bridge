@@ -1,4 +1,4 @@
-import { dbg } from "@/lib/utils";
+import { dbg } from "@/lib/logging";
 import React from "react";
 
 const syncedProjectsContext = React.createContext<{

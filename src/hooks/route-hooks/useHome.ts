@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { alertError, checkAuth } from "@/lib/utils";
+import { checkAuth } from "@/lib/utils";
+import { alertError } from "@/lib/logging";
 import { useNavigate, useSearchParams } from "react-router";
 import useGetUser from "../backend-api-hooks/internet-independant/useGetUser";
 

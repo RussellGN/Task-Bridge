@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { alertError, logInfo } from "@/lib/utils";
+import { alertError, logInfo } from "@/lib/logging";
 import { PossiblyPendingAuthor } from "@/types/interfaces";
 import { TEAM_LOGINS_SEPERATOR } from "@/lib/constants";
 import useSearchUsers from "../backend-api-hooks/internet-dependant/useSearchUsers";

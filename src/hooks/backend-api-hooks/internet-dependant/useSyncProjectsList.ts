@@ -1,4 +1,4 @@
-import { alertError, alertInfo, dbg } from "@/lib/utils";
+import { alertError, alertInfo, dbg } from "@/lib/logging";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";

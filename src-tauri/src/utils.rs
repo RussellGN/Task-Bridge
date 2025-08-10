@@ -5,7 +5,7 @@ use tauri::{AppHandle, Runtime};
 use tauri_plugin_store::{Store, StoreExt};
 use uuid::Uuid;
 
-use crate::{auth::AccessToken, ENV_STR, STORE_PATH};
+use crate::{auth::AccessToken, ENV_STR, LOGS_STORE_PATH, STORE_PATH};
 
 #[macro_export]
 macro_rules! log {
@@ -79,6 +79,17 @@ pub fn get_store<R: Runtime>(app: AppHandle<R>) -> crate::Result<Arc<Store<R>>> 
    let store = app.store(STORE_PATH).map_err(|e| format!("{F} {}", e.to_string()))?;
 
    Ok(store)
+}
+
+pub fn get_logs_store<R: Runtime>(app: AppHandle<R>) -> crate::Result<Arc<Store<R>>> {
+   const F: &str = "[get_logs_store]";
+
+   log!("{F} getting logs store");
+   let logs_store = app
+      .store(LOGS_STORE_PATH)
+      .map_err(|e| format!("{F} {}", e.to_string()))?;
+
+   Ok(logs_store)
 }
 
 pub fn get_token<R: Runtime>(store: &Arc<Store<R>>) -> crate::Result<AccessToken> {

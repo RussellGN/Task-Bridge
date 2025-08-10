@@ -1,4 +1,4 @@
-import { alertError, alertSuccess } from "@/lib/utils";
+import { alertError, alertSuccess } from "@/lib/logging";
 import React from "react";
 
 export default function useIsOnline() {

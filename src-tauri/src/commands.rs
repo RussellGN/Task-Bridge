@@ -7,25 +7,18 @@ use tauri::{AppHandle, Emitter, Manager, Runtime};
 
 use crate::{
    log,
+   logging::Log,
    new_github_api::GithubAPI,
    project::{
       task::{DraftTask, NewDraftTaskPayload, NewTaskPayload, Task},
       Project, ProjectPatchArgs, ProjectPayload,
    },
-   utils::{dbg_store, get_store, get_token, IssueExt},
+   utils::{dbg_store, get_logs_store, get_store, get_token, IssueExt},
 };
 
 #[tauri::command]
-pub async fn hide_splash<R: Runtime>(app: AppHandle<R>) -> crate::Result {
-   if let Some(splashscreen) = app.get_webview_window("splashscreen") {
-      let _ = splashscreen.close();
-   }
-   app.get_webview_window("main")
-      .expect("could not access main window")
-      .show()
-      .expect("could not display main window");
-
-   Ok(())
+pub async fn persist_log<R: Runtime>(app: AppHandle<R>, log: Log) {
+   log.persist(get_logs_store(app).ok().as_ref()).await
 }
 
 #[tauri::command]

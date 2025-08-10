@@ -1,6 +1,6 @@
 import useSettings from "@/hooks/route-hooks/useSettings";
 import { DEFAULT_PROJECT_SYNC_INTERVAL_MINS } from "@/lib/constants";
-import { alertError, alertInfo, alertSuccess, dbg } from "@/lib/utils";
+import { alertError, alertInfo, alertSuccess, dbg } from "@/lib/logging";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useSyncedProjects } from "@/providers/SyncedProjectsProvider";

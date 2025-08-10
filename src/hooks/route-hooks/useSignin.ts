@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { checkAuth, logError, logInfo } from "@/lib/utils";
+import { logError, logInfo } from "@/lib/logging";
+import { checkAuth } from "@/lib/utils";
 import { useNavigate } from "react-router";
 
 export default function useSignin() {

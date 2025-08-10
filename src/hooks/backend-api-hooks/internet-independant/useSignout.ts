@@ -2,7 +2,7 @@ import { load } from "@tauri-apps/plugin-store";
 import { STORE_PATH } from "@/lib/constants";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
-import { alertError, alertSuccess, logInfo } from "@/lib/utils";
+import { alertError, alertSuccess, logInfo } from "@/lib/logging";
 import { useClient } from "@/providers/ReactQueryProvider";
 
 export default function useSignout() {

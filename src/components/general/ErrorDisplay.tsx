@@ -1,5 +1,6 @@
 import { MAX_ERR_LENGTH } from "@/lib/constants";
-import { cn, trimFunctionNameFromLog, truncateStr } from "@/lib/utils";
+import { cn, truncateStr } from "@/lib/utils";
+import { trimFunctionNameFromLog } from "@/lib/logging";
 import { AlertTriangle } from "lucide-react";
 
 type ErrorDisplayProps = {

@@ -1,5 +1,5 @@
 import { useParams } from "react-router";
-import { alertError, dbg } from "@/lib/utils";
+import { alertError, dbg } from "@/lib/logging";
 import { ProjectPatchArgs, ProjectSettingsPatchPayload } from "@/types/interfaces";
 import useDeleteProjectPermanently from "./backend-api-hooks/internet-independant/useDeleteProjectPermanently";
 import useUpdateProjectSyncSettings from "./useUpdateProjectSyncSettings";

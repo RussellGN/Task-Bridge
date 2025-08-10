@@ -1,11 +1,12 @@
-import { alertError, alertSuccess, dbg, stringifyAndRemoveQuotes } from "@/lib/utils";
+import { stringifyAndRemoveQuotes } from "@/lib/utils";
+import { alertError, alertSuccess, dbg } from "@/lib/logging";
 import { ProjectSyncResult } from "@/types/interfaces";
 import { useEffect } from "react";
 import { listen } from "@tauri-apps/api/event";
 
 export default function useListenForSyncUpdateMessage() {
    useEffect(() => {
-      let unlisten = () => console.log("project sync result listener - unlisten func was not set");
+      let unlisten = () => dbg("project sync result listener - unlisten func was not set");
 
       dbg("[useListenForSyncUpdateMessage] registering project sync result listener");
       listen<ProjectSyncResult>("project_sync_result", (e) => {
