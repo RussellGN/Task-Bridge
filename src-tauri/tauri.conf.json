@@ -12,20 +12,7 @@
    "app": {
       "windows": [
          {
-            "label": "splashscreen",
-            "visible": true,
-            "width": 800,
-            "height": 600,
-            "center": true,
-            "maximized": false,
-            "maximizable": false,
-            "url": "/splashscreen",
-            "backgroundColor": "#1c191f",
-            "decorations": false
-         },
-         {
             "label": "main",
-            "visible": false,
             "title": "Task Bridge",
             "width": 800,
             "height": 600,

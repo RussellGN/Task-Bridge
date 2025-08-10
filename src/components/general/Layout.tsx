@@ -4,11 +4,9 @@ import DevKit from "./DevKit";
 import { Toaster } from "@/components/ui/sonner";
 import MenuBar from "./MenuBar";
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
-import useSetup from "@/hooks/useSetup";
 
 export default function Layout() {
    useListenForAuthSetupCompleteEvent();
-   useSetup();
 
    return (
       <div className="flex h-screen flex-col overflow-hidden">
