@@ -80,3 +80,10 @@ jobs:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
            with:
               args: ${{ matrix.args }}
+
+         - name: Upload build artifacts
+           uses: actions/upload-artifact@v4
+           with:
+              name: build-${{ matrix.platform }}
+              path: |
+                 src-tauri/target/release/**
