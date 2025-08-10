@@ -2,9 +2,10 @@ import { Project, Task } from "@/types/interfaces";
 import { useState } from "react";
 import { useSearchParams } from "react-router";
 import useAssignTaskNow from "../backend-api-hooks/internet-dependant/useAssignTaskNow";
-import { alertInfo } from "@/lib/utils";
+import { alertInfo } from "@/lib/logging";
 import useDeleteTask from "../backend-api-hooks/internet-dependant/useDeleteTask";
 import useSyncTaskActivity from "../backend-api-hooks/internet-dependant/useSyncTaskActivity";
+import { dbg } from "@/lib/logging";
 
 export default function useKanbanTaskCard(task: Task, project: Project) {
    const [open, setOpen] = useState(false);
@@ -15,7 +16,7 @@ export default function useKanbanTaskCard(task: Task, project: Project) {
    const { isPending: isActivitySyncing, syncTaskActivity } = useSyncTaskActivity(project);
 
    function editTask() {
-      console.log("Editing task", task.inner_issue.id);
+      dbg("Editing task", task.inner_issue.id);
       setSearchParams((prev) => {
          prev.set("edit_task", task.inner_issue.id.toString());
          return prev;

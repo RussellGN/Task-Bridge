@@ -1,5 +1,5 @@
 import useIsOnline from "@/hooks/useIsOnline";
-import { alertError } from "@/lib/utils";
+import { alertError } from "@/lib/logging";
 import React, { PropsWithChildren, useContext } from "react";
 
 const connectivityContext = React.createContext(true);

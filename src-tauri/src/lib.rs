@@ -2,6 +2,7 @@ mod auth;
 mod commands;
 mod experimental;
 mod github_api;
+mod logging;
 mod new_github_api;
 mod project;
 mod setup;
@@ -10,6 +11,7 @@ mod utils;
 use setup::init_tauri_plugin_single_instance;
 
 pub const STORE_PATH: &str = "store.json";
+pub const LOGS_STORE_PATH: &str = "task_bridge_logs.json";
 pub const ENV_STR: &'static str = include_str!("../.env");
 pub const TEAM_LOGINS_SEPERATOR: &str = "-;;-";
 
@@ -45,6 +47,7 @@ pub fn run() {
          commands::update_project_team,
          commands::update_general_project_metadata,
          commands::sync_projects_with_github_v2,
+         commands::persist_log,
          experimental::clear_store,
       ])
       .run(tauri::generate_context!())

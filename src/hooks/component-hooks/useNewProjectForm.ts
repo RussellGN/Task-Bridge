@@ -1,7 +1,7 @@
 import useCreateProject from "../backend-api-hooks/internet-dependant/useCreateProject";
 import { NewProjectPayload } from "@/types/interfaces";
 import { FormEvent } from "react";
-import { dbg } from "@/lib/utils";
+import { dbg } from "@/lib/logging";
 
 export default function useNewProjectForm() {
    const { errorMessage: projectCreationErr, isPending, createProject } = useCreateProject();

@@ -2,7 +2,8 @@ import { DraftTask, Project } from "@/types/interfaces";
 import { useState } from "react";
 import { useSearchParams } from "react-router";
 import useDeleteDraftTask from "../backend-api-hooks/internet-dependant/useDeleteDraftTask";
-import { alertInfo, wait } from "@/lib/utils";
+import { wait } from "@/lib/utils";
+import { alertInfo } from "@/lib/logging";
 import useAssignDraftTaskNow from "../backend-api-hooks/internet-dependant/useAssignDraftTaskNow";
 
 export default function useKanbanDraftTaskCard(draft: DraftTask, project: Project) {

@@ -1,4 +1,4 @@
-import { alertError, alertSuccess, dbg } from "@/lib/utils";
+import { alertError, alertSuccess, dbg } from "@/lib/logging";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { ProjectPatchArgs } from "@/types/interfaces";
 import { useMutation } from "@tanstack/react-query";

@@ -1,4 +1,5 @@
-import { alertError, alertSuccess, dbg, stringifyAndRemoveQuotes } from "@/lib/utils";
+import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { stringifyAndRemoveQuotes } from "@/lib/utils";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { Project, ProjectPatchArgs } from "@/types/interfaces";
 import { useMutation } from "@tanstack/react-query";

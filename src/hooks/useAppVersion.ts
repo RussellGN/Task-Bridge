@@ -1,4 +1,4 @@
-import { logError } from "@/lib/utils";
+import { logError } from "@/lib/logging";
 import { useEffect, useState } from "react";
 import { getVersion } from "@tauri-apps/api/app";
 

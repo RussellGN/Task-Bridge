@@ -1,5 +1,5 @@
 import { STORE_PATH } from "@/lib/constants";
-import { alertError, alertSuccess, dbg } from "@/lib/utils";
+import { alertError, alertSuccess, dbg } from "@/lib/logging";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { AppPreferences } from "@/types/interfaces";
 import { useMutation, useQuery } from "@tanstack/react-query";

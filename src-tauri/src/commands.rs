@@ -7,13 +7,19 @@ use tauri::{AppHandle, Emitter, Manager, Runtime};
 
 use crate::{
    log,
+   logging::Log,
    new_github_api::GithubAPI,
    project::{
       task::{DraftTask, NewDraftTaskPayload, NewTaskPayload, Task},
       Project, ProjectPatchArgs, ProjectPayload,
    },
-   utils::{dbg_store, get_store, get_token, IssueExt},
+   utils::{dbg_store, get_logs_store, get_store, get_token, IssueExt},
 };
+
+#[tauri::command]
+pub async fn persist_log<R: Runtime>(app: AppHandle<R>, log: Log) {
+   log.persist(get_logs_store(app).ok().as_ref()).await
+}
 
 #[tauri::command]
 pub async fn fetch_save_and_return_user<R: Runtime>(app: AppHandle<R>) -> crate::Result<models::Author> {

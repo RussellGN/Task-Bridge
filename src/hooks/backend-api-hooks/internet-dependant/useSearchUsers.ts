@@ -1,5 +1,5 @@
 import { Author } from "@/types/interfaces";
-import { alertError, logInfo } from "@/lib/utils";
+import { alertError, logInfo } from "@/lib/logging";
 import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";

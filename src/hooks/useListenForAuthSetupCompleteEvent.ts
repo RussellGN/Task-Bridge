@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { alertSuccess, checkAuth, logError, logInfo } from "@/lib/utils";
+import { alertSuccess, logError, logInfo } from "@/lib/logging";
+import { checkAuth } from "@/lib/utils";
 import { once } from "@tauri-apps/api/event";
 
 export default function useListenForAuthSetupCompleteEvent() {

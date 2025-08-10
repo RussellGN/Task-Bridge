@@ -1,9 +1,7 @@
 import SettingSkeleton from "./SettingSkeleton";
-import { SettingsTabElementProps } from "@/types/types";
 import { Input } from "@/components/ui/input";
 
-export default function ProjectDeletionSettings({ project }: SettingsTabElementProps) {
-   console.log("delete options", project?.name);
+export default function ProjectDeletionSettings() {
    return (
       <SettingSkeleton title="Danger Zone" description="Project Deletion options.">
          <div className="mb-10">

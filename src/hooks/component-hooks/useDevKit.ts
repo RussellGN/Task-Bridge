@@ -1,5 +1,5 @@
 import { STORE_PATH } from "@/lib/constants";
-import { alertError, alertInfo, logInfo } from "@/lib/utils";
+import { alertError, alertInfo, logInfo } from "@/lib/logging";
 import { invoke } from "@tauri-apps/api/core";
 import { load } from "@tauri-apps/plugin-store";
 import { useState } from "react";

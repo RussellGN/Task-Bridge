@@ -1,4 +1,4 @@
-import { alertSuccess, dbg } from "@/lib/utils";
+import { alertSuccess, dbg } from "@/lib/logging";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { ActivitySyncResponse, Project } from "@/types/interfaces";
