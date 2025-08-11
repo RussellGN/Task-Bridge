@@ -1,5 +1,6 @@
 mod auth;
 mod commands;
+mod error;
 mod experimental;
 mod github_api;
 mod logging;
@@ -10,12 +11,11 @@ mod utils;
 
 use setup::init_tauri_plugin_single_instance;
 
+pub use error::Result;
 pub const STORE_PATH: &str = "store.json";
 pub const LOGS_STORE_PATH: &str = "task_bridge_logs.json";
 pub const ENV_STR: &'static str = include_str!("../.env");
 pub const TEAM_LOGINS_SEPERATOR: &str = "-;;-";
-
-pub type Result<T = ()> = std::result::Result<T, String>;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
