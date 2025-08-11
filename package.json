@@ -13,7 +13,9 @@
       "qc": "pnpm check-types && pnpm lint",
       "fmt": "prettier . --write",
       "check-fmt": "prettier . --check",
-      "icon": "tauri icon ./public/icon.png"
+      "icon": "tauri icon ./public/icon.png",
+      "ts-rs": "cd src-tauri && cargo test export_bindings",
+      "dev2": "pnpm ts-rs && pnpm tauri dev"
    },
    "dependencies": {
       "@radix-ui/react-avatar": "^1.1.4",

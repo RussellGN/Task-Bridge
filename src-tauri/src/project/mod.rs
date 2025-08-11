@@ -12,6 +12,7 @@ use tauri_plugin_store::Store;
 
 use crate::{
    auth::AccessToken,
+   error::AppErrorAPI,
    log,
    new_github_api::{GithubAPI, RepoPayload},
    utils::{get_token, IssueExt},
@@ -165,9 +166,9 @@ impl Project {
          if login.trim().is_empty() {
             continue;
          }
-         let owner = repo.owner.clone().ok_or(format!(
-            "{F} repo '{}' somehow does not have an owner set up",
-            repo.name
+         let owner = repo.owner.clone().ok_or(AppErrorAPI::unknown(
+            &format!("repo '{}' somehow does not have an owner set up", repo.name),
+            F,
          ))?;
          let collaborator_invited = GithubAPI::invite_collaborator(login, &token, &owner.login, &repo.name).await?;
          pending_invites.push(collaborator_invited);
@@ -200,9 +201,9 @@ impl Project {
       let new_team_logins = team_logins.split(TEAM_LOGINS_SEPERATOR).collect::<Vec<_>>();
       log!("{F} team-logins = {new_team_logins:#?}");
 
-      let owner = self.repo.owner.clone().ok_or(format!(
-         "{F} repo '{}' somehow does not have an owner set up",
-         self.repo.name
+      let owner = self.repo.owner.clone().ok_or(AppErrorAPI::unknown(
+         &format!("repo '{}' somehow does not have an owner set up", self.repo.name),
+         F,
       ))?;
 
       // invite new collaborators
@@ -260,18 +261,19 @@ impl Project {
 
    pub fn place_in_store(&self, store: Arc<Store<impl Runtime>>) -> crate::Result {
       const F: &str = "[save_to_store]";
-      let value = serde_json::to_value(self).map_err(|e| format!("{F} {}", e.to_string()))?;
+      let value = serde_json::to_value(self).map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
       let project_id = self.id.clone();
       store.set(&project_id, value);
 
       // save project-ids in standalone vec
       if let Some(project_ids) = store.get("project-ids") {
          let mut project_ids = serde_json::from_value::<Vec<String>>(project_ids)
-            .map_err(|e| format!("{F} could not deserialize project-ids: {e}"))?;
+            .map_err(|e| AppErrorAPI::unknown(&format!("could not deserialize project-ids: {e}"), F))?;
 
          if project_ids.contains(&project_id) {
-            return Err(format!(
-               "{F} project with id '{project_id}' already exists in local store"
+            return Err(AppErrorAPI::unknown(
+               "project with id '{project_id}' already exists in local store",
+               F,
             ));
          } else {
             project_ids.push(project_id);
@@ -285,11 +287,12 @@ impl Project {
       let repo_id = self.repo_id.clone();
       if let Some(repo_ids) = store.get("repo-ids") {
          let mut repo_ids = serde_json::from_value::<Vec<String>>(repo_ids)
-            .map_err(|e| format!("{F} could not deserialize repo-ids: {e}"))?;
+            .map_err(|e| AppErrorAPI::unknown(&format!("could not deserialize repo-ids: {e}"), F))?;
 
          if repo_ids.contains(&repo_id) {
-            return Err(format!(
-               "{F} repo with id '{repo_id}' already has a project set-up and already exists in local store"
+            return Err(AppErrorAPI::unknown(
+               &format!("repo with id '{repo_id}' already has a project set-up and already exists in local store"),
+               F,
             ));
          } else {
             repo_ids.push(repo_id);
@@ -304,7 +307,7 @@ impl Project {
 
    pub fn save_updates_to_store(&self, store: Arc<Store<impl Runtime>>) -> crate::Result {
       const F: &str = "[save_updates_to_store]";
-      let value = serde_json::to_value(self).map_err(|e| format!("{F} {}", e.to_string()))?;
+      let value = serde_json::to_value(self).map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
       store.set(&self.id, value);
       Ok(())
    }
@@ -363,12 +366,17 @@ impl Project {
 
       let tasks = match &mut self.tasks {
          Some(tasks) => tasks,
-         None => return Err(format!("{F} project {} has no tasks", self.name)),
+         None => return Err(AppErrorAPI::unknown(&format!("project {} has no tasks", self.name), F)),
       };
 
       let task = match tasks.iter_mut().find(|t| t.get_inner_issue().id.to_string() == task_id) {
          Some(task) => task,
-         None => return Err(format!("{F} project {} has no task with id {task_id}", self.name)),
+         None => {
+            return Err(AppErrorAPI::unknown(
+               &format!("project {} has no task with id {task_id}", self.name),
+               F,
+            ))
+         }
       };
 
       let updated_issue = GithubAPI::update_issue(
@@ -415,12 +423,17 @@ impl Project {
 
       let tasks = match &mut self.tasks {
          Some(tasks) => tasks,
-         None => return Err(format!("{F} project {} has no tasks", self.name)),
+         None => return Err(AppErrorAPI::unknown(&format!("project {} has no tasks", self.name), F)),
       };
 
       let task = match tasks.iter_mut().find(|t| t.get_inner_issue().id.to_string() == task_id) {
          Some(task) => task,
-         None => return Err(format!("{F} project {} has no task with id {task_id}", self.name)),
+         None => {
+            return Err(AppErrorAPI::unknown(
+               &format!("project {} has no task with id {task_id}", self.name),
+               F,
+            ))
+         }
       };
 
       let branch_name = task.get_inner_issue().task_branch_name();
@@ -443,12 +456,17 @@ impl Project {
       let repo = self.repo.clone();
       let tasks = match &mut self.tasks {
          Some(tasks) => tasks,
-         None => return Err(format!("{F} project {} has no tasks", self.name)),
+         None => return Err(AppErrorAPI::unknown(&format!("project {} has no tasks", self.name), F)),
       };
 
       let task = match tasks.iter_mut().find(|t| t.get_inner_issue().id.to_string() == task_id) {
          Some(task) => task,
-         None => return Err(format!("{F} project {} has no task with id {task_id}", self.name)),
+         None => {
+            return Err(AppErrorAPI::unknown(
+               &format!("project {} has no task with id {task_id}", self.name),
+               F,
+            ))
+         }
       };
 
       // 1. get branch names that end in '_<task number>'
@@ -492,15 +510,20 @@ impl Project {
 
       let draft_tasks = match &mut self.draft_tasks {
          Some(draft_tasks) => draft_tasks,
-         None => return Err(format!("{F} project {} has no draft-tasks", self.name)),
+         None => {
+            return Err(AppErrorAPI::unknown(
+               &format!("project {} has no draft-tasks", self.name),
+               F,
+            ))
+         }
       };
 
       let draft_task = match draft_tasks.iter_mut().find(|t| t.get_id() == draft_id) {
          Some(draft_task) => draft_task,
          None => {
-            return Err(format!(
-               "{F} project {} has no draft-task with id {draft_id}",
-               self.name
+            return Err(AppErrorAPI::unknown(
+               &format!("project {} has no draft-task with id {draft_id}", self.name),
+               F,
             ))
          }
       };
@@ -535,12 +558,17 @@ impl Project {
 
       let tasks = match &mut self.tasks {
          Some(tasks) => tasks,
-         None => return Err(format!("{F} project {} has no tasks", self.name)),
+         None => return Err(AppErrorAPI::unknown(&format!("project {} has no tasks", self.name), F)),
       };
 
       let task = match tasks.iter_mut().find(|t| t.get_inner_issue().id.to_string() == task_id) {
          Some(task) => task,
-         None => return Err(format!("{F} project {} has no task with id {task_id}", self.name)),
+         None => {
+            return Err(AppErrorAPI::unknown(
+               &format!("project {} has no task with id {task_id}", self.name),
+               F,
+            ))
+         }
       };
 
       let updated_issue = GithubAPI::update_issue(
@@ -586,15 +614,20 @@ impl Project {
 
       let draft_tasks = match &mut self.draft_tasks {
          Some(draft_tasks) => draft_tasks,
-         None => return Err(format!("{F} project {} has no draft tasks", self.name)),
+         None => {
+            return Err(AppErrorAPI::unknown(
+               &format!("project {} has no draft tasks", self.name),
+               F,
+            ))
+         }
       };
 
       let draft_task = match draft_tasks.iter_mut().find(|t| t.get_id() == draft_id) {
          Some(draft_task) => draft_task,
          None => {
-            return Err(format!(
-               "{F} project {} has no draft task with id {draft_id}",
-               self.name
+            return Err(AppErrorAPI::unknown(
+               &format!("project {} has no draft task with id {draft_id}", self.name),
+               F,
             ))
          }
       };
@@ -617,12 +650,17 @@ impl Project {
 
       let tasks = match &mut self.tasks {
          Some(tasks) => tasks,
-         None => return Err(format!("{F} project {} has no tasks", self.name)),
+         None => return Err(AppErrorAPI::unknown(&format!("project {} has no tasks", self.name), F)),
       };
 
       let task = match tasks.iter_mut().find(|t| t.get_inner_issue().id.to_string() == task_id) {
          Some(task) => task,
-         None => return Err(format!("{F} project {} has no task with id {task_id}", self.name)),
+         None => {
+            return Err(AppErrorAPI::unknown(
+               &format!("project {} has no task with id {task_id}", self.name),
+               F,
+            ))
+         }
       };
 
       // close issue and append 'deleted' label for now (TODO: delete using grapgql in future)
@@ -658,7 +696,7 @@ impl Project {
       // update project-ids
       if let Some(project_ids) = store.get("project-ids") {
          let mut project_ids = serde_json::from_value::<Vec<String>>(project_ids)
-            .map_err(|e| format!("{F} could not deserialize project-ids: {e}"))?;
+            .map_err(|e| AppErrorAPI::unknown(&format!("could not deserialize project-ids: {e}"), F))?;
 
          project_ids = project_ids
             .iter()
@@ -671,7 +709,7 @@ impl Project {
       // update repo-ids
       if let Some(repo_ids) = store.get("repo-ids") {
          let mut repo_ids = serde_json::from_value::<Vec<String>>(repo_ids)
-            .map_err(|e| format!("{F} could not deserialize repo-ids: {e}"))?;
+            .map_err(|e| AppErrorAPI::unknown(&format!("could not deserialize repo-ids: {e}"), F))?;
 
          repo_ids = repo_ids
             .iter()
@@ -692,7 +730,7 @@ impl Project {
       // update project-ids
       if let Some(project_ids) = store.get("project-ids") {
          let mut project_ids = serde_json::from_value::<Vec<String>>(project_ids)
-            .map_err(|e| format!("{F} could not deserialize project-ids: {e}"))?;
+            .map_err(|e| AppErrorAPI::unknown(&format!("could not deserialize project-ids: {e}"), F))?;
 
          project_ids = project_ids
             .iter()
@@ -705,7 +743,7 @@ impl Project {
       // update repo-ids
       if let Some(repo_ids) = store.get("repo-ids") {
          let mut repo_ids = serde_json::from_value::<Vec<String>>(repo_ids)
-            .map_err(|e| format!("{F} could not deserialize repo-ids: {e}"))?;
+            .map_err(|e| AppErrorAPI::unknown(&format!("could not deserialize repo-ids: {e}"), F))?;
 
          repo_ids = repo_ids
             .iter()
@@ -723,7 +761,12 @@ impl Project {
 
       let draft_tasks = match &mut self.draft_tasks {
          Some(draft_tasks) => draft_tasks,
-         None => return Err(format!("{F} project {} has no draft tasks", self.name)),
+         None => {
+            return Err(AppErrorAPI::unknown(
+               &format!("project {} has no draft tasks", self.name),
+               F,
+            ))
+         }
       };
 
       *draft_tasks = draft_tasks

@@ -3,7 +3,7 @@ use std::fmt::Display;
 use octocrab::models;
 use serde::{Deserialize, Serialize};
 
-use crate::utils::new_id;
+use crate::{error::AppErrorAPI, utils::new_id};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
@@ -170,7 +170,10 @@ impl NewTaskPayload {
          body: draft.body,
          assignee_login: draft
             .assignee
-            .ok_or(format!("{F} Draft task does not have an assignee. This is required!"))?
+            .ok_or(AppErrorAPI::unknown(
+               "Draft task does not have an assignee. This is required!",
+               F,
+            ))?
             .login,
          priority: draft.priority.unwrap_or_default(),
          project_id,

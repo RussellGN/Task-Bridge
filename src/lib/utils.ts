@@ -1,3 +1,4 @@
+import { AppError } from "@/bindings";
 import { STORE_PATH } from "@/lib/constants";
 import { load } from "@tauri-apps/plugin-store";
 import { clsx, type ClassValue } from "clsx";
@@ -114,4 +115,14 @@ export function getTimeElapsedSinceVerbose(date: Date | string): string {
 export function stringifyAndRemoveQuotes<T>(arg: T) {
    const str = JSON.stringify(arg);
    return str.slice(1, str.length - 1);
+}
+
+export function getErrorMessage(err: AppError | Error | string): string {
+   if (typeof err === "string") return err;
+   else if (err instanceof Error) return err.message;
+   else {
+      const key = Object.keys(err)[0];
+      // @ts-expect-error ts-rs generated type
+      return `${key}: ${err[key].message}`;
+   }
 }

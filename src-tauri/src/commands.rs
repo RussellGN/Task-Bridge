@@ -6,6 +6,7 @@ use serde::Serialize;
 use tauri::{AppHandle, Emitter, Manager, Runtime};
 
 use crate::{
+   error::AppErrorAPI,
    log,
    logging::Log,
    new_github_api::GithubAPI,
@@ -28,12 +29,12 @@ pub async fn fetch_save_and_return_user<R: Runtime>(app: AppHandle<R>) -> crate:
    let store = get_store(app)?;
    let token = get_token(&store)?;
    let user = GithubAPI::get_user(&token).await?;
-   log!("{F} setting user: {}", user.login);
-   let user_val = serde_json::to_value(&user).map_err(|e| e.to_string())?;
+   log!("setting user: {}", user.login);
+   let user_val = serde_json::to_value(&user).map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
    dbg_store(&store);
    store.set("user", user_val);
    dbg_store(&store);
-   log!("{F} returning user");
+   log!("returning user");
    Ok(user)
 }
 
@@ -50,9 +51,7 @@ pub async fn find_users_matching_query<R: Runtime>(
 
 #[tauri::command]
 pub async fn create_project<R: Runtime>(app: tauri::AppHandle<R>, payload: ProjectPayload) -> crate::Result<Project> {
-   const F: &str = "[create_project]";
-
-   log!("{F} {payload:#?}");
+   log!("{payload:#?}");
    let store = get_store(app)?;
    let project = Project::create_and_save(payload, store).await?;
 
@@ -71,12 +70,12 @@ pub async fn sync_projects_with_github<R: Runtime>(app: tauri::AppHandle<R>) -> 
 
    // save them to store with project-name = repo-name
    // (making sure to fecth the repo's issues if it has any, and converting them to tasks)
-   log!("{F} converting repos to projects (with tasks if any) and saving to store");
+   log!("converting repos to projects (with tasks if any) and saving to store");
    for repo in repos {
       // first determine if repo already has project in store
       let repo_already_has_project_in_store = if let Some(repo_ids) = store.get("repo-ids") {
-         let repo_ids =
-            serde_json::from_value::<Vec<String>>(repo_ids).map_err(|e| format!("{F} could not read repo-ids: {e}"))?;
+         let repo_ids = serde_json::from_value::<Vec<String>>(repo_ids)
+            .map_err(|e| AppErrorAPI::unknown(&format!("could not read repo-ids: {e}"), F))?;
          repo_ids.contains(&repo.id.to_string())
       } else {
          false
@@ -84,7 +83,7 @@ pub async fn sync_projects_with_github<R: Runtime>(app: tauri::AppHandle<R>) -> 
 
       if repo_already_has_project_in_store {
          log!(
-            "{F} repo '{}' with id '{}' already has a project in store, skipping it!",
+            "repo '{}' with id '{}' already has a project in store, skipping it!",
             repo.name,
             repo.id
          );
@@ -139,11 +138,12 @@ pub async fn sync_projects_with_github_v2<R: Runtime>(app: tauri::AppHandle<R>) 
 
    // save them to store with project-name = repo-name
    // (making sure to fetch the repo's issues if it has any, and converting them to tasks)
-   log!("{F} converting repos to projects (with tasks if any) and saving to store");
+   log!("converting repos to projects (with tasks if any) and saving to store");
    let mut sync_result_futures = vec![];
 
    let repo_ids = if let Some(repo_ids) = store.get("repo-ids") {
-      serde_json::from_value::<Vec<String>>(repo_ids).map_err(|e| format!("{F} could not read repo-ids: {e}"))?
+      serde_json::from_value::<Vec<String>>(repo_ids)
+         .map_err(|e| AppErrorAPI::unknown(&format!("could not read repo-ids: {e}"), F))?
    } else {
       vec![]
    };
@@ -152,7 +152,7 @@ pub async fn sync_projects_with_github_v2<R: Runtime>(app: tauri::AppHandle<R>) 
       // first determine if repo already has project in store
       if repo_ids.contains(&repo.id.to_string()) {
          log!(
-            "{F} repo '{}' with id '{}' already has a project in store, skipping it!",
+            "repo '{}' with id '{}' already has a project in store, skipping it!",
             repo.name,
             repo.id
          );
@@ -187,18 +187,18 @@ pub async fn sync_projects_with_github_v2<R: Runtime>(app: tauri::AppHandle<R>) 
       sync_result_futures.push(sync_fut);
    }
 
-   let project_results: Vec<Result<Project, String>> = join_all(sync_result_futures).await;
+   let project_results: Vec<crate::Result<Project>> = join_all(sync_result_futures).await;
    for (num, project_result) in project_results.into_iter().enumerate() {
       let sync_message = match project_result {
          Ok(project) => {
             project.place_in_store(Arc::clone(&store))?;
             let msg = format!("Successfully pulled and created project for '{}'", project.name());
-            log!("{F} {msg}");
+            log!("{msg}");
             ProjectSyncResult::new(true, msg)
          }
          Err(e) => {
             let msg = format!("Failed to pull repo and create project (#{num}). {e}");
-            log!("{F} {msg}");
+            log!("{msg}");
             ProjectSyncResult::new(true, msg)
          }
       };
@@ -206,7 +206,7 @@ pub async fn sync_projects_with_github_v2<R: Runtime>(app: tauri::AppHandle<R>) 
       // emit error
       if let Some(main_window) = &main_window {
          if let Err(e) = main_window.emit("project_sync_result", sync_message) {
-            log!("{F} failed to emit sync message {e}");
+            log!("failed to emit sync message {e}");
          }
       };
    }
@@ -222,14 +222,18 @@ pub async fn sync_project_with_github<R: Runtime>(app: tauri::AppHandle<R>, proj
    let token = get_token(&store)?;
 
    let mut project = match store.get(&project_id) {
-      Some(val) => serde_json::from_value::<Project>(val).map_err(|e| format!("{F} could not read project: {e}"))?,
-      None => return Err(format!("{F} project with id '{project_id}' does not exist locally.")),
+      Some(val) => serde_json::from_value::<Project>(val)
+         .map_err(|e| AppErrorAPI::unknown(&format!("could not read project: {e}"), F))?,
+      None => {
+         return Err(AppErrorAPI::unknown(
+            &format!("project with id '{project_id}' does not exist locally."),
+            F,
+         ))
+      }
    };
 
    // fetch project's updated repo, team, pending_invotes and issues if it has any (converting them to tasks)
-   log!(
-      "{F} fetching project's updated repo, team, pending_invotes and issues if it has any (converting them to tasks)"
-   );
+   log!("fetching project's updated repo, team, pending_invotes and issues if it has any (converting them to tasks)");
 
    let updated_repo: models::Repository = GithubAPI::get_updated_repo(&project.get_repo(), &token).await?;
 
@@ -266,16 +270,21 @@ pub async fn sync_project_with_github<R: Runtime>(app: tauri::AppHandle<R>, proj
 pub async fn create_task<R: Runtime>(app: tauri::AppHandle<R>, payload: NewTaskPayload) -> crate::Result<Task> {
    const F: &str = "[create_task]";
 
-   log!("{F} {payload:#?}");
+   log!("{payload:#?}");
    let project_id = &payload.project_id;
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store
-      .get(project_id)
-      .ok_or(format!("{F} project with id {project_id} not found"))?;
-   let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id {}: {e}", payload.project_id))?;
+   let project = store.get(project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {project_id} not found"),
+      F,
+   ))?;
+   let mut project = serde_json::from_value::<Project>(project).map_err(|e| {
+      AppErrorAPI::unknown(
+         &format!("failed to read project with id {}: {e}", payload.project_id),
+         F,
+      )
+   })?;
 
    let task = project
       .create_and_save_task(&token, payload, Arc::clone(&store))
@@ -288,16 +297,21 @@ pub async fn create_task<R: Runtime>(app: tauri::AppHandle<R>, payload: NewTaskP
 pub async fn create_backlog_task<R: Runtime>(app: tauri::AppHandle<R>, payload: NewTaskPayload) -> crate::Result<Task> {
    const F: &str = "[create_backlog_task]";
 
-   log!("{F} {payload:#?}");
+   log!("{payload:#?}");
    let project_id = &payload.project_id;
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store
-      .get(project_id)
-      .ok_or(format!("{F} project with id {project_id} not found"))?;
-   let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id {}: {e}", payload.project_id))?;
+   let project = store.get(project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {project_id} not found"),
+      F,
+   ))?;
+   let mut project = serde_json::from_value::<Project>(project).map_err(|e| {
+      AppErrorAPI::unknown(
+         &format!("failed to read project with id {}: {e}", payload.project_id),
+         F,
+      )
+   })?;
 
    let task = project
       .create_and_save_backlog_task(&token, payload, Arc::clone(&store))
@@ -314,21 +328,22 @@ pub async fn assign_task_now<R: Runtime>(
 ) -> crate::Result<Task> {
    const F: &str = "[assign_task_now]";
 
-   log!("{F} assigning task with id {task_id} in project {project_id}");
+   log!("assigning task with id {task_id} in project {project_id}");
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store
-      .get(&project_id)
-      .ok_or(format!("{F} project with id {project_id} not found"))?;
+   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {project_id} not found"),
+      F,
+   ))?;
 
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id {project_id}: {e}"))?;
+      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id {project_id}: {e}"), F))?;
 
    let updated_task = project
       .assign_task_now(task_id, &token, &project.get_repo().clone(), store)
       .await?;
-   log!("{F} done assigning task!");
+   log!("done assigning task!");
 
    Ok(updated_task)
 }
@@ -347,21 +362,22 @@ pub async fn assign_draft_task_now<R: Runtime>(
 ) -> crate::Result<DraftTaskAssignmentResponse> {
    const F: &str = "[assign_task_now]";
 
-   log!("{F} assigning drafted task with id {draft_id} in project {project_id}");
+   log!("assigning drafted task with id {draft_id} in project {project_id}");
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store
-      .get(&project_id)
-      .ok_or(format!("{F} project with id {project_id} not found"))?;
+   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {project_id} not found"),
+      F,
+   ))?;
 
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id {project_id}: {e}"))?;
+      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id {project_id}: {e}"), F))?;
 
    let derived_task = project
       .assign_drafted_task_now(draft_id.clone(), &token, &project.get_repo().clone(), store)
       .await?;
-   log!("{F} done assigning drafted task!");
+   log!("done assigning drafted task!");
 
    Ok(DraftTaskAssignmentResponse {
       task: derived_task,
@@ -377,21 +393,22 @@ pub async fn delete_task<R: Runtime>(
 ) -> crate::Result<String> {
    const F: &str = "[delete_task]";
 
-   log!("{F} deleting task with id {task_id} in project {project_id}");
+   log!("deleting task with id {task_id} in project {project_id}");
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store
-      .get(&project_id)
-      .ok_or(format!("{F} project with id {project_id} not found"))?;
+   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {project_id} not found"),
+      F,
+   ))?;
 
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id {project_id}: {e}"))?;
+      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id {project_id}: {e}"), F))?;
 
    project
       .delete_task(&task_id, &token, &project.get_repo().clone(), store)
       .await?;
-   log!("{F} done deleting task!");
+   log!("done deleting task!");
 
    Ok(task_id)
 }
@@ -405,21 +422,22 @@ pub async fn edit_task<R: Runtime>(
    const F: &str = "[edit_task]";
 
    let project_id = &payload.project_id;
-   log!("{F} editing task with id {task_id} in project {project_id}");
+   log!("editing task with id {task_id} in project {project_id}");
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store
-      .get(project_id)
-      .ok_or(format!("{F} project with id {project_id} not found"))?;
+   let project = store.get(project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {project_id} not found"),
+      F,
+   ))?;
 
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id {project_id}: {e}"))?;
+      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id {project_id}: {e}"), F))?;
 
    let updated_task = project
       .edit_task(&task_id, payload, &token, &project.get_repo().clone(), store)
       .await?;
-   log!("{F} done editing task!");
+   log!("done editing task!");
 
    Ok(updated_task)
 }
@@ -433,18 +451,19 @@ pub async fn edit_draft_task<R: Runtime>(
    const F: &str = "[edit_draft_task]";
 
    let project_id = &payload.project_id;
-   log!("{F} editing draft task with id {draft_id} in project {project_id}");
+   log!("editing draft task with id {draft_id} in project {project_id}");
    let store = get_store(app)?;
 
-   let project = store
-      .get(project_id)
-      .ok_or(format!("{F} project with id {project_id} not found"))?;
+   let project = store.get(project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {project_id} not found"),
+      F,
+   ))?;
 
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id {project_id}: {e}"))?;
+      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id {project_id}: {e}"), F))?;
 
    let updated_draft_task = project.edit_draft_task(&draft_id, payload, store).await?;
-   log!("{F} done editing draft task!");
+   log!("done editing draft task!");
 
    Ok(updated_draft_task)
 }
@@ -457,18 +476,19 @@ pub async fn delete_draft_task<R: Runtime>(
 ) -> crate::Result<String> {
    const F: &str = "[delete_draft_task]";
 
-   log!("{F} deleting draft task with id {draft_id} in project {project_id}");
+   log!("deleting draft task with id {draft_id} in project {project_id}");
    let store = get_store(app)?;
 
-   let project = store
-      .get(&project_id)
-      .ok_or(format!("{F} project with id {project_id} not found"))?;
+   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {project_id} not found"),
+      F,
+   ))?;
 
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id {project_id}: {e}"))?;
+      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id {project_id}: {e}"), F))?;
 
    project.delete_draft_task(&draft_id, store).await?;
-   log!("{F} done deleting draft task!");
+   log!("done deleting draft task!");
 
    Ok(draft_id)
 }
@@ -480,14 +500,19 @@ pub async fn create_draft_task<R: Runtime>(
 ) -> crate::Result<DraftTask> {
    const F: &str = "[create_draft_task]";
 
-   log!("{F} {payload:#?}");
+   log!("{payload:#?}");
    let project_id = &payload.project_id;
    let store = get_store(app)?;
-   let project = store
-      .get(project_id)
-      .ok_or(format!("{F} project with id {project_id} not found"))?;
-   let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id {}: {e}", payload.project_id))?;
+   let project = store.get(project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {project_id} not found"),
+      F,
+   ))?;
+   let mut project = serde_json::from_value::<Project>(project).map_err(|e| {
+      AppErrorAPI::unknown(
+         &format!("failed to read project with id {}: {e}", payload.project_id),
+         F,
+      )
+   })?;
 
    let task = project.create_and_save_draft_task(payload, Arc::clone(&store)).await?;
 
@@ -508,21 +533,22 @@ pub async fn sync_task_activity<R: Runtime>(
 ) -> crate::Result<ActivitySyncResponse> {
    const F: &str = "[sync_task_activity]";
 
-   log!("{F} syncing task activity for task with id '{task_id}");
+   log!("syncing task activity for task with id '{task_id}");
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store
-      .get(&project_id)
-      .ok_or(format!("{F} project with id {project_id} not found"))?;
+   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {project_id} not found"),
+      F,
+   ))?;
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id '{project_id}': {e}",))?;
+      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id '{project_id}': {e}",), F))?;
 
    let synced_activity = project
       .sync_activity_for_task_v2(task_id.clone(), &token, Arc::clone(&store))
       .await?;
 
-   log!("{F} now returning synced task activity");
+   log!("now returning synced task activity");
 
    Ok(ActivitySyncResponse {
       commits: synced_activity,
@@ -534,19 +560,20 @@ pub async fn sync_task_activity<R: Runtime>(
 pub async fn delete_project_permanently<R: Runtime>(app: tauri::AppHandle<R>, project_id: String) -> crate::Result {
    const F: &str = "[delete_project_permanently]";
 
-   log!("{F} deleting project with id '{project_id}' permanently");
+   log!("deleting project with id '{project_id}' permanently");
    let store = get_store(app)?;
    let token = get_token(&Arc::clone(&store))?;
 
-   let project = store
-      .get(&project_id)
-      .ok_or(format!("{F} project with id {project_id} not found"))?;
+   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {project_id} not found"),
+      F,
+   ))?;
 
    let project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id '{project_id}': {e}",))?;
+      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id '{project_id}': {e}",), F))?;
 
    project.delete_permanently(&token, store).await?;
-   log!("{F} successfully deleted project with id '{project_id}' permanently");
+   log!("successfully deleted project with id '{project_id}' permanently");
    Ok(())
 }
 
@@ -554,18 +581,19 @@ pub async fn delete_project_permanently<R: Runtime>(app: tauri::AppHandle<R>, pr
 pub async fn delete_project_locally<R: Runtime>(app: tauri::AppHandle<R>, project_id: String) -> crate::Result {
    const F: &str = "[delete_project_locally]";
 
-   log!("{F} deleting project with id '{project_id}' from local store");
+   log!("deleting project with id '{project_id}' from local store");
    let store = get_store(app)?;
 
-   let project = store
-      .get(&project_id)
-      .ok_or(format!("{F} project with id {project_id} not found"))?;
+   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {project_id} not found"),
+      F,
+   ))?;
 
    let project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id '{project_id}': {e}",))?;
+      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id '{project_id}': {e}",), F))?;
 
    project.delete_locally(store)?;
-   log!("{F} successfully deleted project with id '{project_id}' from local store");
+   log!("successfully deleted project with id '{project_id}' from local store");
    Ok(())
 }
 
@@ -573,21 +601,26 @@ pub async fn delete_project_locally<R: Runtime>(app: tauri::AppHandle<R>, projec
 pub async fn update_project_team<R: Runtime>(app: tauri::AppHandle<R>, patch_args: ProjectPatchArgs) -> crate::Result {
    const F: &str = "[update_project_team]";
 
-   log!("{F} updating team for project with id '{}'", patch_args.project_id);
+   log!("updating team for project with id '{}'", patch_args.project_id);
    let store = get_store(app)?;
 
-   let project = store
-      .get(&patch_args.project_id)
-      .ok_or(format!("{F} project with id {} not found", patch_args.project_id))?;
+   let project = store.get(&patch_args.project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {} not found", patch_args.project_id),
+      F,
+   ))?;
 
-   let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id '{}': {e}", patch_args.project_id))?;
+   let mut project = serde_json::from_value::<Project>(project).map_err(|e| {
+      AppErrorAPI::unknown(
+         &format!("failed to read project with id '{}': {e}", patch_args.project_id),
+         F,
+      )
+   })?;
 
    if let Some(updated_team_logins) = patch_args.settings_patch.team {
       project.update_and_save_team(updated_team_logins, store).await?;
-      log!("{F} team updated for project '{}'", patch_args.project_id);
+      log!("team updated for project '{}'", patch_args.project_id);
    } else {
-      log!("{F} no team updates were made for project '{}'", patch_args.project_id);
+      log!("no team updates were made for project '{}'", patch_args.project_id);
    }
 
    Ok(())
@@ -601,18 +634,23 @@ pub async fn update_general_project_metadata<R: Runtime>(
    const F: &str = "[update_general_project_metadata]";
 
    log!(
-      "{F} updating general metadata for project with id '{}'",
+      "updating general metadata for project with id '{}'",
       patch_args.project_id
    );
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store
-      .get(&patch_args.project_id)
-      .ok_or(format!("{F} project with id {} not found", patch_args.project_id))?;
+   let project = store.get(&patch_args.project_id).ok_or(AppErrorAPI::unknown(
+      &format!("project with id {} not found", patch_args.project_id),
+      F,
+   ))?;
 
-   let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| format!("{F} failed to read project with id '{}': {e}", patch_args.project_id))?;
+   let mut project = serde_json::from_value::<Project>(project).map_err(|e| {
+      AppErrorAPI::unknown(
+         &format!("failed to read project with id '{}': {e}", patch_args.project_id),
+         F,
+      )
+   })?;
 
    // update name if different
    if let Some(new_project_name) = &patch_args.settings_patch.name {

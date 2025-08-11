@@ -13,6 +13,7 @@ use urlencoding::encode;
 
 use crate::{
    auth::AccessToken,
+   error::AppErrorAPI,
    log,
    project::task::NewTaskPayload,
    utils::{create_authenticated_octo, IssueExt},
@@ -81,10 +82,10 @@ impl GithubAPI {
 
    fn repo_owner(repo: &models::Repository) -> crate::Result<models::Author> {
       const F: &str = "[GithubAPI::repo_owner]";
-      repo
-         .owner
-         .clone()
-         .ok_or(format!("{F} '{}' repo somehow does not have an owner", repo.name))
+      repo.owner.clone().ok_or(AppErrorAPI::unknown(
+         &format!("'{}' repo somehow does not have an owner", repo.name),
+         F,
+      ))
    }
 
    async fn stream_all<T, S, F>(items_fut: S, octo: &Octocrab, exceptance_cb: F) -> crate::Result<Vec<T>>
@@ -95,26 +96,26 @@ impl GithubAPI {
    {
       const F: &str = "[GithubAPI::stream_all]";
 
-      log!("{F} streaming items");
+      log!("streaming items");
 
       let items_stream = items_fut
          .await
-         .map_err(|e| format!("{F} Failed to stream items. {e}"))?
+         .map_err(|e| AppErrorAPI::unknown(&format!("Failed to stream items. {e}"), F))?
          .into_stream(octo);
 
       let mut items_stream = Box::pin(items_stream);
-      log!("{F} placing in local vector");
+      log!("placing in local vector");
       let mut all_items = vec![];
 
       while let Some(response) = items_stream.next().await {
          match response {
             Ok(item) if exceptance_cb(item.clone()) => all_items.push(item),
-            Err(e) => return Err(format!("{F} Failed to fetch next item in loop. {e}")),
+            Err(e) => return Err(AppErrorAPI::unknown(&format!("Failed to fetch next item in loop. {e}"), F)),
             _ => {}
          };
       }
 
-      log!("{F} streamed {} items, now returning", all_items.len());
+      log!("streamed {} items, now returning", all_items.len());
       Ok(all_items)
    }
 
@@ -147,11 +148,11 @@ impl GithubAPI {
          .header(header::ACCEPT, "application/json")
          .json(&payload)
          .build()
-         .map_err(|e| format!("{F} failed to build request, error: {}", e.to_string()))?;
+         .map_err(|e| AppErrorAPI::unknown(&format!("failed to build request, error: {}", e.to_string()), F))?;
 
       // log request
       log!(
-         "{F} -- request built successfully, request :-> {} {}?{} | body content-length = {} KBs",
+         "-- request built successfully, request :-> {} {}?{} | body content-length = {} KBs",
          req.method(),
          req.url().path(),
          req.url().query().unwrap_or(""),
@@ -171,7 +172,7 @@ impl GithubAPI {
       let res = reqwest::Client::new()
          .execute(req)
          .await
-         .map_err(|e| format!("{F} error sending request, error: {}", e.to_string()))?;
+         .map_err(|e| AppErrorAPI::unknown(&format!("error sending request, error: {}", e.to_string()), F))?;
 
       match res.error_for_status() {
          Ok(res) => {
@@ -188,7 +189,7 @@ impl GithubAPI {
                .round();
 
             log!(
-               "{F} -- request sent, got response :-> status - {} @ {}?{} | returned {} with content-length = {} KBs",
+               "-- request sent, got response :-> status - {} @ {}?{} | returned {} with content-length = {} KBs",
                res.status(),
                res.url().path(),
                res.url().query().unwrap_or(""),
@@ -211,13 +212,16 @@ impl GithubAPI {
             let json_data = res
                .json::<R>()
                .await
-               .map_err(|e| format!("{F} error reading response body: {e}",))?;
+               .map_err(|e| AppErrorAPI::unknown(&format!("error reading response body: {e}",), F))?;
 
             Ok((json_data, parts))
          }
          Err(e) => {
-            let status_code = e.status().expect(&format!("{F} no error status code found: {e}"));
-            return Err(format!("{F} received error response with status '{status_code}', {e}",));
+            let status_code = e.status().expect(&format!("no error status code found: {e}"));
+            return Err(AppErrorAPI::unknown(
+               &format!("received error response with status '{status_code}', {e}",),
+               F,
+            ));
          }
       }
    }
@@ -251,11 +255,11 @@ impl GithubAPI {
          .header(header::ACCEPT, "application/json")
          .json(&payload)
          .build()
-         .map_err(|e| format!("{F} failed to build request, error: {}", e.to_string()))?;
+         .map_err(|e| AppErrorAPI::unknown(&format!("failed to build request, error: {}", e.to_string()), F))?;
 
       // log request
       log!(
-         "{F} -- request built successfully, request :-> {} {}?{} | body content-length = {} KBs",
+         "-- request built successfully, request :-> {} {}?{} | body content-length = {} KBs",
          req.method(),
          req.url().path(),
          req.url().query().unwrap_or(""),
@@ -275,7 +279,7 @@ impl GithubAPI {
       let res = reqwest::Client::new()
          .execute(req)
          .await
-         .map_err(|e| format!("{F} error sending request, error: {}", e.to_string()))?;
+         .map_err(|e| AppErrorAPI::unknown(&format!("error sending request, error: {}", e.to_string()), F))?;
 
       match res.error_for_status() {
          Ok(res) => {
@@ -292,7 +296,7 @@ impl GithubAPI {
                .round();
 
             log!(
-               "{F} -- request sent, got response :-> status - {} @ {}?{} | returned {} with content-length = {} KBs",
+               "-- request sent, got response :-> status - {} @ {}?{} | returned {} with content-length = {} KBs",
                res.status(),
                res.url().path(),
                res.url().query().unwrap_or(""),
@@ -316,7 +320,7 @@ impl GithubAPI {
                let json_data = res
                   .json::<R>()
                   .await
-                  .map_err(|e| format!("{F} error reading response body: {e}",))?;
+                  .map_err(|e| AppErrorAPI::unknown(&format!("error reading response body: {e}",), F))?;
 
                Ok((Some(json_data), parts))
             } else {
@@ -324,8 +328,11 @@ impl GithubAPI {
             }
          }
          Err(e) => {
-            let status_code = e.status().expect(&format!("{F} no error status code found: {e}"));
-            return Err(format!("{F} received error response with status '{status_code}', {e}",));
+            let status_code = e.status().expect(&format!("no error status code found: {e}"));
+            return Err(AppErrorAPI::unknown(
+               &format!("received error response with status '{status_code}', {e}",),
+               F,
+            ));
          }
       }
    }
@@ -334,17 +341,17 @@ impl GithubAPI {
       const F: &str = "[GithubAPI::search_users]";
 
       let octo = create_authenticated_octo(&token.get_token())?;
-      log!("{F} searching users that match '{search}'");
+      log!("searching users that match '{search}'");
       let page = octo
          .search()
          .users(search)
          .per_page(50)
          .send()
          .await
-         .map_err(|e| format!("{F} {}", e.to_string()))?;
+         .map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
       let users = page.items;
       log!(
-         "{F} returning users found, count: {}. User logins: {}",
+         "returning users found, count: {}. User logins: {}",
          users.len(),
          users.iter().map(|u| u.login.clone()).collect::<Vec<_>>().join(", ")
       );
@@ -356,9 +363,13 @@ impl GithubAPI {
       const F: &str = "[GithubAPI::get_user]";
 
       let octo = create_authenticated_octo(&token.get_token())?;
-      log!("{F} fetching authenticated user");
-      let user = octo.current().user().await.map_err(|e| e.to_string())?;
-      log!("{F} got user, now returning: {}", user.login);
+      log!("fetching authenticated user");
+      let user = octo
+         .current()
+         .user()
+         .await
+         .map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
+      log!("got user, now returning: {}", user.login);
 
       Ok(user)
    }
@@ -366,7 +377,7 @@ impl GithubAPI {
    pub async fn create_repo(payload: RepoPayload, token: &AccessToken) -> crate::Result<models::Repository> {
       const F: &str = "[GithubAPI::create_repo]";
 
-      log!("{F} building create-request payload");
+      log!("building create-request payload");
       let payload = match payload {
          RepoPayload {
             name: Some(name),
@@ -384,15 +395,18 @@ impl GithubAPI {
             name: None,
             private: None,
          } => {
-            return Err(format!("{F} cannot create repo with no name nor visibility parameters"));
+            return Err(AppErrorAPI::unknown(
+               "cannot create repo with no name nor visibility parameters",
+               F,
+            ));
          }
       };
 
-      log!("{F} creating new repo, payload: {payload:#?}");
+      log!("creating new repo, payload: {payload:#?}");
       let repo: models::Repository = Self::request(Method::POST, "/user/repos", &token, Some(payload))
          .await?
          .0;
-      log!("{F} new repo created: {}", repo.name);
+      log!("new repo created: {}", repo.name);
 
       Ok(repo)
    }
@@ -419,7 +433,7 @@ impl GithubAPI {
          html_url: String,
       }
 
-      log!("{F} about to invite collaborator with login: {login}");
+      log!("about to invite collaborator with login: {login}");
       let path_n_query = format!("/repos/{owner}/{repo}/collaborators/{login}");
 
       let (invite_response, parts) =
@@ -430,14 +444,14 @@ impl GithubAPI {
 
       if was_successfull {
          log!(
-            "{F} successfully invited {login}, status: {status} invite-response-invitee: {}-{}",
+            "successfully invited {login}, status: {status} invite-response-invitee: {}-{}",
             invite_response.invitee.login,
             invite_response.id
          );
          Ok(invite_response.invitee)
       } else {
-         let msg = format!("{F} failed to invite {login} to {owner}/{repo}, status: {status}",);
-         Err(msg)
+         let msg = format!("failed to invite {login} to {owner}/{repo}, status: {status}",);
+         Err(AppErrorAPI::unknown(&msg, F))
       }
    }
 
@@ -449,7 +463,7 @@ impl GithubAPI {
    ) -> crate::Result {
       const F: &str = "[GithubAPI::remove_collaborator]";
 
-      log!("{F} about to remove collaborator with login: {login}");
+      log!("about to remove collaborator with login: {login}");
       let path_n_query = format!("/repos/{owner}/{}/collaborators/{login}", repo.name);
 
       let (_, parts) = Self::request_with_option_res::<Value, Value>(Method::DELETE, path_n_query, token, None).await?;
@@ -458,14 +472,14 @@ impl GithubAPI {
       let was_successfull = status == reqwest::StatusCode::NO_CONTENT;
 
       if was_successfull {
-         log!("{F} successfully removed {login}, status: {status}",);
+         log!("successfully removed {login}, status: {status}",);
          Ok(())
       } else {
          let msg = format!(
-            "{F} failed to remove collaborator {login} in {owner}/{}, status: {status}",
+            "failed to remove collaborator {login} in {owner}/{}, status: {status}",
             repo.name
          );
-         Err(msg)
+         Err(AppErrorAPI::unknown(&msg, F))
       }
    }
 
@@ -477,7 +491,7 @@ impl GithubAPI {
    ) -> crate::Result {
       const F: &str = "[GithubAPI::cancel_any_invite_to]";
 
-      log!("{F} fetching all repo invites");
+      log!("fetching all repo invites");
       let path_n_query = format!("/repos/{owner}/{}/invitations", repo.name);
 
       #[derive(Deserialize, Debug, Clone)]
@@ -495,22 +509,28 @@ impl GithubAPI {
          Self::request::<Vec<TempInvitation>, Value>(Method::GET, path_n_query, token, None).await?;
 
       if parts.status != StatusCode::OK {
-         return Err(format!(
-            "{F} failed to retrieve collab invites for {}: status: {}",
-            repo.name, parts.status
+         return Err(AppErrorAPI::unknown(
+            &format!(
+               "failed to retrieve collab invites for {}: status: {}",
+               repo.name, parts.status
+            ),
+            F,
          ));
       }
 
       let invitation_id = if let Some(invitation) = invitations.iter().find(|i| i.invitee.login == login) {
          invitation.id
       } else {
-         return Err(format!(
-            "{F} failed to retrieve collab invite sent to {login}: status: {}",
-            parts.status
+         return Err(AppErrorAPI::unknown(
+            &format!(
+               "failed to retrieve collab invite sent to {login}: status: {}",
+               parts.status
+            ),
+            F,
          ));
       };
 
-      log!("{F} cancelling collab invite '{invitation_id}' sent to: {login}");
+      log!("cancelling collab invite '{invitation_id}' sent to: {login}");
       let path_n_query = format!("/repos/{owner}/{}/invitations/{invitation_id}", repo.name);
 
       let (_, parts) = Self::request_with_option_res::<Value, Value>(Method::DELETE, path_n_query, token, None).await?;
@@ -519,21 +539,21 @@ impl GithubAPI {
       let was_successfull = status == reqwest::StatusCode::NO_CONTENT;
 
       if was_successfull {
-         log!("{F} successfully cancelled invite sent to {login}, status: {status}",);
+         log!("successfully cancelled invite sent to {login}, status: {status}",);
          Ok(())
       } else {
          let msg = format!(
-            "{F} failed to cancel invite sent to {login} in {owner}/{}, status: {status}",
+            "failed to cancel invite sent to {login} in {owner}/{}, status: {status}",
             repo.name
          );
-         Err(msg)
+         Err(AppErrorAPI::unknown(&msg, F))
       }
    }
 
    pub async fn get_repos(token: &AccessToken, page: Option<u32>) -> crate::Result<Vec<models::Repository>> {
       const F: &str = "[GithubAPI::get_repos]";
 
-      log!("{F} fetching authenticated user's repos");
+      log!("fetching authenticated user's repos");
       let (repos, parts) = Self::request::<Vec<models::Repository>, Value>(
          Method::GET,
          format!("/user/repos?affiliation=owner&per_page=100&page={}", page.unwrap_or(1)),
@@ -542,11 +562,11 @@ impl GithubAPI {
       )
       .await?;
 
-      log!("{F} reading link header, if any");
+      log!("reading link header, if any");
       if let Some(link_header) = parts.headers.get("link") {
          let links = link_header
             .to_str()
-            .map_err(|e| format!("{F} could not read link headers: {e}"))?
+            .map_err(|e| AppErrorAPI::unknown(&format!("could not read link headers: {e}"), F))?
             .split("\",")
             .filter(|link| !link.contains("rel=\"next"))
             .map(|link| link.trim().replace("<", "").replace(">; rel=\"next", ""))
@@ -554,7 +574,7 @@ impl GithubAPI {
 
          // links should only contain one rel=next link
          if links.len() == 1 {
-            log!("{F} TODO! links vec contains a 'rel=next' link, dont forget to handle!. Links = {links:#?}");
+            log!("TODO! links vec contains a 'rel=next' link, dont forget to handle!. Links = {links:#?}");
             // let next_page = links
             //    .first()
             //    .expect("links should only contain one rel=next link")
@@ -566,11 +586,11 @@ impl GithubAPI {
             // let mut next_page_repos = Self::get_repos(token, Some(next_page)).await?;
             // repos.append(&mut next_page_repos);
          } else {
-            log!("{F} links vec did not contain a 'rel=next' link, skipping next page fetches. Links = {links:#?}");
+            log!("links vec did not contain a 'rel=next' link, skipping next page fetches. Links = {links:#?}");
          }
       }
 
-      log!("{F} got {} repos, now returning", repos.len());
+      log!("got {} repos, now returning", repos.len());
 
       Ok(repos)
    }
@@ -582,13 +602,13 @@ impl GithubAPI {
       const F: &str = "[GithubAPI::get_repo_collaborators]";
 
       let octo = create_authenticated_octo(&token.get_token())?;
-      log!("{F} fetching collaborators for repo '{}'", repo.name);
+      log!("fetching collaborators for repo '{}'", repo.name);
       let collaborators = octo
          .repos(
             repo
                .owner
                .clone()
-               .expect(&format!("{F} '{}' repo somehow doesnt have owner", repo.name))
+               .expect(&format!("'{}' repo somehow doesnt have owner", repo.name))
                .login,
             repo.name.clone(),
          )
@@ -596,14 +616,14 @@ impl GithubAPI {
          .per_page(100)
          .send()
          .await
-         .map_err(|e| format!("{F} error fetching list of collaborators: {e}"))?;
+         .map_err(|e| AppErrorAPI::unknown(&format!("error fetching list of collaborators: {e}"), F))?;
 
       if let Some(_) = collaborators.next {
-         log!("{F} TODO! repo has more than 100 collaborators , handle this",);
+         log!("TODO! repo has more than 100 collaborators , handle this",);
       }
 
       let collaborators = collaborators.items.into_iter().map(|c| c.author).collect::<Vec<_>>();
-      log!("{F} got {} collaborators, now returning", collaborators.len());
+      log!("got {} collaborators, now returning", collaborators.len());
 
       Ok(collaborators)
    }
@@ -612,9 +632,7 @@ impl GithubAPI {
       repo: &models::Repository,
       token: &AccessToken,
    ) -> crate::Result<Vec<models::Author>> {
-      const F: &str = "[GithubAPI::get_repo_collab_invitees]";
-
-      log!("{F} fetching collab invites for repo '{}'", repo.name);
+      log!("fetching collab invites for repo '{}'", repo.name);
 
       #[derive(Deserialize, Debug)]
       #[allow(unused)]
@@ -636,7 +654,7 @@ impl GithubAPI {
          repo
             .owner
             .clone()
-            .expect(&format!("{F} '{}' repo somehow doesnt have owner", repo.name))
+            .expect(&format!("'{}' repo somehow doesnt have owner", repo.name))
             .login,
          repo.name
       );
@@ -647,7 +665,7 @@ impl GithubAPI {
          .map(|i| i.invitee)
          .collect::<Vec<_>>();
 
-      log!("{F} got {} collab invites for repo '{}'", invites.len(), repo.name);
+      log!("got {} collab invites for repo '{}'", invites.len(), repo.name);
 
       Ok(invites)
    }
@@ -658,13 +676,13 @@ impl GithubAPI {
    ) -> crate::Result<Vec<models::issues::Issue>> {
       const F: &str = "[GithubAPI::get_repo_issues]";
 
-      log!("{F} fetching issues for repo '{}'", repo.name);
+      log!("fetching issues for repo '{}'", repo.name);
 
       let octo = create_authenticated_octo(&token.get_token())?;
       let owner = repo
          .owner
          .clone()
-         .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name));
+         .expect(&format!("'{}' repo somehow does not have an owner", repo.name));
 
       let issues_stream = octo
          .issues(&owner.login, &repo.name)
@@ -673,26 +691,26 @@ impl GithubAPI {
          .send()
          .await
          .map_err(|e| {
-            format!(
-               "{F} failed to fetch issues at {}/{}. Error: {e}",
-               owner.login, repo.name
+            AppErrorAPI::unknown(
+               &format!("failed to fetch issues at {}/{}. Error: {e}", owner.login, repo.name),
+               F,
             )
          })?
          .into_stream(&octo);
 
       let mut issues_stream = Box::pin(issues_stream);
 
-      log!("{F} streaming issues into local vec",);
+      log!("streaming issues into local vec",);
       let mut all_issues = vec![];
       while let Some(response) = issues_stream.next().await {
          match response {
             Ok(issue) if !issue.was_deleted() => all_issues.push(issue),
-            Err(e) => return Err(format!("{F} failed to fetch next issue in loop: {e}")),
+            Err(e) => return Err(AppErrorAPI::unknown(&format!("failed to fetch next issue in loop: {e}"), F)),
             _ => {}
          };
       }
       log!(
-         "{F} done streaming issues into local vec, now returning {} issues",
+         "done streaming issues into local vec, now returning {} issues",
          all_issues.len()
       );
 
@@ -709,12 +727,12 @@ impl GithubAPI {
       let owner = repo
          .owner
          .clone()
-         .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name))
+         .expect(&format!("'{}' repo somehow does not have an owner", repo.name))
          .login;
 
       let path_n_query = format!("/repos/{owner}/{}", repo.name);
 
-      log!("{F} building update request payload");
+      log!("building update request payload");
       let payload = match payload {
          RepoPayload {
             name: Some(name),
@@ -732,18 +750,21 @@ impl GithubAPI {
             name: None,
             private: None,
          } => {
-            return Err(format!("{F} cannot update repo with no name nor visibility parameters"));
+            return Err(AppErrorAPI::unknown(
+               "cannot update repo with no name nor visibility parameters",
+               F,
+            ))
          }
       };
-      log!("{F} sending update request");
-      log!("{F} repo update payload is:\n{payload:#?}",);
+      log!("sending update request");
+      log!("repo update payload is:\n{payload:#?}",);
 
       let new_repo: models::Repository = Self::request(Method::PATCH, path_n_query, &token, Some(payload))
          .await?
          .0;
 
       log!(
-         "{F} repo updated from {} | {:?} | {} to {} | {:?} | {}!",
+         "repo updated from {} | {:?} | {} to {} | {:?} | {}!",
          repo.name,
          repo.private,
          repo.id,
@@ -758,19 +779,19 @@ impl GithubAPI {
    pub async fn delete_repo(repo: &models::Repository, token: &AccessToken) -> crate::Result {
       const F: &str = "[GithubAPI::delete_repo]";
 
-      log!("{F} deleting repo '{}'", repo.name);
+      log!("deleting repo '{}'", repo.name);
 
       let octo = create_authenticated_octo(&token.get_token())?;
       let owner = repo
          .owner
          .clone()
-         .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name));
+         .expect(&format!("'{}' repo somehow does not have an owner", repo.name));
 
       octo
          .repos(&owner.login, &repo.name)
          .delete()
          .await
-         .map_err(|e| format!("{F} error deleting repo {}. {e}", repo.name))
+         .map_err(|e| AppErrorAPI::unknown(&format!("error deleting repo {}. {e}", repo.name), F))
    }
 
    pub async fn get_branch_commits(
@@ -780,12 +801,12 @@ impl GithubAPI {
    ) -> crate::Result<Vec<models::repos::RepoCommit>> {
       const F: &str = "[GithubAPI::get_branch_commits]";
 
-      log!("{F} fetching commits exclusively in branch '{branch_name}' (as compared to branch main )",);
+      log!("fetching commits exclusively in branch '{branch_name}' (as compared to branch main )",);
 
       let owner = repo
          .owner
          .clone()
-         .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name));
+         .expect(&format!("'{}' repo somehow does not have an owner", repo.name));
 
       #[derive(Deserialize, Debug)]
       struct BranchesComparison {
@@ -800,14 +821,14 @@ impl GithubAPI {
          encode(&branch_name).as_ref()
       );
 
-      log!("{F} fetching exclusive commits @ {path_query} ");
+      log!("fetching exclusive commits @ {path_query} ");
 
       match Self::request::<BranchesComparison, Value>(Method::GET, &path_query, token, None).await {
          Ok((BranchesComparison { commits }, _)) => Ok(commits),
          Err(e) => {
-            log!("{F} failed to fetch exclusive commits @ {path_query}. {e} ");
+            log!("failed to fetch exclusive commits @ {path_query}. {e} ");
             if repo.default_branch.is_some() {
-               return Err(format!("{F} failed to fetch task activity: {e}"));
+               return Err(AppErrorAPI::unknown(&format!("failed to fetch task activity: {e}"), F));
             }
             let path_query = format!(
                "/repos/{}/{}/compare/master...{}",
@@ -816,7 +837,7 @@ impl GithubAPI {
                encode(&branch_name).as_ref()
             );
 
-            log!("{F} retrying exclusive commits fetch @ {path_query}");
+            log!("retrying exclusive commits fetch @ {path_query}");
             let BranchesComparison { commits } =
                Self::request::<BranchesComparison, Value>(Method::GET, path_query, token, None)
                   .await?
@@ -834,13 +855,13 @@ impl GithubAPI {
    ) -> crate::Result<models::issues::Issue> {
       const F: &str = "[GithubAPI::create_issue]";
 
-      log!("{F} creating issue titled '{}' in repo '{}'", payload.title, repo.name);
+      log!("creating issue titled '{}' in repo '{}'", payload.title, repo.name);
 
       let octo = create_authenticated_octo(&token.get_token())?;
       let owner = repo
          .owner
          .clone()
-         .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name));
+         .expect(&format!("'{}' repo somehow does not have an owner", repo.name));
 
       let assignees = Some(vec![payload.assignee_login]);
       let labels = if let Some(mut labels) = labels {
@@ -859,14 +880,17 @@ impl GithubAPI {
          .send()
          .await
          .map_err(|e| {
-            format!(
-               "{F} failed to create issue titled '{}' in repo '{}': {e}",
-               payload.title, repo.name
+            AppErrorAPI::unknown(
+               &format!(
+                  "failed to create issue titled '{}' in repo '{}': {e}",
+                  payload.title, repo.name
+               ),
+               F,
             )
          })?;
 
       log!(
-         "{F} created issue titled '{}' with id '{}'. Now returning",
+         "created issue titled '{}' with id '{}'. Now returning",
          issue.title,
          issue.id
       );
@@ -886,17 +910,13 @@ impl GithubAPI {
    ) -> crate::Result<models::issues::Issue> {
       const F: &str = "[GithubAPI::update_issue]";
 
-      log!(
-         "{F} updating issue number '{}' in repo '{}'",
-         old_issue.number,
-         repo.name
-      );
+      log!("updating issue number '{}' in repo '{}'", old_issue.number, repo.name);
 
       let octo = create_authenticated_octo(&token.get_token())?;
       let owner = repo
          .owner
          .clone()
-         .expect(&format!("{F} '{}' repo somehow does not have an owner", repo.name));
+         .expect(&format!("'{}' repo somehow does not have an owner", repo.name));
 
       let issues = octo.issues(&owner.login, &repo.name);
       let mut updated_issue = issues.update(old_issue.number);
@@ -922,14 +942,17 @@ impl GithubAPI {
       }
 
       let updated_issue = updated_issue.send().await.map_err(|e| {
-         format!(
-            "failed to send update request for issue number {}. {e}",
-            old_issue.number
+         AppErrorAPI::unknown(
+            &format!(
+               "failed to send update request for issue number {}. {e}",
+               old_issue.number
+            ),
+            F,
          )
       })?;
 
       log!(
-         "{F} successfully updated issue number '{}' in repo '{}'",
+         "successfully updated issue number '{}' in repo '{}'",
          old_issue.number,
          repo.name
       );
@@ -943,19 +966,22 @@ impl GithubAPI {
    ) -> crate::Result<models::Repository> {
       const F: &str = "[GithubAPI::get_updated_repo]";
 
-      log!("{F} fetching updated {} repo", old_repo.name);
+      log!("fetching updated {} repo", old_repo.name);
 
       let octo = create_authenticated_octo(&token.get_token())?;
 
       let owner = old_repo
          .owner
          .clone()
-         .expect(&format!("{F} '{}' repo somehow does not have an owner", old_repo.name));
+         .expect(&format!("'{}' repo somehow does not have an owner", old_repo.name));
 
       let updated_repo = octo.repos(&owner.login, &old_repo.name).get().await.map_err(|e| {
-         format!(
-            "{F} failed to fetch updated {} repo at {}/{}. Error: {e}",
-            old_repo.name, owner.login, old_repo.name
+         AppErrorAPI::unknown(
+            &format!(
+               "failed to fetch updated {} repo at {}/{}. Error: {e}",
+               old_repo.name, owner.login, old_repo.name
+            ),
+            F,
          )
       })?;
 
@@ -966,9 +992,7 @@ impl GithubAPI {
       repo: &models::Repository,
       token: &AccessToken,
    ) -> crate::Result<Vec<models::repos::Branch>> {
-      const F: &str = "[GithubAPI::get_branches]";
-
-      log!("{F} fetching branches for repo {}", repo.name);
+      log!("fetching branches for repo {}", repo.name);
       let octo = Self::octo(token)?;
       let owner = Self::repo_owner(repo)?;
 

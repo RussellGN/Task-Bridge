@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use tauri::{http::Method, Url};
 use tauri_plugin_http::reqwest;
 
-use crate::{auth::AccessToken, log, utils::get_env_vars};
+use crate::{auth::AccessToken, error::AppErrorAPI, log, utils::get_env_vars};
 
 pub fn exchange_code_for_access_token(code: &str) -> crate::Result<AccessToken> {
    const F: &str = "[exchange_code_for_access_token]";
@@ -11,12 +11,13 @@ pub fn exchange_code_for_access_token(code: &str) -> crate::Result<AccessToken> 
    let env_vars_map = get_env_vars()?;
    let client_id = env_vars_map
       .get("CLIENT_ID")
-      .ok_or(format!("{F} failed to load CLIENT_ID var"))?;
+      .ok_or(AppErrorAPI::unknown("failed to load CLIENT_ID var", F))?;
    let client_secret = env_vars_map
       .get("CLIENT_SECRET")
-      .ok_or(format!("{F} failed to load CLIENT_SECRET var"))?;
+      .ok_or(AppErrorAPI::unknown("Failed to load CLIENT_SECRET var", F))?;
 
-   let mut code_exchange_url = Url::parse("https://github.com/login/oauth/access_token").map_err(|e| e.to_string())?;
+   let mut code_exchange_url =
+      Url::parse("https://github.com/login/oauth/access_token").map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
 
    code_exchange_url
       .query_pairs_mut()
@@ -28,10 +29,13 @@ pub fn exchange_code_for_access_token(code: &str) -> crate::Result<AccessToken> 
    let req = reqwest::blocking::Request::new(Method::POST, code_exchange_url);
    let res = reqwest::blocking::Client::new()
       .execute(req)
-      .map_err(|e| e.to_string())?;
+      .map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
 
-   let bytes = res.bytes().map_err(|e| e.to_string())?.to_vec();
-   let params = String::from_utf8(bytes).map_err(|e| e.to_string())?;
+   let bytes = res
+      .bytes()
+      .map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?
+      .to_vec();
+   let params = String::from_utf8(bytes).map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
    let param_pairs_list = params
       .split("&")
       .map(|query_pair| query_pair.split("=").map(|item| item.to_string()).collect::<Vec<_>>())
@@ -43,15 +47,16 @@ pub fn exchange_code_for_access_token(code: &str) -> crate::Result<AccessToken> 
       if let [k, v] = k_v_pair.as_slice() {
          params.insert(k.to_string(), v.to_string());
       } else {
-         return Err(format!(
-            "{F} param_pairs_list does not contain key-value pairs: {param_pairs_list:#?}"
+         return Err(AppErrorAPI::unknown(
+            "param_pairs_list does not contain key-value pairs: {param_pairs_list:#?}",
+            F,
          ));
       }
    }
 
    let access_token = params
       .get("access_token")
-      .ok_or(format!("{F} access_token was not found in params"))?
+      .ok_or(AppErrorAPI::unknown("access_token was not found in params", F))?
       .to_string();
 
    let token = AccessToken::new(access_token);
