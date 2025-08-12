@@ -19,7 +19,7 @@ use crate::{
 
 #[tauri::command]
 pub async fn persist_log<R: Runtime>(app: AppHandle<R>, log: Log) {
-   log.persist(get_logs_store(app).ok().as_ref()).await
+   log.persist(get_logs_store(app).ok()).await
 }
 
 #[tauri::command]

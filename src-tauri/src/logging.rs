@@ -31,7 +31,7 @@ impl Log {
       }
    }
 
-   pub async fn persist<R: Runtime>(self, logs_store: Option<&Arc<Store<R>>>) {
+   pub async fn persist<R: Runtime>(self, logs_store: Option<Arc<Store<R>>>) {
       if let Some(logs_store) = logs_store {
          self.persist_to_logs_store(logs_store)
       }
@@ -46,7 +46,7 @@ impl Log {
       )
    }
 
-   fn persist_to_logs_store<R: Runtime>(self, logs_store: &Arc<Store<R>>) {
+   fn persist_to_logs_store<R: Runtime>(self, logs_store: Arc<Store<R>>) {
       let id = self.generate_id();
 
       if let Ok(val) = serde_json::to_value(self) {
