@@ -5,7 +5,7 @@ use tauri::{AppHandle, Runtime};
 use tauri_plugin_store::{Store, StoreExt};
 use uuid::Uuid;
 
-use crate::{auth::AccessToken, error::AppErrorAPI, ENV_STR, LOGS_STORE_PATH, STORE_PATH};
+use crate::{auth::AccessToken, error::AppError, ENV_STR, LOGS_STORE_PATH, STORE_PATH};
 
 #[macro_export]
 macro_rules! log {
@@ -66,11 +66,11 @@ pub fn get_env_vars() -> crate::Result<HashMap<String, String>> {
       }
       let name = pair
          .get(0)
-         .ok_or(AppErrorAPI::unknown("could not access env vars", F))?
+         .ok_or(AppError::unknown("could not access env vars", F, None))?
          .to_string();
       let value = pair
          .get(1)
-         .ok_or(AppErrorAPI::unknown("could not access env vars", F))?
+         .ok_or(AppError::unknown("could not access env vars", F, None))?
          .to_string();
       env_vars_map.insert(name, value);
    }
@@ -84,7 +84,7 @@ pub fn get_store<R: Runtime>(app: AppHandle<R>) -> crate::Result<Arc<Store<R>>> 
    log!("{F} getting store");
    let store = app
       .store(STORE_PATH)
-      .map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
+      .map_err(|e| AppError::unknown(&e.to_string(), F, None))?;
 
    Ok(store)
 }
@@ -95,7 +95,7 @@ pub fn get_logs_store<R: Runtime>(app: AppHandle<R>) -> crate::Result<Arc<Store<
    log!("{F} getting logs store");
    let logs_store = app
       .store(LOGS_STORE_PATH)
-      .map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
+      .map_err(|e| AppError::unknown(&e.to_string(), F, None))?;
 
    Ok(logs_store)
 }
@@ -104,9 +104,11 @@ pub fn get_token<R: Runtime>(store: &Arc<Store<R>>) -> crate::Result<AccessToken
    const F: &str = "[get_token]";
 
    log!("{F} getting token");
-   let token = store.get("token").ok_or(AppErrorAPI::unknown("token not found", F))?;
+   let token = store
+      .get("token")
+      .ok_or(AppError::unknown("token not found", F, None))?;
    log!("{F} token value: {token:#?}");
-   let token = serde_json::from_value::<AccessToken>(token).map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
+   let token = serde_json::from_value::<AccessToken>(token).map_err(|e| AppError::unknown(&e.to_string(), F, None))?;
 
    Ok(token)
 }
@@ -118,7 +120,7 @@ pub fn create_authenticated_octo(token: &str) -> crate::Result<Octocrab> {
    let octo = OctocrabBuilder::new()
       .user_access_token(token)
       .build()
-      .map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
+      .map_err(|e| AppError::unknown(&e.to_string(), F, None))?;
 
    Ok(octo)
 }

@@ -6,7 +6,7 @@ use serde::Serialize;
 use tauri::{AppHandle, Emitter, Manager, Runtime};
 
 use crate::{
-   error::AppErrorAPI,
+   error::AppError,
    log,
    logging::Log,
    new_github_api::GithubAPI,
@@ -30,7 +30,7 @@ pub async fn fetch_save_and_return_user<R: Runtime>(app: AppHandle<R>) -> crate:
    let token = get_token(&store)?;
    let user = GithubAPI::get_user(&token).await?;
    log!("setting user: {}", user.login);
-   let user_val = serde_json::to_value(&user).map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
+   let user_val = serde_json::to_value(&user).map_err(|e| AppError::unknown(&e.to_string(), F, None))?;
    dbg_store(&store);
    store.set("user", user_val);
    dbg_store(&store);
@@ -75,7 +75,7 @@ pub async fn sync_projects_with_github<R: Runtime>(app: tauri::AppHandle<R>) -> 
       // first determine if repo already has project in store
       let repo_already_has_project_in_store = if let Some(repo_ids) = store.get("repo-ids") {
          let repo_ids = serde_json::from_value::<Vec<String>>(repo_ids)
-            .map_err(|e| AppErrorAPI::unknown(&format!("could not read repo-ids: {e}"), F))?;
+            .map_err(|e| AppError::unknown(&format!("could not read repo-ids: {e}"), F, None))?;
          repo_ids.contains(&repo.id.to_string())
       } else {
          false
@@ -143,7 +143,7 @@ pub async fn sync_projects_with_github_v2<R: Runtime>(app: tauri::AppHandle<R>) 
 
    let repo_ids = if let Some(repo_ids) = store.get("repo-ids") {
       serde_json::from_value::<Vec<String>>(repo_ids)
-         .map_err(|e| AppErrorAPI::unknown(&format!("could not read repo-ids: {e}"), F))?
+         .map_err(|e| AppError::unknown(&format!("could not read repo-ids: {e}"), F, None))?
    } else {
       vec![]
    };
@@ -223,11 +223,12 @@ pub async fn sync_project_with_github<R: Runtime>(app: tauri::AppHandle<R>, proj
 
    let mut project = match store.get(&project_id) {
       Some(val) => serde_json::from_value::<Project>(val)
-         .map_err(|e| AppErrorAPI::unknown(&format!("could not read project: {e}"), F))?,
+         .map_err(|e| AppError::unknown(&format!("could not read project: {e}"), F, None))?,
       None => {
-         return Err(AppErrorAPI::unknown(
+         return Err(AppError::unknown(
             &format!("project with id '{project_id}' does not exist locally."),
             F,
+            None,
          ))
       }
    };
@@ -275,14 +276,16 @@ pub async fn create_task<R: Runtime>(app: tauri::AppHandle<R>, payload: NewTaskP
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store.get(project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(project_id).ok_or(AppError::unknown(
       &format!("project with id {project_id} not found"),
       F,
+      None,
    ))?;
    let mut project = serde_json::from_value::<Project>(project).map_err(|e| {
-      AppErrorAPI::unknown(
+      AppError::unknown(
          &format!("failed to read project with id {}: {e}", payload.project_id),
          F,
+         None,
       )
    })?;
 
@@ -302,14 +305,16 @@ pub async fn create_backlog_task<R: Runtime>(app: tauri::AppHandle<R>, payload: 
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store.get(project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(project_id).ok_or(AppError::unknown(
       &format!("project with id {project_id} not found"),
       F,
+      None,
    ))?;
    let mut project = serde_json::from_value::<Project>(project).map_err(|e| {
-      AppErrorAPI::unknown(
+      AppError::unknown(
          &format!("failed to read project with id {}: {e}", payload.project_id),
          F,
+         None,
       )
    })?;
 
@@ -332,13 +337,14 @@ pub async fn assign_task_now<R: Runtime>(
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(&project_id).ok_or(AppError::unknown(
       &format!("project with id {project_id} not found"),
       F,
+      None,
    ))?;
 
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id {project_id}: {e}"), F))?;
+      .map_err(|e| AppError::unknown(&format!("failed to read project with id {project_id}: {e}"), F, None))?;
 
    let updated_task = project
       .assign_task_now(task_id, &token, &project.get_repo().clone(), store)
@@ -366,13 +372,14 @@ pub async fn assign_draft_task_now<R: Runtime>(
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(&project_id).ok_or(AppError::unknown(
       &format!("project with id {project_id} not found"),
       F,
+      None,
    ))?;
 
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id {project_id}: {e}"), F))?;
+      .map_err(|e| AppError::unknown(&format!("failed to read project with id {project_id}: {e}"), F, None))?;
 
    let derived_task = project
       .assign_drafted_task_now(draft_id.clone(), &token, &project.get_repo().clone(), store)
@@ -397,13 +404,14 @@ pub async fn delete_task<R: Runtime>(
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(&project_id).ok_or(AppError::unknown(
       &format!("project with id {project_id} not found"),
       F,
+      None,
    ))?;
 
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id {project_id}: {e}"), F))?;
+      .map_err(|e| AppError::unknown(&format!("failed to read project with id {project_id}: {e}"), F, None))?;
 
    project
       .delete_task(&task_id, &token, &project.get_repo().clone(), store)
@@ -426,13 +434,14 @@ pub async fn edit_task<R: Runtime>(
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store.get(project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(project_id).ok_or(AppError::unknown(
       &format!("project with id {project_id} not found"),
       F,
+      None,
    ))?;
 
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id {project_id}: {e}"), F))?;
+      .map_err(|e| AppError::unknown(&format!("failed to read project with id {project_id}: {e}"), F, None))?;
 
    let updated_task = project
       .edit_task(&task_id, payload, &token, &project.get_repo().clone(), store)
@@ -454,13 +463,14 @@ pub async fn edit_draft_task<R: Runtime>(
    log!("editing draft task with id {draft_id} in project {project_id}");
    let store = get_store(app)?;
 
-   let project = store.get(project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(project_id).ok_or(AppError::unknown(
       &format!("project with id {project_id} not found"),
       F,
+      None,
    ))?;
 
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id {project_id}: {e}"), F))?;
+      .map_err(|e| AppError::unknown(&format!("failed to read project with id {project_id}: {e}"), F, None))?;
 
    let updated_draft_task = project.edit_draft_task(&draft_id, payload, store).await?;
    log!("done editing draft task!");
@@ -479,13 +489,14 @@ pub async fn delete_draft_task<R: Runtime>(
    log!("deleting draft task with id {draft_id} in project {project_id}");
    let store = get_store(app)?;
 
-   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(&project_id).ok_or(AppError::unknown(
       &format!("project with id {project_id} not found"),
       F,
+      None,
    ))?;
 
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id {project_id}: {e}"), F))?;
+      .map_err(|e| AppError::unknown(&format!("failed to read project with id {project_id}: {e}"), F, None))?;
 
    project.delete_draft_task(&draft_id, store).await?;
    log!("done deleting draft task!");
@@ -503,14 +514,16 @@ pub async fn create_draft_task<R: Runtime>(
    log!("{payload:#?}");
    let project_id = &payload.project_id;
    let store = get_store(app)?;
-   let project = store.get(project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(project_id).ok_or(AppError::unknown(
       &format!("project with id {project_id} not found"),
       F,
+      None,
    ))?;
    let mut project = serde_json::from_value::<Project>(project).map_err(|e| {
-      AppErrorAPI::unknown(
+      AppError::unknown(
          &format!("failed to read project with id {}: {e}", payload.project_id),
          F,
+         None,
       )
    })?;
 
@@ -537,12 +550,13 @@ pub async fn sync_task_activity<R: Runtime>(
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(&project_id).ok_or(AppError::unknown(
       &format!("project with id {project_id} not found"),
       F,
+      None,
    ))?;
    let mut project = serde_json::from_value::<Project>(project)
-      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id '{project_id}': {e}",), F))?;
+      .map_err(|e| AppError::unknown(&format!("failed to read project with id '{project_id}': {e}",), F, None))?;
 
    let synced_activity = project
       .sync_activity_for_task_v2(task_id.clone(), &token, Arc::clone(&store))
@@ -564,13 +578,14 @@ pub async fn delete_project_permanently<R: Runtime>(app: tauri::AppHandle<R>, pr
    let store = get_store(app)?;
    let token = get_token(&Arc::clone(&store))?;
 
-   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(&project_id).ok_or(AppError::unknown(
       &format!("project with id {project_id} not found"),
       F,
+      None,
    ))?;
 
    let project = serde_json::from_value::<Project>(project)
-      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id '{project_id}': {e}",), F))?;
+      .map_err(|e| AppError::unknown(&format!("failed to read project with id '{project_id}': {e}",), F, None))?;
 
    project.delete_permanently(&token, store).await?;
    log!("successfully deleted project with id '{project_id}' permanently");
@@ -584,13 +599,14 @@ pub async fn delete_project_locally<R: Runtime>(app: tauri::AppHandle<R>, projec
    log!("deleting project with id '{project_id}' from local store");
    let store = get_store(app)?;
 
-   let project = store.get(&project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(&project_id).ok_or(AppError::unknown(
       &format!("project with id {project_id} not found"),
       F,
+      None,
    ))?;
 
    let project = serde_json::from_value::<Project>(project)
-      .map_err(|e| AppErrorAPI::unknown(&format!("failed to read project with id '{project_id}': {e}",), F))?;
+      .map_err(|e| AppError::unknown(&format!("failed to read project with id '{project_id}': {e}",), F, None))?;
 
    project.delete_locally(store)?;
    log!("successfully deleted project with id '{project_id}' from local store");
@@ -604,15 +620,17 @@ pub async fn update_project_team<R: Runtime>(app: tauri::AppHandle<R>, patch_arg
    log!("updating team for project with id '{}'", patch_args.project_id);
    let store = get_store(app)?;
 
-   let project = store.get(&patch_args.project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(&patch_args.project_id).ok_or(AppError::unknown(
       &format!("project with id {} not found", patch_args.project_id),
       F,
+      None,
    ))?;
 
    let mut project = serde_json::from_value::<Project>(project).map_err(|e| {
-      AppErrorAPI::unknown(
+      AppError::unknown(
          &format!("failed to read project with id '{}': {e}", patch_args.project_id),
          F,
+         None,
       )
    })?;
 
@@ -640,15 +658,17 @@ pub async fn update_general_project_metadata<R: Runtime>(
    let store = get_store(app)?;
    let token = get_token(&store)?;
 
-   let project = store.get(&patch_args.project_id).ok_or(AppErrorAPI::unknown(
+   let project = store.get(&patch_args.project_id).ok_or(AppError::unknown(
       &format!("project with id {} not found", patch_args.project_id),
       F,
+      None,
    ))?;
 
    let mut project = serde_json::from_value::<Project>(project).map_err(|e| {
-      AppErrorAPI::unknown(
+      AppError::unknown(
          &format!("failed to read project with id '{}': {e}", patch_args.project_id),
          F,
+         None,
       )
    })?;
 

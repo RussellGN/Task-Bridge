@@ -13,7 +13,7 @@ use urlencoding::encode;
 
 use crate::{
    auth::AccessToken,
-   error::AppErrorAPI,
+   error::AppError,
    log,
    project::task::NewTaskPayload,
    utils::{create_authenticated_octo, IssueExt},
@@ -82,9 +82,10 @@ impl GithubAPI {
 
    fn repo_owner(repo: &models::Repository) -> crate::Result<models::Author> {
       const F: &str = "[GithubAPI::repo_owner]";
-      repo.owner.clone().ok_or(AppErrorAPI::unknown(
+      repo.owner.clone().ok_or(AppError::unknown(
          &format!("'{}' repo somehow does not have an owner", repo.name),
          F,
+         None,
       ))
    }
 
@@ -100,7 +101,7 @@ impl GithubAPI {
 
       let items_stream = items_fut
          .await
-         .map_err(|e| AppErrorAPI::unknown(&format!("Failed to stream items. {e}"), F))?
+         .map_err(|e| AppError::unknown(&format!("Failed to stream items. {e}"), F, None))?
          .into_stream(octo);
 
       let mut items_stream = Box::pin(items_stream);
@@ -110,7 +111,13 @@ impl GithubAPI {
       while let Some(response) = items_stream.next().await {
          match response {
             Ok(item) if exceptance_cb(item.clone()) => all_items.push(item),
-            Err(e) => return Err(AppErrorAPI::unknown(&format!("Failed to fetch next item in loop. {e}"), F)),
+            Err(e) => {
+               return Err(AppError::unknown(
+                  &format!("Failed to fetch next item in loop. {e}"),
+                  F,
+                  None,
+               ))
+            }
             _ => {}
          };
       }
@@ -148,7 +155,7 @@ impl GithubAPI {
          .header(header::ACCEPT, "application/json")
          .json(&payload)
          .build()
-         .map_err(|e| AppErrorAPI::unknown(&format!("failed to build request, error: {}", e.to_string()), F))?;
+         .map_err(|e| AppError::unknown(&format!("failed to build request, error: {}", e.to_string()), F, None))?;
 
       // log request
       log!(
@@ -172,7 +179,7 @@ impl GithubAPI {
       let res = reqwest::Client::new()
          .execute(req)
          .await
-         .map_err(|e| AppErrorAPI::unknown(&format!("error sending request, error: {}", e.to_string()), F))?;
+         .map_err(|e| AppError::unknown(&format!("error sending request, error: {}", e.to_string()), F, None))?;
 
       match res.error_for_status() {
          Ok(res) => {
@@ -212,15 +219,16 @@ impl GithubAPI {
             let json_data = res
                .json::<R>()
                .await
-               .map_err(|e| AppErrorAPI::unknown(&format!("error reading response body: {e}",), F))?;
+               .map_err(|e| AppError::unknown(&format!("error reading response body: {e}",), F, None))?;
 
             Ok((json_data, parts))
          }
          Err(e) => {
             let status_code = e.status().expect(&format!("no error status code found: {e}"));
-            return Err(AppErrorAPI::unknown(
+            return Err(AppError::unknown(
                &format!("received error response with status '{status_code}', {e}",),
                F,
+               None,
             ));
          }
       }
@@ -255,7 +263,7 @@ impl GithubAPI {
          .header(header::ACCEPT, "application/json")
          .json(&payload)
          .build()
-         .map_err(|e| AppErrorAPI::unknown(&format!("failed to build request, error: {}", e.to_string()), F))?;
+         .map_err(|e| AppError::unknown(&format!("failed to build request, error: {}", e.to_string()), F, None))?;
 
       // log request
       log!(
@@ -279,7 +287,7 @@ impl GithubAPI {
       let res = reqwest::Client::new()
          .execute(req)
          .await
-         .map_err(|e| AppErrorAPI::unknown(&format!("error sending request, error: {}", e.to_string()), F))?;
+         .map_err(|e| AppError::unknown(&format!("error sending request, error: {}", e.to_string()), F, None))?;
 
       match res.error_for_status() {
          Ok(res) => {
@@ -320,7 +328,7 @@ impl GithubAPI {
                let json_data = res
                   .json::<R>()
                   .await
-                  .map_err(|e| AppErrorAPI::unknown(&format!("error reading response body: {e}",), F))?;
+                  .map_err(|e| AppError::unknown(&format!("error reading response body: {e}",), F, None))?;
 
                Ok((Some(json_data), parts))
             } else {
@@ -329,9 +337,10 @@ impl GithubAPI {
          }
          Err(e) => {
             let status_code = e.status().expect(&format!("no error status code found: {e}"));
-            return Err(AppErrorAPI::unknown(
+            return Err(AppError::unknown(
                &format!("received error response with status '{status_code}', {e}",),
                F,
+               None,
             ));
          }
       }
@@ -348,7 +357,7 @@ impl GithubAPI {
          .per_page(50)
          .send()
          .await
-         .map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
+         .map_err(|e| AppError::unknown(&e.to_string(), F, None))?;
       let users = page.items;
       log!(
          "returning users found, count: {}. User logins: {}",
@@ -368,7 +377,7 @@ impl GithubAPI {
          .current()
          .user()
          .await
-         .map_err(|e| AppErrorAPI::unknown(&e.to_string(), F))?;
+         .map_err(|e| AppError::unknown(&e.to_string(), F, None))?;
       log!("got user, now returning: {}", user.login);
 
       Ok(user)
@@ -395,9 +404,10 @@ impl GithubAPI {
             name: None,
             private: None,
          } => {
-            return Err(AppErrorAPI::unknown(
+            return Err(AppError::unknown(
                "cannot create repo with no name nor visibility parameters",
                F,
+               None,
             ));
          }
       };
@@ -451,7 +461,7 @@ impl GithubAPI {
          Ok(invite_response.invitee)
       } else {
          let msg = format!("failed to invite {login} to {owner}/{repo}, status: {status}",);
-         Err(AppErrorAPI::unknown(&msg, F))
+         Err(AppError::unknown(&msg, F, None))
       }
    }
 
@@ -479,7 +489,7 @@ impl GithubAPI {
             "failed to remove collaborator {login} in {owner}/{}, status: {status}",
             repo.name
          );
-         Err(AppErrorAPI::unknown(&msg, F))
+         Err(AppError::unknown(&msg, F, None))
       }
    }
 
@@ -509,24 +519,26 @@ impl GithubAPI {
          Self::request::<Vec<TempInvitation>, Value>(Method::GET, path_n_query, token, None).await?;
 
       if parts.status != StatusCode::OK {
-         return Err(AppErrorAPI::unknown(
+         return Err(AppError::unknown(
             &format!(
                "failed to retrieve collab invites for {}: status: {}",
                repo.name, parts.status
             ),
             F,
+            None,
          ));
       }
 
       let invitation_id = if let Some(invitation) = invitations.iter().find(|i| i.invitee.login == login) {
          invitation.id
       } else {
-         return Err(AppErrorAPI::unknown(
+         return Err(AppError::unknown(
             &format!(
                "failed to retrieve collab invite sent to {login}: status: {}",
                parts.status
             ),
             F,
+            None,
          ));
       };
 
@@ -546,7 +558,7 @@ impl GithubAPI {
             "failed to cancel invite sent to {login} in {owner}/{}, status: {status}",
             repo.name
          );
-         Err(AppErrorAPI::unknown(&msg, F))
+         Err(AppError::unknown(&msg, F, None))
       }
    }
 
@@ -566,7 +578,7 @@ impl GithubAPI {
       if let Some(link_header) = parts.headers.get("link") {
          let links = link_header
             .to_str()
-            .map_err(|e| AppErrorAPI::unknown(&format!("could not read link headers: {e}"), F))?
+            .map_err(|e| AppError::unknown(&format!("could not read link headers: {e}"), F, None))?
             .split("\",")
             .filter(|link| !link.contains("rel=\"next"))
             .map(|link| link.trim().replace("<", "").replace(">; rel=\"next", ""))
@@ -616,7 +628,7 @@ impl GithubAPI {
          .per_page(100)
          .send()
          .await
-         .map_err(|e| AppErrorAPI::unknown(&format!("error fetching list of collaborators: {e}"), F))?;
+         .map_err(|e| AppError::unknown(&format!("error fetching list of collaborators: {e}"), F, None))?;
 
       if let Some(_) = collaborators.next {
          log!("TODO! repo has more than 100 collaborators , handle this",);
@@ -691,9 +703,10 @@ impl GithubAPI {
          .send()
          .await
          .map_err(|e| {
-            AppErrorAPI::unknown(
+            AppError::unknown(
                &format!("failed to fetch issues at {}/{}. Error: {e}", owner.login, repo.name),
                F,
+               None,
             )
          })?
          .into_stream(&octo);
@@ -705,7 +718,13 @@ impl GithubAPI {
       while let Some(response) = issues_stream.next().await {
          match response {
             Ok(issue) if !issue.was_deleted() => all_issues.push(issue),
-            Err(e) => return Err(AppErrorAPI::unknown(&format!("failed to fetch next issue in loop: {e}"), F)),
+            Err(e) => {
+               return Err(AppError::unknown(
+                  &format!("failed to fetch next issue in loop: {e}"),
+                  F,
+                  None,
+               ))
+            }
             _ => {}
          };
       }
@@ -750,9 +769,10 @@ impl GithubAPI {
             name: None,
             private: None,
          } => {
-            return Err(AppErrorAPI::unknown(
+            return Err(AppError::unknown(
                "cannot update repo with no name nor visibility parameters",
                F,
+               None,
             ))
          }
       };
@@ -791,7 +811,7 @@ impl GithubAPI {
          .repos(&owner.login, &repo.name)
          .delete()
          .await
-         .map_err(|e| AppErrorAPI::unknown(&format!("error deleting repo {}. {e}", repo.name), F))
+         .map_err(|e| AppError::unknown(&format!("error deleting repo {}. {e}", repo.name), F, None))
    }
 
    pub async fn get_branch_commits(
@@ -828,7 +848,11 @@ impl GithubAPI {
          Err(e) => {
             log!("failed to fetch exclusive commits @ {path_query}. {e} ");
             if repo.default_branch.is_some() {
-               return Err(AppErrorAPI::unknown(&format!("failed to fetch task activity: {e}"), F));
+               return Err(AppError::unknown(
+                  &format!("failed to fetch task activity: {e}"),
+                  F,
+                  None,
+               ));
             }
             let path_query = format!(
                "/repos/{}/{}/compare/master...{}",
@@ -880,12 +904,13 @@ impl GithubAPI {
          .send()
          .await
          .map_err(|e| {
-            AppErrorAPI::unknown(
+            AppError::unknown(
                &format!(
                   "failed to create issue titled '{}' in repo '{}': {e}",
                   payload.title, repo.name
                ),
                F,
+               None,
             )
          })?;
 
@@ -942,12 +967,13 @@ impl GithubAPI {
       }
 
       let updated_issue = updated_issue.send().await.map_err(|e| {
-         AppErrorAPI::unknown(
+         AppError::unknown(
             &format!(
                "failed to send update request for issue number {}. {e}",
                old_issue.number
             ),
             F,
+            None,
          )
       })?;
 
@@ -976,12 +1002,13 @@ impl GithubAPI {
          .expect(&format!("'{}' repo somehow does not have an owner", old_repo.name));
 
       let updated_repo = octo.repos(&owner.login, &old_repo.name).get().await.map_err(|e| {
-         AppErrorAPI::unknown(
+         AppError::unknown(
             &format!(
                "failed to fetch updated {} repo at {}/{}. Error: {e}",
                old_repo.name, owner.login, old_repo.name
             ),
             F,
+            None,
          )
       })?;
 

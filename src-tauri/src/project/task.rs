@@ -3,7 +3,7 @@ use std::fmt::Display;
 use octocrab::models;
 use serde::{Deserialize, Serialize};
 
-use crate::{error::AppErrorAPI, utils::new_id};
+use crate::{error::AppError, utils::new_id};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
@@ -165,14 +165,16 @@ pub struct NewTaskPayload {
 impl NewTaskPayload {
    pub fn from_draft_task_and_project_id(draft: DraftTask, project_id: String) -> crate::Result<Self> {
       const F: &str = "[NewTaskPayload::from_draft_task_and_project_id]";
+
       Ok(Self {
          title: draft.title,
          body: draft.body,
          assignee_login: draft
             .assignee
-            .ok_or(AppErrorAPI::unknown(
+            .ok_or(AppError::unknown(
                "Draft task does not have an assignee. This is required!",
                F,
+               None,
             ))?
             .login,
          priority: draft.priority.unwrap_or_default(),
