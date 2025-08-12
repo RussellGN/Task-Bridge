@@ -6,15 +6,31 @@ use tauri_plugin_store::Store;
 
 use crate::utils::new_id;
 
+#[derive(Deserialize, Serialize, Debug)]
+pub enum LogType {
+   INFO,
+   ERROR,
+   SUCCESS,
+}
+
 #[derive(Deserialize, Serialize)]
 pub struct Log {
-   log_type: String,
+   log_type: LogType,
    title: String,
    body: Option<String>,
    context: Option<String>,
 }
 
 impl Log {
+   pub fn new(log_type: LogType, title: String, body: Option<String>, context: Option<String>) -> Self {
+      Self {
+         log_type,
+         title,
+         body,
+         context,
+      }
+   }
+
    pub async fn persist<R: Runtime>(self, logs_store: Option<&Arc<Store<R>>>) {
       if let Some(logs_store) = logs_store {
          self.persist_to_logs_store(logs_store)
@@ -23,7 +39,7 @@ impl Log {
 
    fn generate_id(&self) -> String {
       format!(
-         "{}__{}__{}",
+         "{}__{:?}__{}",
          chrono::Utc::now().timestamp_micros(),
          self.log_type,
          new_id()
