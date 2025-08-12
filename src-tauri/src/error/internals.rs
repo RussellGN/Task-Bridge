@@ -34,7 +34,7 @@ impl _AppErrorContext {
 #[derive(Debug, Serialize, TS)]
 #[ts(export)]
 #[ts(export_to = "../../src/bindings/index.ts")]
-pub(crate) enum _AppError {
+pub enum _AppError {
    #[allow(private_interfaces)]
    UnknownError(_AppErrorContext),
 }
