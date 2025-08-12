@@ -34,6 +34,8 @@ impl _AppErrorContext {
 #[derive(Debug, Serialize, TS)]
 #[ts(export)]
 #[ts(export_to = "../../src/bindings/index.ts")]
+#[ts(rename_all = "kebab-case")]
+#[serde(rename_all = "kebab-case")]
 pub enum _AppError {
    #[allow(private_interfaces)]
    UnknownError(_AppErrorContext),
