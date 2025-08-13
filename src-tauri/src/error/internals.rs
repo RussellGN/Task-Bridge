@@ -1,7 +1,15 @@
-use std::{error::Error as StdError, fmt};
+use std::{
+   error::Error as StdError,
+   fmt::{self},
+   sync::Arc,
+};
 
 use serde::Serialize;
+use tauri::Runtime;
+use tauri_plugin_store::Store;
 use ts_rs::TS;
+
+use crate::logging::{Log, LogType};
 
 pub(super) type DynErrorOption = Option<Box<dyn StdError + Send>>;
 
@@ -31,6 +39,26 @@ impl _AppErrorContext {
    }
 }
 
+pub async fn log_err_and_relay<R, T, F>(cb: F, store: Arc<Store<R>>) -> crate::Result<T>
+where
+   R: Runtime,
+   T: Serialize,
+   F: AsyncFnOnce() -> crate::Result<T>,
+{
+   match cb().await {
+      Ok(res) => Ok(res),
+      Err(e) => {
+         if let Some(context) = e.get_context() {
+            let body = format!("This error originated in {}", context.origin);
+            let context_str = Some(format!("{:#?}", context.inner_err));
+            let log = Log::new(LogType::ERROR, context.message.clone(), Some(body), context_str);
+            log.persist(Some(store)).await;
+         }
+         Err(e)
+      }
+   }
+}
+
 #[derive(Debug, Serialize, TS)]
 #[ts(export)]
 #[ts(export_to = "../../src/bindings/index.ts")]
@@ -39,6 +67,14 @@ impl _AppErrorContext {
 pub enum _AppError {
    #[allow(private_interfaces)]
    UnknownError(_AppErrorContext),
+}
+
+impl _AppError {
+   fn get_context(&self) -> Option<&_AppErrorContext> {
+      match self {
+         Self::UnknownError(c) => Some(c),
+      }
+   }
 }
 
 impl StdError for _AppError {}
