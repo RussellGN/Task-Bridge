@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use tauri::Runtime;
 use tauri_plugin_store::Store;
 
-use crate::utils::new_id;
+use crate::{utils::new_id, ArcStoreOption};
 
 #[derive(Deserialize, Serialize, Debug)]
 pub enum LogType {
@@ -31,7 +31,7 @@ impl Log {
       }
    }
 
-   pub async fn persist<R: Runtime>(self, logs_store: Option<Arc<Store<R>>>) {
+   pub async fn persist<R: Runtime>(self, logs_store: ArcStoreOption<R>) {
       if let Some(logs_store) = logs_store {
          self.persist_to_logs_store(logs_store)
       }

@@ -9,9 +9,14 @@ mod project;
 mod setup;
 mod utils;
 
-use setup::init_tauri_plugin_single_instance;
+use std::sync::Arc;
 
 pub use error::Result;
+use setup::init_tauri_plugin_single_instance;
+use tauri_plugin_store::Store;
+
+pub type ArcStoreOption<R> = Option<Arc<Store<R>>>;
+
 pub const STORE_PATH: &str = "store.json";
 pub const LOGS_STORE_PATH: &str = "task_bridge_logs.json";
 pub const ENV_STR: &'static str = include_str!("../.env");
