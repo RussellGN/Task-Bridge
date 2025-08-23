@@ -38,7 +38,6 @@ export default function KanbanDraftTaskCard({ draft, project }: { draft: DraftTa
 
                   <span className={open ? "" : "line-clamp-1"}>
                      <span className="text-foreground/50 px-1 text-xs italic">Draft</span> {draft.title}
-                     Lorem ipsum dolor sit.
                   </span>
                </CollapsibleTrigger>
 
