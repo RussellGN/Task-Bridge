@@ -13,7 +13,7 @@ export default function MenuBar() {
    return (
       <Menubar>
          <MenuBarBackBtn />
-         <MenuBarLinkItem to="/home" Icon={HomeIcon}>
+         <MenuBarLinkItem to="/projects" Icon={HomeIcon}>
             Home
          </MenuBarLinkItem>
          <AccountManager />

@@ -53,7 +53,7 @@ export default function DevKit() {
                </form>
                <div className="flex gap-2">
                   <Button disabled={loading} asChild>
-                     <Link to="/home">Home</Link>
+                     <Link to="/projects">Home</Link>
                   </Button>
                   <Button disabled={loading} asChild>
                      <Link to="/">Sign In</Link>

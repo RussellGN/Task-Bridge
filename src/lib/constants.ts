@@ -1,6 +1,6 @@
 import Signin from "@/routes/Signin";
 import { random_global_auth_keyword } from "./utils";
-import Home from "@/routes/Home";
+import Welcome from "@/routes/Welcome";
 import NotFound from "@/routes/NotFound";
 import ProjectDashboard from "@/routes/ProjectDashboard";
 import { TaskPriority } from "@/types/types";
@@ -24,7 +24,7 @@ export const STORE_PATH = "store.json";
 
 export const ROUTES = [
    { path: "/", component: Signin },
-   { path: "/home", component: Home },
+   { path: "/welcome", component: Welcome },
    { path: "/projects", component: ProjectsExplorer },
    { path: "/settings", component: Settings },
    { path: "/settings/:projectId", component: Settings },

@@ -28,7 +28,7 @@ export default function useListenForAuthSetupCompleteEvent() {
                   unlisten = undefined;
                } else logInfo("[useListenForAuthSetupCompleteEvent] inside auth event cb! unlisten was not set!");
 
-               navigate("/home");
+               navigate("/welcome");
             });
          } catch (e) {
             logError(e);

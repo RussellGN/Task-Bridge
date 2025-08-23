@@ -13,7 +13,7 @@ export default function useSignin() {
          try {
             const isAuthenticated = await checkAuth();
             if (isAuthenticated) {
-               navigate("/home");
+               navigate("/welcome");
             } else logInfo("[useSignin] not authenticated, awaiting sign-in");
          } catch (e) {
             logError(e);

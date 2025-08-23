@@ -176,6 +176,7 @@ export interface Setting {
 }
 
 export interface AppPreferences {
+   is_not_first_launch?: boolean;
    project_sync_interval_mins?: number;
    show_branch_convention_alert?: "no";
 }

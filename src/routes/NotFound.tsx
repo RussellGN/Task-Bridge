@@ -21,7 +21,7 @@ export default function NotFound() {
                <BackBtn />
             </Button>
             <Button title="home-screen" asChild variant="outline">
-               <Link to="/home">
+               <Link to="/projects">
                   Home <Home />
                </Link>
             </Button>

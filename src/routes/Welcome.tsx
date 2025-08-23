@@ -1,4 +1,4 @@
-import useHome from "@/hooks/route-hooks/useHome";
+import useWelcome from "@/hooks/route-hooks/useWelcome";
 import Spinner from "@/components/general/Spinner";
 import { UserAvatar } from "@/components/general/UserAvatar";
 import { Button } from "@/components/ui/button";
@@ -7,9 +7,9 @@ import { ArrowUpRight, TriangleAlert } from "lucide-react";
 import { Link } from "react-router";
 import NewProjectForm from "@/components/screens/projects-explorer/NewProjectForm";
 
-export default function Home() {
+export default function Welcome() {
    const appVersion = useAppVersion();
-   const { user, loading, error } = useHome();
+   const { user, loading, error } = useWelcome();
 
    return (
       <div className="flex h-full flex-col items-center gap-3 p-4 pt-30 text-center font-semibold">
