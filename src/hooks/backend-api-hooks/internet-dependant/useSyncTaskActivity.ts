@@ -1,4 +1,4 @@
-import { alertSuccess, dbg } from "@/lib/logging";
+import { dbg, logInfo } from "@/lib/logging";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { ActivitySyncResponse, Project } from "@/types/interfaces";
@@ -19,7 +19,7 @@ export default function useSyncTaskActivity(project: Project) {
       },
       onSuccess: ({ task_id, commits }) => {
          dbg("[useSyncTaskActivity]", commits);
-         alertSuccess(`[useSyncTaskActivity] Activity sync complete!`);
+         logInfo(`[useSyncTaskActivity] Activity sync complete!`);
          client.setQueryData(
             ["project", project.id],
             (oldData: Project) =>

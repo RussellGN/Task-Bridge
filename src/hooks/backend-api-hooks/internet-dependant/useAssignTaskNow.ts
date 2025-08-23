@@ -1,5 +1,5 @@
 import { Project, Task } from "@/types/interfaces";
-import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
@@ -18,7 +18,7 @@ export default function useAssignTaskNow(project: Project) {
       },
       onSuccess(task) {
          dbg("[useAssignTaskNow]", task);
-         alertSuccess(`[useAssignTaskNow] Task assigned!`, task.inner_issue.title);
+         logInfo(`[useAssignTaskNow] Task assigned!`, task.inner_issue.title);
          client.setQueryData(["project", project.id], (oldData: Project) => ({
             ...oldData,
             tasks: (oldData.tasks || []).map((t) => (t.inner_issue.id === task.inner_issue.id ? task : t)),

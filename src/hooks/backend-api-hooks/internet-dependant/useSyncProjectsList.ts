@@ -1,4 +1,4 @@
-import { alertError, alertInfo, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
@@ -17,7 +17,7 @@ export default function useSyncProjectsList() {
          alertError("[useSyncProjectsList] Error syncing projects with github: " + errorMessage);
       },
       onSuccess() {
-         alertInfo(`[useSyncProjectsList] Done syncing projects with github!`);
+         logInfo(`[useSyncProjectsList] Done syncing projects with github!`);
          client.invalidateQueries({ queryKey: ["projects"] });
       },
    });

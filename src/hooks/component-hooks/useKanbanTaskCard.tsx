@@ -2,7 +2,7 @@ import { Project, Task } from "@/types/interfaces";
 import { useState } from "react";
 import { useSearchParams } from "react-router";
 import useAssignTaskNow from "../backend-api-hooks/internet-dependant/useAssignTaskNow";
-import { alertInfo } from "@/lib/logging";
+import { logInfo } from "@/lib/logging";
 import useDeleteTask from "../backend-api-hooks/internet-dependant/useDeleteTask";
 import useSyncTaskActivity from "../backend-api-hooks/internet-dependant/useSyncTaskActivity";
 import { dbg } from "@/lib/logging";
@@ -29,12 +29,12 @@ export default function useKanbanTaskCard(task: Task, project: Project) {
    }
 
    function assignNow() {
-      alertInfo("Assigning task to " + task.inner_issue.assignee!.login + "...");
+      logInfo("Assigning task to " + task.inner_issue.assignee!.login + "...");
       assignTaskNow(task.inner_issue.id);
    }
 
    function deleteTask() {
-      alertInfo("Deleting task...", task.inner_issue.title);
+      logInfo("Deleting task...", task.inner_issue.title);
       deleteTaskWithId(task.inner_issue.id);
    }
 

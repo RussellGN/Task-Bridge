@@ -1,4 +1,4 @@
-import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { ProjectPatchArgs } from "@/types/interfaces";
 import { useMutation } from "@tanstack/react-query";
@@ -17,7 +17,7 @@ export default function useUpdateProjectTeam(project_id: string | undefined) {
          alertError("[useUpdateProjectTeam] Error updating project team", errorMessage);
       },
       onSuccess() {
-         alertSuccess(`[useUpdateProjectTeam] Project team updated!`);
+         logInfo(`[useUpdateProjectTeam] Project team updated!`);
          client.invalidateQueries({ queryKey: ["project", project_id] });
       },
    });

@@ -1,5 +1,5 @@
 import { Project } from "@/types/interfaces";
-import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
@@ -16,7 +16,7 @@ export default function useDeleteDraftTask(project: Project) {
       },
       onSuccess(draftId) {
          dbg("[useDeleteDraftTask]", draftId);
-         alertSuccess(`[useDeleteDraftTask] Draft with id ${draftId} was deleted!`);
+         logInfo(`[useDeleteDraftTask] Draft with id ${draftId} was deleted!`);
          client.setQueryData(
             ["project", project.id],
             (oldData: Project) =>

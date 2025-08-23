@@ -1,5 +1,5 @@
 import { Project } from "@/types/interfaces";
-import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
@@ -18,7 +18,7 @@ export default function useDeleteTask(project: Project) {
       },
       onSuccess(taskId) {
          dbg("[useDeleteTask]", taskId);
-         alertSuccess(`[useDeleteTask] Task with id ${taskId} was deleted!`);
+         logInfo(`[useDeleteTask] Task with id ${taskId} was deleted!`);
          client.setQueryData(["project", project.id], (oldData: Project) => ({
             ...oldData,
             tasks: (oldData.tasks || []).filter((t) => t.inner_issue.id.toString() !== taskId),

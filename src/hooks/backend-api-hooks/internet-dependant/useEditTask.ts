@@ -1,5 +1,5 @@
 import { NewTaskPayload, Project, Task } from "@/types/interfaces";
-import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
@@ -19,7 +19,7 @@ export default function useEditTask(project_id: string) {
       },
       onSuccess(updatedTask) {
          dbg("[useEditTask]", updatedTask);
-         alertSuccess(
+         logInfo(
             `[useEditTask] Task was updated!`,
             `${updatedTask.inner_issue.assignee?.login}: ${updatedTask.inner_issue.title}`,
          );

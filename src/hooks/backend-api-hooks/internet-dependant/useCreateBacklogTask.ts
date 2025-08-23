@@ -1,5 +1,5 @@
 import { NewTaskPayload, Project, Task } from "@/types/interfaces";
-import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
@@ -18,7 +18,7 @@ export default function useCreateBacklogTask(project_id: string) {
       },
       onSuccess(task) {
          dbg("[useCreateBacklogTask]", task);
-         alertSuccess(`[useCreateBacklogTask] Task added to backlog!`, task.inner_issue.title);
+         logInfo(`[useCreateBacklogTask] Task added to backlog!`, task.inner_issue.title);
          client.setQueryData(["project", project_id], (oldData: Project) => ({
             ...oldData,
             tasks: [...(oldData.tasks || []), task],

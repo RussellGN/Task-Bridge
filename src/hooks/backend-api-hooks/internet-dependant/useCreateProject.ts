@@ -1,5 +1,5 @@
 import { NewProjectPayload, Project } from "@/types/interfaces";
-import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
@@ -20,7 +20,7 @@ export default function useCreateProject() {
       },
       onSuccess(project) {
          dbg("[useNewProjectTab]", project);
-         alertSuccess(`[useNewProjectTab] ${project.name} project was created!`);
+         logInfo(`[useNewProjectTab] ${project.name} project was created!`);
          client.setQueryData(["project", project.id], project);
          client.setQueryData(["projects"], (prev: Project[] | null) => (prev ? [...prev, project] : [project]));
          navigate("/project-dashboard/" + project.id);

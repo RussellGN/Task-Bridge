@@ -1,5 +1,5 @@
 import { DraftTask, NewDraftTaskPayload, Project } from "@/types/interfaces";
-import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
@@ -17,10 +17,7 @@ export default function useEditDraftTask(project_id: string) {
       },
       onSuccess(updatedDraft) {
          dbg("[useEditDraftTask]", updatedDraft);
-         alertSuccess(
-            `[useEditDraftTask] Draft was updated!`,
-            `${updatedDraft.assignee?.login}: ${updatedDraft.title}`,
-         );
+         logInfo(`[useEditDraftTask] Draft was updated!`, `${updatedDraft.assignee?.login}: ${updatedDraft.title}`);
          client.setQueryData(
             ["project", project_id],
             (oldData: Project) =>

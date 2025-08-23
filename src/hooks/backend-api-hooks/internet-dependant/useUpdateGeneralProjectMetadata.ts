@@ -1,4 +1,4 @@
-import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 import { stringifyAndRemoveQuotes } from "@/lib/utils";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { Project, ProjectPatchArgs } from "@/types/interfaces";
@@ -18,7 +18,7 @@ export default function useUpdateGeneralProjectMetadata(projectId: string | unde
          alertError(`${F} Error updating general project metadata`, err.message || stringifyAndRemoveQuotes(err));
       },
       onSuccess: (project) => {
-         alertSuccess(`${F} Project metadata updated!`);
+         logInfo(`${F} Project metadata updated!`);
          client.invalidateQueries({ queryKey: ["project", projectId] });
          client.setQueryData(["projects"], (prev: Project[] | null) =>
             prev ? prev.map((p) => (p.id === project.id ? project : p)) : [project],

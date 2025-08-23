@@ -1,5 +1,5 @@
 import { DraftTaskAssignmentResponse, Project } from "@/types/interfaces";
-import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
@@ -19,7 +19,7 @@ export default function useAssignDraftTaskNow(project: Project) {
       },
       onSuccess({ old_draft_id, task }) {
          dbg("[useAssignDraftTaskNow]", task, old_draft_id);
-         alertSuccess(
+         logInfo(
             `[useAssignDraftTaskNow] Drafted Task assigned!`,
             task.inner_issue.title + ` (from draft: ${old_draft_id})`,
          );

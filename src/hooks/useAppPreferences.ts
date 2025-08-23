@@ -1,5 +1,5 @@
 import { STORE_PATH } from "@/lib/constants";
-import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { AppPreferences } from "@/types/interfaces";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -27,7 +27,7 @@ export default function useAppPreferences() {
          await store.set("app-preferences", { ...oldAppPreferences, ...newAppPreferences });
       },
       onSuccess() {
-         alertSuccess("[useAppPreferences] App Preferences saved!");
+         logInfo("[useAppPreferences] App Preferences saved!");
          client.invalidateQueries({ queryKey: ["app-preferences"] });
       },
       onError(err: Error | string) {

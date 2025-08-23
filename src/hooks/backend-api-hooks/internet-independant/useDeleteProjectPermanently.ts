@@ -4,7 +4,7 @@ import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
-import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 
 export default function useDeleteProjectPermanently(projectId: string | undefined) {
    const client = useClient();
@@ -19,7 +19,7 @@ export default function useDeleteProjectPermanently(projectId: string | undefine
          alertError("[useDeleteProjectPermanently] Error deleting project permanently", errorMessage);
       },
       onSuccess() {
-         alertSuccess("[useDeleteProjectPermanently] project deleted permanently!", `Id: ${projectId}`);
+         logInfo("[useDeleteProjectPermanently] project deleted permanently!", `Id: ${projectId}`);
          client.removeQueries({ queryKey: ["project", projectId] });
          client.setQueryData(["projects"], (prev: Project[] | null) =>
             prev ? prev.filter((p) => p.id !== projectId) : null,

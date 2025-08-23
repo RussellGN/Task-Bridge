@@ -1,5 +1,5 @@
 import { STORE_PATH } from "@/lib/constants";
-import { alertError, alertInfo, logInfo } from "@/lib/logging";
+import { alertError, logInfo } from "@/lib/logging";
 import { invoke } from "@tauri-apps/api/core";
 import { load } from "@tauri-apps/plugin-store";
 import { useState } from "react";
@@ -16,7 +16,7 @@ export default function useDevKit() {
       setLoading(true);
       invoke("clear_store")
          .then(() => {
-            alertInfo("[clearStore] Store cleared successfully");
+            logInfo("[clearStore] Store cleared successfully");
             navigate("/");
          })
          .catch((e) => alertError("[clearStore] " + JSON.stringify(e)))

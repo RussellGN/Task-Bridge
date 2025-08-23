@@ -1,5 +1,5 @@
 import { STORE_PATH } from "@/lib/constants";
-import { alertError, alertSuccess } from "@/lib/logging";
+import { alertError, logInfo } from "@/lib/logging";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { Project, ProjectPatchArgs } from "@/types/interfaces";
 import { useMutation } from "@tanstack/react-query";
@@ -21,7 +21,7 @@ export default function useUpdateProjectSyncSettings() {
       onError: (error) => alertError(`${F} Error updating project sync settings`, error.message),
       onSuccess: (project) => {
          client.setQueryData(["project", project.id], project);
-         alertSuccess(`${F} Project sync settings updated successfully for ${project.name}.`);
+         logInfo(`${F} Project sync settings updated successfully for ${project.name}.`);
       },
    });
 

@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { checkAuth } from "@/lib/utils";
-import { alertError } from "@/lib/logging";
 import { useNavigate, useSearchParams } from "react-router";
 import useGetUser from "../backend-api-hooks/internet-independant/useGetUser";
 
@@ -14,7 +13,7 @@ export default function useHome() {
       // checkAuth should not raise an error, crash if it does
       checkAuth().then((isAuthed) => {
          if (!isAuthed) {
-            alertError("[useHome] You are not authenticated. Please sign in.");
+            // alertError("[useHome] You are not authenticated. Please sign in.");
             navigate("/");
          } else {
             getUser();

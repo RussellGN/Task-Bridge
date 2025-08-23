@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { alertSuccess, logError, logInfo } from "@/lib/logging";
+import { logError, logInfo } from "@/lib/logging";
 import { checkAuth } from "@/lib/utils";
 import { once } from "@tauri-apps/api/event";
 
@@ -19,7 +19,7 @@ export default function useListenForAuthSetupCompleteEvent() {
             }
 
             unlisten = await once("auth-setup-complete", (e) => {
-               alertSuccess("[useListenForAuthSetupCompleteEvent] Auth setup complete!");
+               logInfo("[useListenForAuthSetupCompleteEvent] Auth setup complete!");
                logInfo("[useListenForAuthSetupCompleteEvent] auth-setup-complete, event: " + JSON.stringify(e));
 
                if (unlisten) {

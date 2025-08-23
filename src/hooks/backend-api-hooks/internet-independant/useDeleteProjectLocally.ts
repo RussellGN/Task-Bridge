@@ -3,7 +3,7 @@ import { Project } from "@/types/interfaces";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
-import { alertError, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 
 export default function useDeleteProjectLocally(projectId: string | undefined) {
    const client = useClient();
@@ -17,7 +17,7 @@ export default function useDeleteProjectLocally(projectId: string | undefined) {
          alertError("[useDeleteProjectLocally] Error deleting project locally", errorMessage);
       },
       onSuccess() {
-         alertSuccess("[useDeleteProjectLocally] project deleted from computer!", `Id: ${projectId}`);
+         logInfo("[useDeleteProjectLocally] project deleted from computer!", `Id: ${projectId}`);
          client.removeQueries({ queryKey: ["project", projectId] });
          client.setQueryData(["projects"], (prev: Project[] | null) =>
             prev ? prev.filter((p) => p.id !== projectId) : null,

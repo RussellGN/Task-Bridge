@@ -1,6 +1,6 @@
 import useSettings from "@/hooks/route-hooks/useSettings";
 import { DEFAULT_PROJECT_SYNC_INTERVAL_MINS } from "@/lib/constants";
-import { alertError, alertInfo, alertSuccess, dbg } from "@/lib/logging";
+import { alertError, dbg, logInfo } from "@/lib/logging";
 import { useConnectionStatus } from "@/providers/ConnectionStatusProvider";
 import { useClient } from "@/providers/ReactQueryProvider";
 import { useSyncedProjects } from "@/providers/SyncedProjectsProvider";
@@ -25,7 +25,7 @@ export default function useSyncProjectWithGitHub(project: Project) {
       onSuccess() {
          client.invalidateQueries({ queryKey: ["project", project.id] });
          client.invalidateQueries({ queryKey: ["projects"] });
-         alertSuccess(`[useSyncProjectWithGitHub] sync complete! ${project.name} project was updated!`);
+         logInfo(`[useSyncProjectWithGitHub] sync complete! ${project.name} project was updated!`);
       },
    });
 
@@ -47,7 +47,7 @@ export default function useSyncProjectWithGitHub(project: Project) {
          () => {
             doIfOnline(
                () => {
-                  alertInfo(`[useSyncProjectWithGitHub] Syncing ${project.name} with GitHub...`);
+                  logInfo(`[useSyncProjectWithGitHub] Syncing ${project.name} with GitHub...`);
                   mutate();
                },
                "GitHub sync attempt failed!",
