@@ -114,7 +114,7 @@ jobs:
            id: changelog
            run: |
               # Extract everything between ## [2.0.1] and next ##
-              NOTES=$(awk '/## \['"${{ env.VERSION }}"'\]/{flag=1;next}/## \[/{flag=0}flag' CHANGELOG.md)
+              NOTES=$(awk '/## \['"${{ env.VERSION }}"'\]/{flag=1;next}/## \[/{flag=0}flag' CHANGELOG)
               echo "notes<<EOF" >> $GITHUB_OUTPUT
               echo "$NOTES" >> $GITHUB_OUTPUT
               echo "EOF" >> $GITHUB_OUTPUT
