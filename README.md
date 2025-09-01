@@ -1,6 +1,6 @@
 # Task-Bridge
 
-**Task-Bridge** is a desktop-based project management solution built on top of GitHub. It simplifies work management & project oversight for GitHub-averse project managers.
+GitHub issues management and branch-commits oversight from a simple interface. Built for GitHub-averse project overseers.
 
 <details>
 <summary>Screenshots - v2.3.0</summary>
@@ -29,27 +29,32 @@
       <img src="./doc/screenshots/4-project-dashboard.png" width="90%"/><br/>
     </td>
     <td align="center">
-      <img src="./doc/screenshots/5-project-analytics.png" width="90%"/><br/>
+      <img src="./doc/screenshots/5-new-task-form.png" width="90%"/><br/>
     </td>
   </tr>
   <tr>
     <td align="center">
-      <img src="./doc/screenshots/6-project-settings.png" width="90%"/><br/>
+      <img src="./doc/screenshots/6-project-analytics.png" width="90%"/><br/>
+    </td>
+    <td align="center">
+      <img src="./doc/screenshots/7-project-settings.png" width="90%"/><br/>
     </td>
   </tr>
 </table>
 
 </details>
 
+## Usage
+
+Task-bridge is pretty straightforward to use, but in the event you get stuck, a usage guide is available in-app under the `Help` tab.
+
 ## Download
 
-[Download latest (recommended)](https://github.com/russellgn/task-bridge/releases/latest) <br/>
-Previous documented versions are available under [Releases](https://github.com/russellgn/task-bridge/releases). <br/>
-Older undocumented versions are available [here](https://drive.google.com/drive/folders/1i988b_XsgcZ_Q5wK7dM5CCH7DYNJDwfV?usp=sharing). <br/>
+[> Download latest](https://github.com/russellgn/task-bridge/releases/latest) <br/>
 
-⚠️ **Important** <br/>
-Older versions may be buggier and less stable. <br/>
-Always enable `uninstall first` and `clear previous data` options when switching between versions (will be improved in future).
+⚠️ **Caveat** <br/>
+Always toggle `uninstall first` and `clear previous data` options if switching between versions (will be improved in future).
+<br/>
 <br/>
 <br/>
 [See license](./LICENSE)
