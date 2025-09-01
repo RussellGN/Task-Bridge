@@ -3,7 +3,7 @@ import { Project } from "@/types/interfaces";
 import { useQuery } from "@tanstack/react-query";
 import { load } from "@tauri-apps/plugin-store";
 import useSyncProjectsList from "../internet-dependant/useSyncProjectsList";
-import { alertError, dbg } from "@/lib/logging";
+import { alertError, alertInfo, dbg } from "@/lib/logging";
 import React from "react";
 import { toast } from "sonner";
 
@@ -18,7 +18,8 @@ export default function useLocalProjectsList() {
          const projectIds = await store.get<string[]>("project-ids");
 
          if (projectIds === undefined) {
-            throw new Error("No projects found locally, trigger a sync with github or create a new project");
+            alertInfo("No projects found locally, trigger a sync with github or create a new project");
+            return [];
          } else {
             const projects = [] as Project[];
 
