@@ -9,18 +9,16 @@ export default function useSignin() {
 
    useEffect(() => {
       setLoading(true);
-      void (async () => {
-         try {
-            const isAuthenticated = await checkAuth();
+      checkAuth()
+         .then((isAuthenticated) => {
             if (isAuthenticated) {
                navigate("/welcome");
-            } else logInfo("[useSignin] not authenticated, awaiting sign-in");
-         } catch (e) {
-            logError(e);
-         } finally {
-            setLoading(false);
-         }
-      })();
+            } else {
+               logInfo("[useSignin] not authenticated, awaiting sign-in");
+            }
+         })
+         .catch((e) => logError(e))
+         .finally(() => setLoading(false));
    }, []);
 
    // useEffect(() => {
