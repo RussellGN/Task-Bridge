@@ -6,6 +6,12 @@ on:
          - "src-tauri/tauri.conf.json"
       branches:
          - main
+   workflow_dispatch:
+      inputs:
+         tag:
+            description: "Release Tag (e.g., v2.0.1)"
+            required: true
+            type: string
 
 env:
    CLIENT_ID: ${{ secrets.CLIENT_ID }}
@@ -37,9 +43,21 @@ jobs:
       steps:
          - uses: actions/checkout@v4
            with:
-              fetch-depth: 2 # required for git diff to identify changes
+              fetch-depth: 2
+
+         - name: Set version from tag if workflow_dispatch
+           if: github.event_name == 'workflow_dispatch'
+           id: set_version_from_tag
+           run: |
+              TAG_VERSION=$(echo "${{ github.event.inputs.tag }}" | sed 's/^v//')
+              if [ -z "$TAG_VERSION" ]; then
+                echo "::error::Release Tag input is required and cannot be empty."
+                exit 1
+              fi
+              echo "version=$TAG_VERSION" >> $GITHUB_OUTPUT
 
          - name: Validate version change
+           if: github.event_name == 'push'
            id: version_validation
            run: |
               cd src-tauri
@@ -62,11 +80,15 @@ jobs:
                 echo "::error::Version not changed (still $CURRENT_VERSION)"
                 exit 1
               fi
-
               echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
          - name: Set version environment variable
-           run: echo "VERSION=${{ steps.version_validation.outputs.version }}" >> $GITHUB_ENV
+           run: |
+              if [ "${{ github.event_name }}" == "push" ]; then
+                echo "VERSION=${{ steps.version_validation.outputs.version }}" >> $GITHUB_ENV
+              elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+                echo "VERSION=${{ steps.set_version_from_tag.outputs.version }}" >> $GITHUB_ENV
+              fi
 
          - name: Install Ubuntu dependencies
            if: matrix.platform == 'ubuntu-22.04'
