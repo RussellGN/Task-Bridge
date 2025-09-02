@@ -9,7 +9,7 @@ import React from "react";
 export default function useAppPreferences() {
    const client = useClient();
 
-   const { data, error, isPending } = useQuery({
+   const { data, error, isPending, refetch } = useQuery({
       queryKey: ["app-preferences"],
       queryFn: async () => {
          const store = await load(STORE_PATH);
@@ -58,5 +58,6 @@ export default function useAppPreferences() {
       appPreferencesloading: isPending || isMutating,
       updateAppPreferences,
       updateAppPreferencesManually,
+      reloadAppPreferences: refetch,
    };
 }
