@@ -1,6 +1,6 @@
 # Task-Bridge
 
-GitHub issues management and branch-commits oversight from a simple interface. Built for GitHub-averse project overseers.
+A desktop app for simplified GitHub issues tracking & management. Designed for people needing a simpler way to stay on top of development projects without needing to be GitHub experts.
 
 <details>
 <summary>Screenshots - v2.3.0</summary>
