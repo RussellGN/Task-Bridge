@@ -1,5 +1,5 @@
 import useAppVersion from "@/hooks/useAppVersion";
-import { DOWNLOAD_URL, DOWNLOAD_URL_TEXT, GITHUB_REPO_URL, LICENSE_URL } from "@/lib/constants";
+import { DOWNLOAD_URL, DOWNLOAD_URL_TEXT, GITHUB_REPO_URL } from "@/lib/constants";
 import { HelpCircle } from "lucide-react";
 
 export default function Help() {
@@ -216,16 +216,6 @@ export default function Help() {
                         <strong>Version:</strong> V{appVersion}
                      </div>
                   </div>
-
-                  {/* version */}
-
-                  <p className="text-muted-foreground mt-10 text-xs">
-                     Task Bridge v{appVersion} is free to use and public for demonstration purposes, but is not open
-                     source. <br /> All rights reserved.{" "}
-                     <a href={LICENSE_URL} className="text-PRIMARY underline" target="_blank" rel="noopener noreferrer">
-                        See License
-                     </a>
-                  </p>
                </div>
             </section>
          </div>
