@@ -54,7 +54,4 @@ Task-bridge is pretty straightforward to use, but in the event you get stuck, a 
 
 ⚠️ **Caveat** <br/>
 Always toggle `uninstall first` and `clear previous data` options if switching between versions (will be improved in future).
-<br/>
-<br/>
-<br/>
-[See license](./LICENSE)
+
