@@ -160,3 +160,7 @@
       @apply bg-PRIMARY hover:bg-PRIMARY/80 text-black;
    }
 }
+
+.img_outline {
+   @apply border-foreground/10 border-2 shadow-2xl;
+}
