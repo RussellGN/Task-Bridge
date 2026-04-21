@@ -7,6 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
    const os = getOS();
    if (os !== "unknown") {
       downloadBtn.innerText = `Download For ${os}`;
-      downloadBtn.href = `#dowload-${os}`;
+      // downloadBtn.href = `#dowload-${os}`;
    }
 });

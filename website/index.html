@@ -13,22 +13,155 @@
       <script defer type="module" src="/src/main.ts"></script>
    </head>
 
-   <body class="dark font-mono">
-      <main class="container mx-auto flex h-screen flex-col gap-5 px-4 py-20">
-         <section class="flex flex-col-reverse items-center gap-5 md:flex-row">
-            <div class="max-w-100 md:text-right">
+   <body class="dark py-20 text-center font-mono">
+      <main class="container mx-auto px-3">
+         <section class="mb-30 flex flex-col items-center gap-5">
+            <div class="mb-10 max-w-100">
                <h1 class="text-2xl font-bold">Task Bridge</h1>
                <p class="py-4">Track & manage GitHub issues from a clean desktop interface.</p>
-               <a id="downloadBtn" href="#download" class="btn btn-PRIMARY inline-flex w-fit text-lg">Download </a>
+               <!-- <a id="downloadBtn" href="#download" class="btn btn-PRIMARY inline-flex w-fit text-lg">Download </a> -->
+               <a
+                  id="downloadBtn"
+                  target="_blank"
+                  href="https://github.com/russellgn/task-bridge/releases/latest"
+                  class="btn btn-PRIMARY inline-flex w-fit text-lg"
+                  >Download
+               </a>
             </div>
 
             <img
                src="/screenshots/4-project-dashboard.png"
                alt="task bridge project dashboard"
                width="500"
-               class="grow"
+               class="md:w-3/4"
             />
          </section>
+
+         <section class="mx-auto mb-30 md:w-3/4">
+            <div class="mx-auto mb-10 max-w-prose">
+               <h1 class="text-2xl font-bold">Usage</h1>
+               <p class="py-4">
+                  Follow in-app instructions to get started. In the event you get stuck, a help guide is available also
+                  in-app.
+               </p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-5 text-xs sm:text-sm md:grid-cols-2">
+               <div>
+                  <img
+                     src="/public/screenshots/0-sign-in.png"
+                     alt="task bridge login screen"
+                     width="100%"
+                     class="border-foreground aspect-video w-full"
+                  />
+                  <p class="bg-foreground/5 rounded-b-sm p-1">
+                     <span class="text-PRIMARY">1.</span>
+                     Login to your GitHub account
+                  </p>
+               </div>
+
+               <div>
+                  <img
+                     src="/public/screenshots/3-all-projects-view-screen.png"
+                     alt="task bridge login screen"
+                     width="100%"
+                     class="border-foreground aspect-video w-full"
+                  />
+                  <p class="bg-foreground/5 rounded-b-sm p-1">
+                     <span class="text-PRIMARY">2.</span>
+                     View your projects
+                  </p>
+               </div>
+
+               <div>
+                  <img
+                     src="/public/screenshots/2-new-project-wizard.png"
+                     alt="task bridge login screen"
+                     width="100%"
+                     class="border-foreground aspect-video w-full"
+                  />
+                  <p class="bg-foreground/5 rounded-b-sm p-1">
+                     <span class="text-PRIMARY">3.</span>
+                     Optionally create a new project
+                  </p>
+               </div>
+
+               <div>
+                  <img
+                     src="/public/screenshots/4-project-dashboard.png"
+                     alt="task bridge login screen"
+                     width="100%"
+                     class="border-foreground aspect-video w-full"
+                  />
+                  <p class="bg-foreground/5 rounded-b-sm p-1">
+                     <span class="text-PRIMARY">4.</span>
+                     Open a project dashboard
+                  </p>
+               </div>
+
+               <div>
+                  <img
+                     src="/public/screenshots/5-new-task-form.png"
+                     alt="task bridge login screen"
+                     width="100%"
+                     class="border-foreground aspect-video w-full"
+                  />
+                  <p class="bg-foreground/5 rounded-b-sm p-1">
+                     <span class="text-PRIMARY">5.</span>
+                     Create a new task (GitHub issue)
+                  </p>
+               </div>
+
+               <div>
+                  <img
+                     src="/public/screenshots/7-project-settings.png"
+                     alt="task bridge login screen"
+                     width="100%"
+                     class="border-foreground aspect-video w-full"
+                  />
+                  <p class="bg-foreground/5 rounded-b-sm p-1">
+                     <span class="text-PRIMARY">6.</span>
+                     Manage project
+                  </p>
+               </div>
+
+               <div>
+                  <img
+                     src="/public/screenshots/6-project-analytics.png"
+                     alt="task bridge login screen"
+                     width="100%"
+                     class="border-foreground aspect-video w-full"
+                  />
+                  <p class="bg-foreground/5 rounded-b-sm p-1">
+                     <span class="text-PRIMARY">7.</span>
+                     View project analytics
+                  </p>
+               </div>
+
+               <div>
+                  <ul class="flex aspect-video list-disc flex-col items-center justify-center">
+                     <li>keeps in sync with GitHub</li>
+                     <li>tracks git commits for each task</li>
+                     <li>automatically progresses status</li>
+                     <li>supports multiple accounts</li>
+                  </ul>
+
+                  <p class="bg-foreground/5 rounded-b-sm p-1">
+                     <span class="text-PRIMARY">+</span>
+                     More
+                  </p>
+               </div>
+            </div>
+         </section>
       </main>
+
+      <footer>
+         <p class="">
+            Task Bridge is open-source. Check out the code on
+            <a href="https://github.com/russellgn/task-bridge" target="_blank" class="text-PRIMARY hover:underline"
+               >GitHub</a
+            >.
+         </p>
+      </footer>
    </body>
 </html>
