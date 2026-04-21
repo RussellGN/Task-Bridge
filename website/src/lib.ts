@@ -1,4 +1,5 @@
-export type OS = "Mac" | "Windows" | "Linux" | "unknown";
+import { Octokit } from "octokit";
+import type { OS } from "./types";
 
 export function getOS(): OS {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,4 +22,17 @@ export function getOS(): OS {
    if (source.includes("linux")) return "Linux";
 
    return "unknown";
+}
+
+export async function getLatestReleaseAssets() {
+   const octokit = new Octokit();
+   const owner = "RussellGN";
+   const repo = "Task-Bridge";
+
+   const { data } = await octokit.rest.repos.getLatestRelease({
+      owner,
+      repo,
+   });
+
+   return data.assets;
 }

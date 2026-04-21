@@ -164,3 +164,7 @@
 .img_outline {
    @apply border-foreground/10 border-2 shadow-2xl;
 }
+
+#downloads a {
+   @apply text-PRIMARY text-sm hover:underline;
+}
