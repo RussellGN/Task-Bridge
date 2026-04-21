@@ -1,5 +1,5 @@
-import { getOS } from "./lib";
 import "./style.css";
+import { getOS } from "./lib";
 
 const downloadBtn = document.querySelector("#downloadBtn") as HTMLAnchorElement;
 
