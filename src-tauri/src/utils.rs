@@ -13,28 +13,30 @@ macro_rules! log {
       println!();
    };
    ($($arg:tt)*) => {{
-      use colored::Colorize;
-      print!("{}", "|".purple());
-      print!("{}", "--> ".yellow());
-      let s = format!($($arg)*);
+      if cfg!(debug_assertions) {
+         use colored::Colorize;
+         print!("{}", "|".purple());
+         print!("{}", "--> ".yellow());
+         let s = format!($($arg)*);
 
-      let (func_name, msg) = if s.starts_with("[") {
-         let split = s.split("]")
-            .collect::<Vec<_>>();
+         let (func_name, msg) = if s.starts_with("[") {
+            let split = s.split("]")
+               .collect::<Vec<_>>();
 
-            let func_name =
-            split.first()
-            .unwrap_or(&"[")
-            .get(1..)
-            .unwrap_or("");
+               let func_name =
+               split.first()
+               .unwrap_or(&"[")
+               .get(1..)
+               .unwrap_or("");
 
-            let msg = split.get(1).unwrap_or(&s.as_str()).to_string();
-         (func_name, msg)
-      } else {
-         ("", s)
-      };
-      print!("{} {msg}", func_name.cyan());
-      println!("\n{}", "|".purple());
+               let msg = split.get(1).unwrap_or(&s.as_str()).to_string();
+            (func_name, msg)
+         } else {
+            ("", s)
+         };
+         print!("{} {msg}", func_name.cyan());
+         println!("\n{}", "|".purple());
+      }
    }};
 }
 
