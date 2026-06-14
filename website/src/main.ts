@@ -9,7 +9,7 @@ const OS_ORDER = ["Windows", "Mac", "Linux", "Unknown"] as const;
 
 document.addEventListener("DOMContentLoaded", async () => {
    const os = getOS();
-   if (os !== "unknown") {
+   if (os !== "unknown" && window.screen.width > 600) {
       downloadBtn.innerText = `Download For ${os}`;
       downloadBtn.href = `#downloads-${os.toLowerCase()}`;
    }
